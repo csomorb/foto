@@ -7,4 +7,6 @@ export interface PhotoModel extends ItemModel{
   src1280x720: string;
   src1920x1080: string;
   srcOrig: string;
+  latitude?: number;
+  longuitude?: number;
 }
