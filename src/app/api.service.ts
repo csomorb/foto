@@ -1,28 +1,46 @@
 import { Injectable } from '@angular/core';
 import { PhotoModel } from './models/photo.model';
 import { TagModel } from './models/tag.model';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { AlbumModel } from './models/album.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
+  /**
+   * Retourne la photo
+   * @param id
+   */
   getPhoto(id:number){
-    let photo: PhotoModel;
-    photo.title = "Titre photo";
-    photo.descr = "Description de la photo";
-    photo.listTag = new Array<TagModel>();
-    photo.src1280x720 = "";
-    photo.src150x150 = "";
-    photo.src1920x1080 = "";
-    photo.src320x240 = "";
-    photo.src640x480 = "";
-    photo.srcOrig = "";
-    photo.addDate = new Date();
-    photo.creatDate = new Date();
-
-    return photo;
+    return this.http.get<PhotoModel>(`${environment.apiUrl}/photos/${id}`);
   }
+
+  /**
+   * Renvoie la liste de tous les albums avec la photo de couverture
+   */
+  getAlbums(){
+    return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums`);
+  }
+
+  /**
+   * Renvoie un album avec la photo de couverture
+   * @param id
+   */
+  getAlbum(id:number){
+    return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums/${id}`);
+  }
+
+  /**
+   * Renvoie un album avec la photo de couverture et les photos qu'elle contient
+   */
+  getAlbumWithPhotos(id:number){
+    return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums/${id}/photos`);
+  }
+
+
 }

@@ -4,13 +4,13 @@ import { AlbumModel } from './album.model';
 
 export interface ItemModel {
   title: string;
-  descr: string;
+  description: string;
   weight: number;
   height: number;
   width: number;
   creatDate: Date;
   addDate: Date;
-  listTag: Array<TagModel>;
-  listPeople: Array<PeopleModel>;
-  listAlbum: Array<AlbumModel>;
+  listTag?: Array<TagModel>;
+  listPeople?: Array<PeopleModel>;
+  listAlbum?: Array<AlbumModel>;
 }
