@@ -1,0 +1,7 @@
+<p>gallery works!</p>
+
+<div *ngFor="let photo of photos">{{photo.title}}
+  <div (click)="loadPhoto(photo)">
+    <img [src]="photoBaseUrl + photo.src150"/>
+  </div>
+</div>

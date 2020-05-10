@@ -3,7 +3,8 @@ import { PhotoModel } from './photo.model';
 
 export interface CategoryModel {
   title: string;
-  descr?: string;
+  description?: string;
   coverPhoto?: PhotoModel;
-  listItem?: Array<PhotoModel|VideoModel>;
+  photos?: Array<PhotoModel>;
+  videos?: Array<VideoModel>;
 }

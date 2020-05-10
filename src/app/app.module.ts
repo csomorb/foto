@@ -8,6 +8,8 @@ import { NotFoundComponent } from './modules/general/not-found/not-found.compone
 import { LoginComponent } from './modules/general/login/login.component';
 import { AlbumComponent } from './modules/application/album/album.component';
 import { HomeComponent } from './modules/general/home/home.component';
+import { GalleryComponent } from './components/gallery/gallery.component';
+import { PhotoComponent } from './components/photo/photo.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { HomeComponent } from './modules/general/home/home.component';
     NotFoundComponent,
     LoginComponent,
     AlbumComponent,
-    HomeComponent
+    HomeComponent,
+    GalleryComponent,
+    PhotoComponent
   ],
   imports: [
     BrowserModule,
