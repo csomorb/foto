@@ -1,7 +1,35 @@
-<p>gallery works!</p>
+<div *ngIf="curentPhoto" class="Photo">
+  <div class="photoContainer">
+    <img [src]="photoBaseUrl + curentPhoto.srcOrig"/>
+  </div>
+  <div class="photoDetail">
+    <div>{{curentPhoto.title}}</div>
+    <div>{{curentPhoto.description}}</div>
+    <div>Pris le: {{curentPhoto.shootDate | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>Ajouté le: {{curentPhoto.createAt | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>Modifié le: {{curentPhoto.updatedAt | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>{{curentPhoto.weight | fileSize }}</div>
+    <div>Altitude: {{curentPhoto.alti}} m</div>
+    <div>{{curentPhoto.width}} x {{curentPhoto.height}} pixel</div>
+  </div>
+  <div class="photoNavigation">
+    <div (click)="movePrevPhoto()">prev</div>
+    <div (click)="returnGalery()">home</div>
+    <div (click)="moveNextPhoto()">next</div>
+  </div>
 
-<div *ngFor="let photo of photos">{{photo.title}}
-  <div (click)="loadPhoto(photo)">
-    <img [src]="photoBaseUrl + photo.src150"/>
+
+</div>
+<div *ngIf="!curentPhoto" class="Gallery">
+  <div (click)="triPriseDeVueAncienRecent()">Tri prise de vu ancien -> récent</div>
+  <div (click)="triPriseDeVueRecentAncien()">Tri prise de vu récent -> ancien</div>
+  <div (click)="triAZ()">Tri A -> Z</div>
+  <div (click)="triZA()">Tri Z -> A</div>
+
+  <div *ngFor="let photo of photos">{{photo.title}}
+    <div (click)="loadPhoto(photo)">
+      <img [src]="photoBaseUrl + photo.src150"/>
+    </div>
   </div>
 </div>
+

@@ -10,6 +10,7 @@ import { AlbumComponent } from './modules/application/album/album.component';
 import { HomeComponent } from './modules/general/home/home.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
 import { PhotoComponent } from './components/photo/photo.component';
+import { FileSizePipe } from './file-size.pipe';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { PhotoComponent } from './components/photo/photo.component';
     AlbumComponent,
     HomeComponent,
     GalleryComponent,
-    PhotoComponent
+    PhotoComponent,
+    FileSizePipe
   ],
   imports: [
     BrowserModule,

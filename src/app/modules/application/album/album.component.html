@@ -1,8 +1,16 @@
-<p>album works!</p>
+
+<a href="" routerLink="/albums">Acceuil</a>
+
 <h2>{{album?.title}}</h2>
 <p>{{album?.description}}</p>
 
 <!--Affichage des sous albums-->
+<div *ngFor="let ssAlbum of album?.listAlbum">
+  <a href="" routerLink="/albums/{{ssAlbum.id}}">
+{{ssAlbum.title}} Coucou
+<img [src]="photoBaseUrl + ssAlbum?.coverPhoto?.src150"/>
+  </a>
+</div>
 
 <!--Affichage des photos de l'album-->
 

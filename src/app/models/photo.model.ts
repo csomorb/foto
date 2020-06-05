@@ -10,4 +10,5 @@ export interface PhotoModel extends ItemModel{
   srcOrig: string;
   lat?: number;
   long?: number;
+  alti?: number;
 }

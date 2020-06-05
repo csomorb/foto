@@ -43,5 +43,10 @@ export class ApiService {
     return this.http.get<AlbumModel>(url);
   }
 
+  getSSAlbums(id:number){
+    let url = environment.apiUrl + '/albums/' + id + '/childrens-tree';
+    return this.http.get<any>(url);
+  }
+
 
 }

@@ -8,8 +8,9 @@ export interface ItemModel {
   weight: number;
   height: number;
   width: number;
-  creatDate: Date;
-  addDate: Date;
+  createAt: Date;
+  updatedAt: Date;
+  shootDate: Date;
   listTag?: Array<TagModel>;
   listPeople?: Array<PeopleModel>;
   listAlbum?: Array<AlbumModel>;
