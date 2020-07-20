@@ -11,6 +11,8 @@ import { HomeComponent } from './modules/general/home/home.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
 import { PhotoComponent } from './components/photo/photo.component';
 import { FileSizePipe } from './file-size.pipe';
+import { DropzoneDirective } from './directives/dropzone.directive';
+import { UploaderComponent } from './modules/application/uploader/uploader.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,9 @@ import { FileSizePipe } from './file-size.pipe';
     HomeComponent,
     GalleryComponent,
     PhotoComponent,
-    FileSizePipe
+    FileSizePipe,
+    DropzoneDirective,
+    UploaderComponent
   ],
   imports: [
     BrowserModule,

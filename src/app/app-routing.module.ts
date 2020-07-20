@@ -6,6 +6,7 @@ import { AlbumComponent } from './modules/application/album/album.component';
 import { HomeComponent } from './modules/general/home/home.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
 import { PhotoComponent } from './components/photo/photo.component';
+import { UploaderComponent } from './modules/application/uploader/uploader.component';
 
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
       { path: 'photos/:idPhoto', component: PhotoComponent }
       ]
   },
+  { path: 'upload', component: UploaderComponent },
   { path: 'login', component: LoginComponent },
   { path: '**', component: NotFoundComponent }
 ];

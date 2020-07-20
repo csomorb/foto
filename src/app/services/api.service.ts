@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { PhotoModel } from '../models/photo.model';
 import { TagModel } from '../models/tag.model';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
 import { AlbumModel } from '../models/album.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +47,22 @@ export class ApiService {
   getSSAlbums(id:number){
     let url = environment.apiUrl + '/albums/' + id + '/childrens-tree';
     return this.http.get<any>(url);
+  }
+
+  upload(file: File, idAlbum: number, title: string, description: string): Observable<HttpEvent<any>>{
+    const formData: FormData = new FormData();
+
+    formData.append('file', file);
+    formData.append('idAlbum',idAlbum.toString());
+    formData.append('title', title);
+    formData.append('description', description);
+
+    const req = new HttpRequest('POST', `${environment.apiUrl}/photos/upload`, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
+
+    return this.http.request(req);
   }
 
 
