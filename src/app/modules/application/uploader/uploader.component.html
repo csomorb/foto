@@ -1,4 +1,7 @@
 
+
+<app-selectalbum (selectedAlbum)="setSelectedAlbum($event)"></app-selectalbum>
+
 <input type='file' (change)="onAddFiles($event)" multiple/>
 <div class="dropzone"
      dropzone
@@ -14,6 +17,14 @@
 
 <div *ngFor="let file of files">
   <img [src]="file.data" *ngIf="file.type.indexOf('image')> -1" height="200">
+  <form [formGroup]="file.photoForm">
+    <div>
+      <label>Title</label><input formControlName="title">
+    </div>
+    <div>
+      <label>Description</label><input formControlName="description">
+    </div>
+    </form>
 </div>
 
 <div *ngFor="let progressInfo of progressInfos" class="mb-2">

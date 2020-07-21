@@ -1,0 +1,14 @@
+<p>selectalbum works!</p>
+<form>
+  <div>
+    <label>Album</label>
+    <select name="album" (change)="changeSelectedAlbum($event)">
+      <option *ngFor="let album of listAlbums" value="{{album.id}}">{{album.title}}</option>
+    </select>
+  </div>
+</form>
+
+
+<div *ngFor="let album of listAlbums">
+  {{album.id}} : {{album.title}}
+</div>

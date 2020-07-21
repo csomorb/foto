@@ -13,6 +13,8 @@ import { PhotoComponent } from './components/photo/photo.component';
 import { FileSizePipe } from './file-size.pipe';
 import { DropzoneDirective } from './directives/dropzone.directive';
 import { UploaderComponent } from './modules/application/uploader/uploader.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { SelectalbumComponent } from './components/selectalbum/selectalbum.component';
 
 @NgModule({
   declarations: [
@@ -25,12 +27,15 @@ import { UploaderComponent } from './modules/application/uploader/uploader.compo
     PhotoComponent,
     FileSizePipe,
     DropzoneDirective,
-    UploaderComponent
+    UploaderComponent,
+    SelectalbumComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
