@@ -1,14 +1,20 @@
-<p>selectalbum works!</p>
-<form>
+<form (ngSubmit)="addAlbum(albumForm.value)" #albumForm="ngForm">
+  <div *ngIf="!modeAdd" (click)="toModeAdd()">Add album</div>
+  <div *ngIf="modeAdd" (click)="cancelModeAdd()">Cancel</div>
   <div>
     <label>Album</label>
-    <select name="album" (change)="changeSelectedAlbum($event)">
+    <select name="idAlbum" (change)="changeSelectedAlbum($event)" [(ngModel)]="selectAlbum">
+      <option *ngIf="modeAdd" value="0">------</option>
       <option *ngFor="let album of listAlbums" value="{{album.id}}">{{album.title}}</option>
     </select>
   </div>
+  <div *ngIf="modeAdd">
+    <label>Title</label>
+    <input name="title" ngModel required />
+  </div>
+  <div *ngIf="modeAdd">
+    <label>Description</label>
+    <textarea name="description" ngModel></textarea>
+  </div>
+  <button *ngIf="modeAdd" type="submit">Add album</button>
 </form>
-
-
-<div *ngFor="let album of listAlbums">
-  {{album.id}} : {{album.title}}
-</div>

@@ -29,6 +29,13 @@ export class ApiService {
   }
 
   /**
+   * Renvoie la liste des albums racines avec la photo de couverture
+   */
+  getRootsAlbums(){
+    return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums/roots`);
+  }
+
+  /**
    * Renvoie un album avec la photo de couverture
    * @param id
    */
@@ -49,6 +56,25 @@ export class ApiService {
     return this.http.get<any>(url);
   }
 
+  /**
+   * Créer un nouvel album
+   * @param title
+   * @param description
+   * @param idParent
+   */
+  postAlbum(title:string, description: string, idParent?: number){
+    let album = idParent ?  {title : title, description: description,idParent: idParent } : {title : title, description: description };
+    return this.http.post<AlbumModel>(environment.apiUrl + '/albums/', album);
+  }
+
+
+  /**
+   * Upload une photo dans l'album donné avec le titre et la description donné
+   * @param file
+   * @param idAlbum
+   * @param title
+   * @param description
+   */
   upload(file: File, idAlbum: number, title: string, description: string): Observable<HttpEvent<any>>{
     const formData: FormData = new FormData();
 

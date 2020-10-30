@@ -26,7 +26,8 @@
   <div (click)="triAZ()">Tri A -> Z</div>
   <div (click)="triZA()">Tri Z -> A</div>
 
-  <div *ngFor="let photo of photos">{{photo.title}}
+  <div *ngFor="let photo of photos">
+    {{photo.title}}
     <div (click)="loadPhoto(photo)">
       <img [src]="photoBaseUrl + photo.src150"/>
     </div>

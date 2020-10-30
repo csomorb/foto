@@ -3,12 +3,15 @@ import { ApiService } from 'src/app/services/api.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AlbumModel } from 'src/app/models/album.model';
 import { environment } from 'src/environments/environment';
+import { PhotoModel } from 'src/app/models/photo.model';
+import { VideoModel } from 'src/app/models/video.model';
 
 @Component({
   selector: 'app-album',
   templateUrl: './album.component.html',
   styleUrls: ['./album.component.css']
 })
+
 export class AlbumComponent implements OnInit {
 
   album: AlbumModel;
@@ -35,6 +38,10 @@ export class AlbumComponent implements OnInit {
         });
       }
       else{
+        this.album = { id: 0, title: "Acceuil"};
+        this.album.description = "Description";
+        this.apiService.getRootsAlbums().subscribe(album => { console.log(album);
+          this.album.listAlbum = album });
         console.log("Chargement racine");
       }
       });
