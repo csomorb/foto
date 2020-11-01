@@ -1,0 +1,50 @@
+footer{
+  background-color: #282f33;
+  color: #ccc;
+  flex-shrink: 0;
+  padding: 8px;
+  text-align: center;
+}
+
+.content {
+  flex: 1 0 auto;
+}
+
+
+/** Nav bar **/
+
+nav{
+  background-color: #282f33;
+  color: #ccc;
+}
+
+nav a{
+  color: #ccc;
+  text-decoration: none;
+}
+
+.nav-deskop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.nav-left{
+  display:flex;
+}
+
+.nav-item{
+  padding: 8px;
+}
+
+@media screen and (max-width: 1024px){
+  .nav-deskop{
+    display: none;
+  }
+}
+
+@media screen and (min-width: 1024px){
+  .nav-mobil{
+    display: none;
+  }
+}
