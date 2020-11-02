@@ -18,8 +18,8 @@
 <div *ngFor="let file of files">
   <img [src]="file.data" *ngIf="file.type.indexOf('image')> -1" height="200">
   <form [formGroup]="file.photoForm">
-    <div>
-      <label>Title</label><input formControlName="title">
+    <div class="webflow-style-input">
+      <input formControlName="title" placeholder="What's your email?">
     </div>
     <div>
       <label>Description</label><input formControlName="description">

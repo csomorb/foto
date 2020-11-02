@@ -8,7 +8,13 @@ footer{
 
 .content {
   flex: 1 0 auto;
+  background-image: radial-gradient(circle at 0% 0%, #373b52, #252736 51%, #1d1e26);
+  color: #ccc;
 }
+
+li { list-style: none; }
+p, h1, h2, h3, h4, h5, h6 { margin-top: 0; }
+a { text-decoration: none; }
 
 
 /** Nav bar **/
@@ -48,3 +54,8 @@ nav a{
     display: none;
   }
 }
+
+
+/** inputs **/
+
+
