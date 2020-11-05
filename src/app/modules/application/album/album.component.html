@@ -1,5 +1,7 @@
 
 <a href="" routerLink="/albums">Acceuil</a>
+<a *ngFor="let album of albumService.parentList" href="" routerLink="/albums/{{album.id}}"> {{album.title}}</a>
+<a href="" routerLink="/albums/{{albumService?.currentAlbum?.id}}">{{albumService?.currentAlbum?.title}}</a>
 
 <router-outlet></router-outlet>
 <!--Affichage des photos de l'album-->

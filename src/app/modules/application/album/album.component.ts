@@ -18,7 +18,7 @@ export class AlbumComponent implements OnInit {
   album: AlbumModel;
 
   constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router,
-    private albumService: AlbumService) {
+    public albumService: AlbumService) {
   }
 
   ngOnInit(): void {

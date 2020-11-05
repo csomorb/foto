@@ -73,6 +73,7 @@ export class AlbumService {
     if (tree.parent){
       if (currentAlbum.id === tree.id){
         this.parentList.push({id : tree.parent.id, title : tree.parent.title});
+        console.log(this.parentList);
         let albumParent: AlbumModel = {id: tree.parent.id, title : tree.parent.title, description : tree.parent.description};
         albumParent.listAlbum = currentAlbum;
         this.buildParentTree(tree.parent,albumParent);
@@ -82,6 +83,7 @@ export class AlbumService {
       }
     }
     // On ratache à la racine
+    this.parentList = this.parentList.reverse();
     let indexAlbum = this.albumCache.listAlbum.findIndex(a => a.id === currentAlbum.id)
     if (indexAlbum !== -1){
       this.albumCache.listAlbum[indexAlbum] = currentAlbum;
