@@ -51,8 +51,12 @@ export class UploaderComponent implements OnInit {
           console.log('reponse: ');
           console.log(event);
         }
+        else{
+          console.log(event);
+        }
       },
       err => {
+        console.log(err);
         this.progressInfos[idx].value = 0;
         this.message = 'Could not upload the file:' + file.name;
       });

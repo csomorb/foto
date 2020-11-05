@@ -1,0 +1,60 @@
+.photo-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.photo-container:after {
+  content:'';
+  display:block;
+  flex-grow: 10;
+}
+
+.photo-container > div {
+  height: 40vh;
+  flex-grow: 1;
+  margin:1px;
+  cursor: pointer;
+}
+
+/* .photo-container > div:last-child {
+  flex-grow: 10;
+} */
+
+.photo-container img {
+  max-height: 100%;
+  min-width: 100%;
+  object-fit: cover;
+  vertical-align: bottom;
+}
+
+.photo-title{
+    position: relative;
+    top: -19px;
+    text-align: center;
+    background: #0a0b0cb8;
+    display: none;
+}
+
+
+.photo-container > div:hover .photo-title{
+  display:block;
+}
+
+.photo{
+  display: flex;
+}
+
+.photo-detail{
+  width: 300px;
+}
+
+.photo-view-container{
+  width: calc(100% - 300px);
+}
+
+.photo-view-container img{
+  max-width: 100%;
+  height: auto;
+}
+

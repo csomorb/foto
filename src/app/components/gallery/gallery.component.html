@@ -1,8 +1,19 @@
-<div *ngIf="curentPhoto" class="Photo">
-  <div class="photoContainer">
-    <img [src]="photoBaseUrl + curentPhoto.srcOrig"/>
+<div *ngIf="curentPhoto" class="photo">
+  <div class="photo-view-container">
+    <picture>
+      <source media="(max-width: 320px)" srcset="{{photoBaseUrl + curentPhoto.src320}}">
+      <source media="(max-width: 640px)" srcset="{{photoBaseUrl + curentPhoto.src640}}">
+      <source media="(max-width: 1280px)" srcset="{{photoBaseUrl + curentPhoto.src1280}}">
+      <source media="(min-width: 1280px)" srcset="{{photoBaseUrl +curentPhoto.src1920}}">
+      <img [src]="photoBaseUrl + curentPhoto.srcOrig" alt="{{curentPhoto.title}}"/>
+    </picture>
   </div>
-  <div class="photoDetail">
+  <div class="photo-detail">
+    <div class="photo-navigation">
+      <div (click)="movePrevPhoto()">prev</div>
+      <div (click)="returnGalery()">home</div>
+      <div (click)="moveNextPhoto()">next</div>
+    </div>
     <div>{{curentPhoto.title}}</div>
     <div>{{curentPhoto.description}}</div>
     <div>Pris le: {{curentPhoto.shootDate | date:'yyyy/MM/dd HH:mm' }}</div>
@@ -12,25 +23,20 @@
     <div>Altitude: {{curentPhoto.alti}} m</div>
     <div>{{curentPhoto.width}} x {{curentPhoto.height}} pixel</div>
   </div>
-  <div class="photoNavigation">
-    <div (click)="movePrevPhoto()">prev</div>
-    <div (click)="returnGalery()">home</div>
-    <div (click)="moveNextPhoto()">next</div>
-  </div>
-
-
 </div>
+
 <div *ngIf="!curentPhoto" class="Gallery">
   <div (click)="triPriseDeVueAncienRecent()">Tri prise de vu ancien -> récent</div>
   <div (click)="triPriseDeVueRecentAncien()">Tri prise de vu récent -> ancien</div>
   <div (click)="triAZ()">Tri A -> Z</div>
   <div (click)="triZA()">Tri Z -> A</div>
 
-  <div *ngFor="let photo of photos">
-    {{photo.title}}
-    <div (click)="loadPhoto(photo)">
-      <img [src]="photoBaseUrl + photo.src150"/>
+  <div class="photo-container">
+    <div *ngFor="let photo of photos" (click)="loadPhoto(photo)">
+        <img [src]="photoBaseUrl + photo.src640"/>
+        <div class="photo-title">{{photo.title}}</div>
     </div>
   </div>
+
 </div>
 

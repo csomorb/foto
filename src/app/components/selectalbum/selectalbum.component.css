@@ -16,11 +16,14 @@ input, textarea, select {
   position: relative;
   display: flex;
   flex-direction: row;
-  width: 100%;
-  max-width: 600px;
+  /* width: calc(100% - 15px); */
+  max-width: 100%;
   margin: 0 auto;
   border-radius: 2px;
-  padding: 1.4rem 2rem 1.6rem;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   background: rgba(57, 63, 84, 0.8);
 }
 .webflow-style-input:after {
@@ -60,25 +63,62 @@ input, textarea, select {
 }
 
 
-.btn-cancel{
-  width: 60px;
-  height: 60px;
- background-image: url('/assets/icon/103-delete.svg');
- background-size: contain;
- margin-right: 10px;
+
+.btn {
+  background: linear-gradient(180deg, rgb(95 95 95 / 75%) 0%, rgb(60 60 66 / 75%) 100%);
+  border-radius: 0;
+  color: #FFFFFF;
+  font-size: 20px;
+  padding: 15px;
+  box-shadow: 1px 1px 10px 0 #000000;
+  /* background-color: rgb(90 90 99 / 75%); */
+  border: 1px solid #1e1e27b8;
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover {
+  box-shadow: 1px 1px 7px 0 #CBCBCB;
+  border: 1px solid #c7c7c79c;
+  background: linear-gradient(180deg, rgb(60 60 66 / 75%) 0%, rgb(95 95 95 / 75%) 100%);
+}
+
+.btn-i{
+  /* background-color: rgb(90 90 99 / 75%); */
+  border: 1px solid #1e1e27b8;
+  width: 40px;
+  height: 40px;
+  background-size: 28px;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-right: 10px;
+  cursor: pointer;
+  box-shadow: 1px 1px 10px 0 #000000;
+}
+
+.btn-i:hover{
+  box-shadow: 1px 1px 7px 0 #CBCBCB;
+  border: 1px solid #c7c7c79c;
 }
 
 .btn-add-album{
-  width: 60px;
-  height: 60px;
- background-image: url('/assets/icon/add-folder.svg');
- background-size: contain;
- margin-right: 10px;
+  background-image: url('/assets/icon/add-folder.svg');
 }
+
+.btn-cancel{
+  background-image: url('/assets/icon/103-delete.svg');
+ }
+
+ .btn-add{
+   float: right;
+   margin-top: 8px;
+ }
 
 .cadre{
   max-width: 700px;
   border: #ccc 1px solid;
+  box-shadow: 1px 1px 10px 0 #CBCBCB;
   display: flex;
   flex-direction: column;
   padding:15px;
@@ -93,10 +133,11 @@ input, textarea, select {
 }
 
 .form-group{
-  width: 80%;
+  width: 100%;
 }
 
 .flex-column{
 display: flex;
 flex-direction: column;
 }
+

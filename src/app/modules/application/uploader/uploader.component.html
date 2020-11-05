@@ -15,17 +15,22 @@
 
 <h3>Uploads</h3>
 
-<div *ngFor="let file of files">
-  <img [src]="file.data" *ngIf="file.type.indexOf('image')> -1" height="200">
-  <form [formGroup]="file.photoForm">
-    <div class="webflow-style-input">
-      <input formControlName="title" placeholder="What's your email?">
+<div class="files-container">
+  <div *ngFor="let file of files" class="file-container">
+    <div class="image-container">
+      <img [src]="file.data" *ngIf="file.type.indexOf('image')> -1">
     </div>
-    <div>
-      <label>Description</label><input formControlName="description">
-    </div>
-    </form>
+    <form [formGroup]="file.photoForm">
+      <div class="webflow-style-input margin-top-m-26">
+        <input formControlName="title" placeholder="Title">
+      </div>
+      <div class="webflow-style-input">
+        <input formControlName="description" placeholder="Description">
+      </div>
+      </form>
+  </div>
 </div>
+
 
 <div *ngFor="let progressInfo of progressInfos" class="mb-2">
   <span>{{ progressInfo.fileName }}</span>

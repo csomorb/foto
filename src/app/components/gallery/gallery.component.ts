@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Component, OnInit, Input, HostListener, Output, EventEmitter } from '@angular/core';
 import { PhotoModel } from 'src/app/models/photo.model';
 import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
@@ -21,6 +21,7 @@ export class GalleryComponent implements OnInit {
   curentPhoto?: PhotoModel;
   nextPhoto?: PhotoModel;
   prevPhoto?: PhotoModel;
+  @Output() curentPictureDisplay = new EventEmitter<boolean>();
 
   constructor(private router: Router ) { }
 
@@ -31,11 +32,13 @@ export class GalleryComponent implements OnInit {
   loadPhoto(photo: PhotoModel){
     console.log(photo);
     this.curentPhoto = photo;
+    this.curentPictureDisplay.emit(true);
     this.getNextPrevPhoto(photo);
   }
 
   returnGalery(){
     this.curentPhoto = null;
+    this.curentPictureDisplay.emit(false);
     this.nextPhoto = null;
     this.prevPhoto = null;
   }

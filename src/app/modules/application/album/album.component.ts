@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AlbumModel } from 'src/app/models/album.model';
 import { environment } from 'src/environments/environment';
 import { PhotoModel } from 'src/app/models/photo.model';
@@ -16,12 +16,14 @@ export class AlbumComponent implements OnInit {
 
   album: AlbumModel;
   photoBaseUrl: string = environment.apiUrl;
+  isCurentPictureDisplay: boolean;
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute) {
+  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router) {
 
   }
 
   ngOnInit(): void {
+    this.isCurentPictureDisplay = false;
     this.route.paramMap.subscribe((params: ParamMap) => {
       const id = parseInt(params.get('idAlbum'));
       if (id){
@@ -45,6 +47,15 @@ export class AlbumComponent implements OnInit {
         console.log("Chargement racine");
       }
       });
+  }
+
+  curentPictureDisplay(e){
+    this.isCurentPictureDisplay = e;
+    console.log(e);
+  }
+
+  goToAlbum(idSsAlbum){
+    this.router.navigateByUrl('/albums/' + idSsAlbum);
   }
 
 }
