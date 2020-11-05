@@ -11,7 +11,12 @@ import { UploaderComponent } from './modules/application/uploader/uploader.compo
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'albums', component: AlbumComponent },
+  { path: 'albums', component: AlbumComponent,
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'gallery' },
+      { path: 'gallery', component: GalleryComponent },
+    ]
+  },
   { path: 'albums/:idAlbum', component: AlbumComponent ,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },

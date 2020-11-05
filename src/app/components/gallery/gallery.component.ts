@@ -1,13 +1,8 @@
 import { Component, OnInit, Input, HostListener, Output, EventEmitter } from '@angular/core';
 import { PhotoModel } from 'src/app/models/photo.model';
 import { environment } from 'src/environments/environment';
-import { Router } from '@angular/router';
-
-export enum KEY_CODE {
-  RIGHT_ARROW = 39,
-  LEFT_ARROW = 37,
-  ESCAPE = 27
-}
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlbumService } from 'src/app/services/album.service';
 
 @Component({
   selector: 'app-gallery',
@@ -18,78 +13,23 @@ export class GalleryComponent implements OnInit {
   @Input() photos: Array<PhotoModel>;
 
   photoBaseUrl: string = environment.apiUrl;
-  curentPhoto?: PhotoModel;
-  nextPhoto?: PhotoModel;
-  prevPhoto?: PhotoModel;
-  @Output() curentPictureDisplay = new EventEmitter<boolean>();
 
-  constructor(private router: Router ) { }
+  constructor(private router: Router, public albumService: AlbumService) { }
 
   ngOnInit(): void {
-    this.curentPhoto = null;
   }
 
   loadPhoto(photo: PhotoModel){
-    console.log(photo);
-    this.curentPhoto = photo;
-    this.curentPictureDisplay.emit(true);
-    this.getNextPrevPhoto(photo);
+    this.albumService.loadPhoto(photo);
+    this.router.navigateByUrl('/albums/'+this.albumService.currentAlbum.id +'/photos/' + photo.idPhoto);
   }
 
-  returnGalery(){
-    this.curentPhoto = null;
-    this.curentPictureDisplay.emit(false);
-    this.nextPhoto = null;
-    this.prevPhoto = null;
-  }
-
-  moveNextPhoto(){
-    if(this.nextPhoto){
-      this.curentPhoto = this.nextPhoto;
-      this.getNextPrevPhoto(this.curentPhoto);
-    }
-  }
-
-  movePrevPhoto(){
-    if(this.prevPhoto){
-      this.curentPhoto = this.prevPhoto;
-      this.getNextPrevPhoto(this.curentPhoto);
-    }
-  }
-
-  @HostListener('window:keyup', ['$event'])
-  keyEvent(event: KeyboardEvent) {
-    if (this.curentPhoto){
-      if (event.keyCode === KEY_CODE.RIGHT_ARROW) {
-        this.moveNextPhoto();
-      }
-      if (event.keyCode === KEY_CODE.LEFT_ARROW) {
-        this.movePrevPhoto();
-      }
-      if (event.keyCode === KEY_CODE.ESCAPE) {
-        this.returnGalery();
-      }
-    }
-  }
-
-  getNextPrevPhoto(photo: PhotoModel){
-    let currentPosition = this.photos.indexOf(photo);
-    if (currentPosition < this.photos.length){
-      this.nextPhoto = this.photos[currentPosition + 1];
-    }
-    else{
-      this.nextPhoto = null;
-    }
-    if (currentPosition > 0){
-      this.prevPhoto = this.photos[currentPosition - 1];
-    }
-    else{
-      this.prevPhoto = null;
-    }
+  goToAlbum(id){
+    this.router.navigateByUrl('/albums/' + id);
   }
 
   triPriseDeVueAncienRecent(){
-    this.photos.sort((a,b) => {
+    this.albumService.currentAlbum.photos.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
       if (dateA < dateB) return -1;
       if (dateA > dateB) return 1;
@@ -98,7 +38,7 @@ export class GalleryComponent implements OnInit {
   }
 
   triPriseDeVueRecentAncien(){
-    this.photos.sort((a,b) => {
+    this.albumService.currentAlbum.photos.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
       if (dateA < dateB) return 1;
       if (dateA > dateB) return -1;
@@ -107,7 +47,7 @@ export class GalleryComponent implements OnInit {
   }
 
   triAZ(){
-    this.photos.sort((a,b) => {
+    this.albumService.currentAlbum.photos.sort((a,b) => {
       let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
       if (titleA < titleB) return -1;
       if (titleA > titleB) return 1;
@@ -116,7 +56,7 @@ export class GalleryComponent implements OnInit {
   }
 
   triZA(){
-    this.photos.sort((a,b) => {
+    this.albumService.currentAlbum.photos.sort((a,b) => {
       let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
       if (titleA < titleB) return 1;
       if (titleA > titleB) return -1;

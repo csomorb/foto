@@ -44,6 +44,14 @@ export class ApiService {
   }
 
   /**
+   * Renvoie les albums parents
+   * @param id
+   */
+  getAlbumParents(id:number){
+    return this.http.get<any>(`${environment.apiUrl}/albums/${id}/parents-tree`);
+  }
+
+  /**
    * Renvoie un album avec la photo de couverture et les photos qu'elle contient
    */
   getAlbumWithPhotos(id:number){

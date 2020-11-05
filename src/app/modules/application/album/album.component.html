@@ -1,20 +1,7 @@
 
 <a href="" routerLink="/albums">Acceuil</a>
 
-<h2>{{album?.title}}</h2>
-<p class="album-desc">{{album?.description}}</p>
-
-<!--Affichage des sous albums-->
-<div class="album-container" *ngIf="!isCurentPictureDisplay">
-  <div *ngFor="let ssAlbum of album?.listAlbum" class="ss-album" (click)="goToAlbum(ssAlbum.id)">
-    <img *ngIf="ssAlbum.coverPhoto" [src]="photoBaseUrl + ssAlbum.coverPhoto?.src640" />
-    <div *ngIf="!ssAlbum.coverPhoto" class="empty-album"></div>
-    <div class="album-title">{{ssAlbum.title}}</div>
-  </div>
-</div>
-
-
+<router-outlet></router-outlet>
 <!--Affichage des photos de l'album-->
 
-<app-gallery [photos] = "album?.photos" (curentPictureDisplay)="curentPictureDisplay($event)"></app-gallery>
 

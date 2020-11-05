@@ -1,9 +1,26 @@
-<p>photo works!</p>
-
-
-<img [src]="photoBaseUrl + photo.srcOrig"/>
-
-<div>{{photo.title}}</div>
-<div>{{photo.description}}</div>
-<div>{{photo.weight}}</div>
-<div>{{photo.width}} x {{photo.height}} pixel</div>
+<div class="photo">
+  <div class="photo-view-container">
+    <picture>
+      <source media="(max-width: 320px)" srcset="{{photoBaseUrl + this.albumService?.currentPhoto?.src320}}">
+      <source media="(max-width: 640px)" srcset="{{photoBaseUrl + this.albumService?.currentPhoto?.src640}}">
+      <source media="(max-width: 1280px)" srcset="{{photoBaseUrl + this.albumService?.currentPhoto?.src1280}}">
+      <source media="(min-width: 1280px)" srcset="{{photoBaseUrl +this.albumService?.currentPhoto?.src1920}}">
+      <img [src]="photoBaseUrl + this.albumService?.currentPhoto?.srcOrig" alt="{{this.albumService?.currentPhoto?.title}}"/>
+    </picture>
+  </div>
+  <div class="photo-detail">
+    <div class="photo-navigation">
+      <div (click)="movePrevPhoto()">prev</div>
+      <div (click)="returnGalery()">home</div>
+      <div (click)="moveNextPhoto()">next</div>
+    </div>
+    <div>{{this.albumService?.currentPhoto?.title}}</div>
+    <div>{{this.albumService?.currentPhoto?.description}}</div>
+    <div>Pris le: {{this.albumService?.currentPhoto?.shootDate | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>Ajouté le: {{this.albumService?.currentPhoto?.createAt | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>Modifié le: {{this.albumService?.currentPhoto?.updatedAt | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>{{this.albumService?.currentPhoto?.weight | fileSize }}</div>
+    <div>Altitude: {{this.albumService?.currentPhoto?.alti}} m</div>
+    <div>{{this.albumService?.currentPhoto?.width}} x {{this.albumService?.currentPhoto?.height}} pixel</div>
+  </div>
+</div>

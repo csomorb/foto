@@ -1,0 +1,16 @@
+.photo-detail{
+  width: 300px;
+}
+
+.photo-view-container{
+  width: calc(100% - 300px);
+}
+
+.photo-view-container img{
+  max-width: 100%;
+  height: auto;
+}
+
+.photo{
+  display: flex;
+}
