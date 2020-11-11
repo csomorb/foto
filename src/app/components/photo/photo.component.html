@@ -1,26 +1,33 @@
 <div class="photo">
   <div class="photo-view-container">
     <picture>
-      <source media="(max-width: 320px)" srcset="{{photoBaseUrl + this.albumService?.currentPhoto?.src320}}">
-      <source media="(max-width: 640px)" srcset="{{photoBaseUrl + this.albumService?.currentPhoto?.src640}}">
-      <source media="(max-width: 1280px)" srcset="{{photoBaseUrl + this.albumService?.currentPhoto?.src1280}}">
-      <source media="(min-width: 1280px)" srcset="{{photoBaseUrl +this.albumService?.currentPhoto?.src1920}}">
-      <img [src]="photoBaseUrl + this.albumService?.currentPhoto?.srcOrig" alt="{{this.albumService?.currentPhoto?.title}}"/>
+      <source media="(max-width: 320px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src320}}">
+      <source media="(max-width: 640px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src640}}">
+      <source media="(max-width: 1280px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src1280}}">
+      <source media="(min-width: 1280px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src1920}}">
+      <img [src]="photoBaseUrl + this.albumService?.currentPhoto?.srcOrig" alt="{{ albumService?.currentPhoto?.title}}"/>
     </picture>
   </div>
   <div class="photo-detail">
     <div class="photo-navigation">
-      <div (click)="movePrevPhoto()">prev</div>
-      <div (click)="returnGalery()">home</div>
-      <div (click)="moveNextPhoto()">next</div>
+      <div (click)="movePrevPhoto()" class="navigation-item">
+        <img *ngIf="albumService?.prevPhoto" [src]="photoBaseUrl + albumService?.prevPhoto?.src150" alt="Previous picture"/>
+        <div *ngIf="albumService?.prevPhoto" class="arrow arrow-prev"></div>
+      </div>
+      <div (click)="returnGalery()" class="navigation-item arrow arrow-home">
+      </div>
+      <div (click)="moveNextPhoto()" class="navigation-item">
+        <img *ngIf="albumService?.nextPhoto" [src]="photoBaseUrl + albumService?.nextPhoto?.src150" alt="Next picture"/>
+        <div *ngIf="albumService?.nextPhoto" class="arrow arrow-next"></div>
+      </div>
     </div>
-    <div>{{this.albumService?.currentPhoto?.title}}</div>
-    <div>{{this.albumService?.currentPhoto?.description}}</div>
-    <div>Pris le: {{this.albumService?.currentPhoto?.shootDate | date:'yyyy/MM/dd HH:mm' }}</div>
-    <div>Ajouté le: {{this.albumService?.currentPhoto?.createAt | date:'yyyy/MM/dd HH:mm' }}</div>
-    <div>Modifié le: {{this.albumService?.currentPhoto?.updatedAt | date:'yyyy/MM/dd HH:mm' }}</div>
-    <div>{{this.albumService?.currentPhoto?.weight | fileSize }}</div>
-    <div>Altitude: {{this.albumService?.currentPhoto?.alti}} m</div>
-    <div>{{this.albumService?.currentPhoto?.width}} x {{this.albumService?.currentPhoto?.height}} pixel</div>
+    <div>{{albumService?.currentPhoto?.title}}</div>
+    <div>{{albumService?.currentPhoto?.description}}</div>
+    <div>Pris le: {{albumService?.currentPhoto?.shootDate | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>Ajouté le: {{albumService?.currentPhoto?.createAt | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>Modifié le: {{albumService?.currentPhoto?.updatedAt | date:'yyyy/MM/dd HH:mm' }}</div>
+    <div>{{albumService?.currentPhoto?.weight | fileSize }}</div>
+    <div>Altitude: {{albumService?.currentPhoto?.alti}} m</div>
+    <div>{{albumService?.currentPhoto?.width}} x {{albumService?.currentPhoto?.height}} pixel</div>
   </div>
 </div>
