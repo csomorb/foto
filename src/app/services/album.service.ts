@@ -120,6 +120,47 @@ export class AlbumService {
     }
   }
 
+  /**
+   * Met à jour une photo dans le cache suite à un changement en bdd
+   * @param photo Photo avec les champs mise à jour
+   */
+  updatePhoto(updatedPhoto: PhotoModel){
+    this.currentPhoto = updatedPhoto;
+    this.currentAlbum.photos.forEach( photo => {
+      if (photo.idPhoto === updatedPhoto.idPhoto){
+        photo = updatedPhoto;
+      }
+    });
+  }
+
+  deleteCurrentPhoto(){
+    const idPhotoToDelete = this.currentPhoto.idPhoto;
+    let photoToShow: PhotoModel = null;
+    if (this.nextPhoto){
+      photoToShow = this.nextPhoto;
+    }
+    else if(this.prevPhoto){
+      photoToShow = this.prevPhoto;
+    }
+    this.currentAlbum.photos.splice(this.currentAlbum.photos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
+    if (photoToShow){
+      this.currentPhoto = photoToShow;
+      this.getNextPrevPhoto(photoToShow);
+    }
+    else{
+      this.currentPhoto = null;
+    }
+    if (this.currentAlbum.coverPhoto && this.currentAlbum.coverPhoto.idPhoto === idPhotoToDelete){
+      if (this.currentAlbum.photos.length > 0){
+        this.currentAlbum.coverPhoto = this.currentAlbum.photos[0];
+      }
+      else{
+        this.currentAlbum.coverPhoto = null;
+      }
+    }
+    //TODO: mise à jour du cache
+  }
+
   loadPhoto(photo: PhotoModel){
     console.log(photo);
     this.currentPhoto = photo;

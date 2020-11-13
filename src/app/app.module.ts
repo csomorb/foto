@@ -15,6 +15,8 @@ import { DropzoneDirective } from './directives/dropzone.directive';
 import { UploaderComponent } from './modules/application/uploader/uploader.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SelectalbumComponent } from './components/selectalbum/selectalbum.component';
+import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,10 @@ import { SelectalbumComponent } from './components/selectalbum/selectalbum.compo
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    OwlDateTimeModule,
+    OwlNativeDateTimeModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

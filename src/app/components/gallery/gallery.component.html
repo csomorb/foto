@@ -1,10 +1,10 @@
 
-  <h2>{{this.albumService?.currentAlbum?.title}}</h2>
-  <p class="album-desc">{{this.albumService?.currentAlbum?.description}}</p>
+  <h2>{{albumService?.currentAlbum?.title}}</h2>
+  <p class="album-desc">{{albumService?.currentAlbum?.description}}</p>
 
   <!--Affichage des sous albums-->
   <div class="album-container">
-    <div *ngFor="let ssAlbum of this.albumService?.currentAlbum?.listAlbum" class="ss-album" (click)="goToAlbum(ssAlbum.id)">
+    <div *ngFor="let ssAlbum of albumService?.currentAlbum?.listAlbum" class="ss-album" (click)="goToAlbum(ssAlbum.id)">
       <img *ngIf="ssAlbum.coverPhoto" [src]="photoBaseUrl + ssAlbum.coverPhoto?.src640" />
       <div *ngIf="!ssAlbum.coverPhoto" class="empty-album"></div>
       <div class="album-title">{{ssAlbum.title}}</div>
@@ -17,7 +17,7 @@
   <div (click)="triZA()">Tri Z -> A</div>
 
   <div class="photo-container">
-    <div *ngFor="let photo of this.albumService?.currentAlbum?.photos" (click)="loadPhoto(photo)">
+    <div *ngFor="let photo of albumService?.currentAlbum?.photos" (click)="loadPhoto(photo)">
         <img [src]="photoBaseUrl + photo.src640"/>
         <div class="photo-title">{{photo.title}}</div>
     </div>

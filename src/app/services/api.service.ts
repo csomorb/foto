@@ -22,6 +22,44 @@ export class ApiService {
   }
 
   /**
+   * Modifie la photo donnée
+   * @param photo
+   */
+  putPhoto(photo: PhotoModel){
+    let body = {
+      title: photo.title,
+      description: photo.description,
+      shootDate: photo.shootDate
+    };
+    return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${photo.idPhoto}`, body);
+  }
+
+  /**
+   * Supprime la photo donnée
+   * @param photo
+   */
+  deletePhoto(photo: PhotoModel){
+    return this.http.delete<any>(`${environment.apiUrl}/photos/${photo.idPhoto}`);
+  }
+
+  /**
+   * Change la photo de couverture
+   * @param album
+   * @param photo
+   */
+  putCover(album: AlbumModel, photo: PhotoModel){
+    return this.http.put<AlbumModel>(`${environment.apiUrl}/albums/${album.id}/cover/${photo.idPhoto}`, null);
+  }
+
+  /**
+   * Supprime la photo de couverture d'un album
+   * @param album
+   */
+  putNoCover(album: AlbumModel){
+    return this.http.put<AlbumModel>(`${environment.apiUrl}/albums/${album.id}/cover/0`, null);
+  }
+
+  /**
    * Renvoie la liste de tous les albums avec la photo de couverture
    */
   getAlbums(){
