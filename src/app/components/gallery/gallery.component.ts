@@ -3,6 +3,7 @@ import { PhotoModel } from 'src/app/models/photo.model';
 import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlbumService } from 'src/app/services/album.service';
+import { ApiService } from 'src/app/services/api.service';
 
 @Component({
   selector: 'app-gallery',
@@ -13,10 +14,14 @@ export class GalleryComponent implements OnInit {
   @Input() photos: Array<PhotoModel>;
 
   photoBaseUrl: string = environment.apiUrl;
+  editMode: boolean;
+  deleteMode: boolean;
 
-  constructor(private router: Router, public albumService: AlbumService) { }
+  constructor(private router: Router, public albumService: AlbumService, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.editMode = false;
+    this.deleteMode = false;
   }
 
   loadPhoto(photo: PhotoModel){
@@ -64,4 +69,38 @@ export class GalleryComponent implements OnInit {
     });
   }
 
+  toEditMode(){
+    this.editMode = true;
+  }
+
+  cancelEditMode(){
+    this.editMode = false;
+  }
+
+  toDeleteMode(){
+    this.deleteMode = true;
+  }
+
+  cancelDeleteMode(){
+    this.deleteMode = false;
+  }
+
+  deleteAlbum(){
+    this.apiService.deleteAlbum(this.albumService.currentAlbum).subscribe(
+      {
+        next: data => {
+            const albumParentId = this.albumService.parentList.pop().id;
+            this.albumService.deleteCurrentAlbumFromCache();
+            this.router.navigateByUrl("albums/" + albumParentId);
+            this.deleteMode = false;
+            // TODO: remonter confirmation
+        },
+        error: error => {
+            // TODO:
+            console.error('There was an error in delete!', error);
+            //error.error <- sous albums et photos
+            //error.status
+        }
+    });
+  }
 }

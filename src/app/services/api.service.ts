@@ -43,6 +43,14 @@ export class ApiService {
   }
 
   /**
+   * Supprime l'album donnée
+   * @param album
+   */
+  deleteAlbum(album: AlbumModel){
+    return this.http.delete<any>(`${environment.apiUrl}/albums/${album.id}`);
+  }
+
+  /**
    * Change la photo de couverture
    * @param album
    * @param photo

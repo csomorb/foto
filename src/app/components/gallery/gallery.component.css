@@ -75,3 +75,21 @@ h2{
   text-align: center;
 }
 
+.btn-cancel{
+  background-image: url('/assets/icon/delete.svg');
+}
+
+.btn-edit{
+  background-image: url('/assets/icon/edit.svg');
+}
+
+.btn-trash{
+  background-image: url('/assets/icon/trash.svg');
+}
+
+.action-conatiner{
+  display: flex;
+  justify-content: flex-end;
+}
+
+

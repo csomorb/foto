@@ -14,6 +14,116 @@ app-root{
   flex-direction: column;
 }
 
+a{
+  text-decoration: none;
+  color: #ccc;
+}
+
+/*** Boutons ***/
+
+.btn {
+  background: linear-gradient(180deg, rgb(95 95 95 / 75%) 0%, rgb(60 60 66 / 75%) 100%);
+  border-radius: 0;
+  color: #FFFFFF;
+  font-size: 20px;
+  padding: 15px;
+  box-shadow: 1px 1px 10px 0 #000000;
+  /* background-color: rgb(90 90 99 / 75%); */
+  border: 1px solid #1e1e27b8;
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover {
+  box-shadow: 1px 1px 7px 0 #CBCBCB;
+  border: 1px solid #c7c7c79c;
+  background: linear-gradient(180deg, rgb(60 60 66 / 75%) 0%, rgb(95 95 95 / 75%) 100%);
+}
+
+.btn-i{
+  /* background-color: rgb(90 90 99 / 75%); */
+  border: 1px solid #1e1e27b8;
+  width: 40px;
+  height: 40px;
+  background-size: 28px;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-right: 10px;
+  cursor: pointer;
+  box-shadow: 1px 1px 10px 0 #000000;
+}
+
+.btn-i:hover{
+  box-shadow: 1px 1px 7px 0 #CBCBCB;
+  border: 1px solid #c7c7c79c;
+}
+
+/*** Inputs */
+
+input, textarea, select {
+  border-style: none;
+  background: transparent;
+  outline: none;
+  color: #bfd2ff;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0 0;
+ }
+  100% {
+    background-position: 100% 0;
+ }
+}
+.webflow-style-input {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  /* width: calc(100% - 15px); */
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: 2px;
+  padding-right: 15px;
+  padding-left: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background: rgba(57, 63, 84, 0.8);
+}
+.webflow-style-input:after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  z-index: 999;
+  height: 1px;
+  border-bottom-left-radius: 1px;
+  border-bottom-right-radius: 1px;
+  background-position: 0% 0%;
+  background: linear-gradient(to right, #b294ff, #57e6e6, #feffb8, #57e6e6, #b294ff, #57e6e6);
+  background-size: 500% auto;
+  animation: gradient 3s linear infinite;
+}
+.webflow-style-input input, .webflow-style-input textarea, .webflow-style-input select {
+  flex-grow: 1;
+  /* font-size: 1.8rem; */
+  /* line-height: 2.4rem; */
+  vertical-align: middle;
+}
+.webflow-style-input input::-webkit-input-placeholder, .webflow-style-input textarea::-webkit-input-placeholder  {
+  color: #7881a1;
+}
+.webflow-style-input button {
+  color: #7881a1;
+  font-size: 2.4rem;
+  line-height: 2.4rem;
+  vertical-align: middle;
+  transition: color 0.25s;
+}
+.webflow-style-input button:hover {
+  color: #bfd2ff;
+}
 
 /********DATETIME PICKER*/
 

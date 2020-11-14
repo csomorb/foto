@@ -177,6 +177,12 @@ export class AlbumService {
     }
   }
 
+  deleteCurrentAlbumFromCache(){
+    // TODO
+  }
+
+
+
   returnGalery(){
     this.currentPhoto = null;
     this.nextPhoto = null;
@@ -198,7 +204,5 @@ export class AlbumService {
       this.prevPhoto = null;
     }
   }
-
-
 
 }

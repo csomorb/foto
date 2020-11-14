@@ -1,4 +1,24 @@
 
+<div class="action-conatiner">
+  <div class="btn-i btn-trash" (click)="toDeleteMode()" *ngIf="!deleteMode"></div>
+  <div class="btn-i btn-cancel" (click)="cancelDeleteMode()" *ngIf="deleteMode"></div>
+  <div class="btn-i btn-edit" (click)="toEditMode()" *ngIf="!editMode"></div>
+  <div class="btn-i btn-cancel" (click)="cancelEditMode()" *ngIf="editMode"></div>
+</div>
+<div *ngIf="deleteMode">
+  <div class="message" *ngIf="albumService.currentAlbum.listAlbum.length > 0">
+    Supprimer d'abord les sous albums
+  </div>
+  <div class="message" *ngIf="albumService.currentAlbum.photos.length > 0">
+    Supprimer d'abord les photos
+  </div>
+  <div class="delete-confirmation" *ngIf="!albumService.currentAlbum.photos.length && !albumService.currentAlbum.listAlbum.length">
+    Confirmez la suppression de l'album:
+    <div class="btn btn-red" (click)="deleteAlbum()">Supprimer</div>
+  </div>
+
+</div>
+
   <h2>{{albumService?.currentAlbum?.title}}</h2>
   <p class="album-desc">{{albumService?.currentAlbum?.description}}</p>
 
