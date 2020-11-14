@@ -17,6 +17,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { SelectalbumComponent } from './components/selectalbum/selectalbum.component';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ClickStopPropagationDirective } from './directives/click-stop-propagation.directive';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FileSizePipe,
     DropzoneDirective,
     UploaderComponent,
-    SelectalbumComponent
+    SelectalbumComponent,
+    ClickStopPropagationDirective
   ],
   imports: [
     BrowserModule,

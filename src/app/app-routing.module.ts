@@ -25,6 +25,7 @@ const routes: Routes = [
       ]
   },
   { path: 'upload', component: UploaderComponent },
+  { path: 'upload/:idAlbum', component: UploaderComponent },
   { path: 'login', component: LoginComponent },
   { path: '**', component: NotFoundComponent }
 ];

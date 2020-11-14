@@ -1,6 +1,6 @@
 
 
-<app-selectalbum (selectedAlbum)="setSelectedAlbum($event)"></app-selectalbum>
+<app-selectalbum (selectedAlbum)="setSelectedAlbum($event)" defaultSelectedIdALbum="{{defaultSelectedIdAlbum}}"></app-selectalbum>
 
 <input type='file' (change)="onAddFiles($event)" multiple/>
 <div class="dropzone"

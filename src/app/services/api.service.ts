@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
 import { AlbumModel } from '../models/album.model';
 import { Observable } from 'rxjs';
+import { AlbumService } from './album.service';
 
 @Injectable({
   providedIn: 'root'
@@ -48,6 +49,18 @@ export class ApiService {
    */
   deleteAlbum(album: AlbumModel){
     return this.http.delete<any>(`${environment.apiUrl}/albums/${album.id}`);
+  }
+
+  /**
+   * Met à jour l'album donnée
+   * @param album
+   */
+  updateAlbum(album: AlbumModel){
+    let body = {
+      title : album.title,
+      description : album.description
+    };
+    return this.http.put<AlbumModel>(`${environment.apiUrl}/albums/${album.id}`, body);
   }
 
   /**

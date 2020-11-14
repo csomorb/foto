@@ -1,6 +1,7 @@
-import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild, Input } from '@angular/core';
 import { ApiService } from 'src/app/services/api.service';
 import { FormBuilder } from '@angular/forms';
+import { AlbumModel } from 'src/app/models/album.model';
 
 @Component({
   selector: 'app-selectalbum',
@@ -9,26 +10,34 @@ import { FormBuilder } from '@angular/forms';
 })
 export class SelectalbumComponent implements OnInit {
 
-  listAlbums = [];
+  listAlbums:Array<any>;
   modeAdd = false;
   selectAlbum;
+  excludedAlbum;
 
   @Output() selectedAlbum = new EventEmitter<number>();
-
+  @Input('defaultSelectedIdALbum') defaultSelectedIdALbum?: number;
+  @Input('exeptIdAlbum') exeptIdAlbum?: number;
 
   constructor(private apiService: ApiService, private fb: FormBuilder) {
   }
 
   ngOnInit(): void {
-    this.initSelect(0);
+    this.initSelect(this.defaultSelectedIdALbum);
   }
 
-  initSelect(selectedAlbum){
+  initSelect(selectedAlbum: number){
     this.apiService.getAlbums().subscribe(listeAlbums => {
       this.listAlbums = [];
-      console.log(listeAlbums);
       this.buildTree('',listeAlbums);
-      if(selectedAlbum){
+
+      if (this.exeptIdAlbum){
+
+        this.excludedAlbum = this.listAlbums.splice(this.listAlbums.findIndex(album => album.id == this.exeptIdAlbum),1)[0];
+        console.log(this.excludedAlbum)
+      }
+      const indexSelectedAlbum = this.listAlbums.findIndex( album => album.id == selectedAlbum);
+      if(indexSelectedAlbum !== -1){
         this.selectAlbum = selectedAlbum;
         this.selectedAlbum.emit(selectedAlbum);
       }
@@ -66,10 +75,16 @@ export class SelectalbumComponent implements OnInit {
 
   toModeAdd(){
     this.modeAdd = true;
+    if (this.excludedAlbum){
+      this.listAlbums.push(this.excludedAlbum);
+    }
   }
 
   cancelModeAdd(){
     this.modeAdd = false;
+    if (this.excludedAlbum){
+      this.listAlbums.pop();
+    }
   }
 
 }

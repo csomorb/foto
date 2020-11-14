@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiService } from 'src/app/services/api.service';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'app-uploader',
@@ -16,10 +17,10 @@ export class UploaderComponent implements OnInit {
   message = '';
   fileInfos: Observable<any>;
   selectedAlbum: number;
+  defaultSelectedIdAlbum: number;
   files = [];
 
-  constructor(private apiService: ApiService,private fb: FormBuilder) {
-    this.selectedAlbum = 0;
+  constructor(private apiService: ApiService,private fb: FormBuilder, private route: ActivatedRoute) {
   }
 
   uploadFiles() {
@@ -63,6 +64,15 @@ export class UploaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      const id = parseInt(params.get('idAlbum'));
+      if (id){
+        this.defaultSelectedIdAlbum = id;
+      }
+      else{
+        this.defaultSelectedIdAlbum = 0;
+      }
+    });
   }
 
   toggleHover(event: boolean) {

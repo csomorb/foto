@@ -1,5 +1,26 @@
+<h2 *ngIf="!editMode">{{albumService?.currentAlbum?.title}}</h2>
+<p class="album-desc" *ngIf="!editMode">{{albumService?.currentAlbum?.description}}</p>
+<form (ngSubmit)="updateAlbum()" *ngIf="editMode" >
+  <div class="webflow-style-input">
+    <input name="title" [(ngModel)]="album.title" required placeholder="Title">
+  </div>
+  <div class="webflow-style-input">
+    <textarea name="description" [(ngModel)]="album.description" required placeholder="Description"></textarea>
+  </div>
+  <div (click)="updateAlbum()" class="btn btn-save">Enregistrer</div>
+</form>
 
 <div class="action-conatiner">
+  <div class="select-all" *ngIf="editMode">
+    <div class="check-container">
+      <input type="checkbox" [(ngModel)]="masterSelected" name="list_name" value="m1" (change)="checkUncheckAll()"/>
+      <label for="list_name"><div></div></label>
+    </div>
+    <div (click)="checkUncheckAll()">Select/ Unselect All</div>
+  </div>
+  <div class="btn-i btn-sort" (click)="toTriMode()" *ngIf="!triMode"></div>
+  <div class="btn-i btn-cancel" (click)="cancelTriMode()" *ngIf="triMode"></div>
+  <div class="btn-i btn-add-picture" (click)="addPhoto()"></div>
   <div class="btn-i btn-trash" (click)="toDeleteMode()" *ngIf="!deleteMode"></div>
   <div class="btn-i btn-cancel" (click)="cancelDeleteMode()" *ngIf="deleteMode"></div>
   <div class="btn-i btn-edit" (click)="toEditMode()" *ngIf="!editMode"></div>
@@ -16,11 +37,15 @@
     Confirmez la suppression de l'album:
     <div class="btn btn-red" (click)="deleteAlbum()">Supprimer</div>
   </div>
-
+</div>
+<div *ngIf="triMode" class="btn-group tri">
+  <div (click)="triPriseDeVueAncienRecent()" class="btn">Tri prise de vu ancien -> récent</div>
+  <div (click)="triPriseDeVueRecentAncien()" class="btn">Tri prise de vu récent -> ancien</div>
+  <div (click)="triAZ()" class="btn">Tri A -> Z</div>
+  <div (click)="triZA()" class="btn">Tri Z -> A</div>
 </div>
 
-  <h2>{{albumService?.currentAlbum?.title}}</h2>
-  <p class="album-desc">{{albumService?.currentAlbum?.description}}</p>
+
 
   <!--Affichage des sous albums-->
   <div class="album-container">
@@ -31,15 +56,56 @@
     </div>
   </div>
 
-  <div (click)="triPriseDeVueAncienRecent()">Tri prise de vu ancien -> récent</div>
-  <div (click)="triPriseDeVueRecentAncien()">Tri prise de vu récent -> ancien</div>
-  <div (click)="triAZ()">Tri A -> Z</div>
-  <div (click)="triZA()">Tri Z -> A</div>
-
-  <div class="photo-container">
+  <div class="photo-container" *ngIf="!editMode">
     <div *ngFor="let photo of albumService?.currentAlbum?.photos" (click)="loadPhoto(photo)">
         <img [src]="photoBaseUrl + photo.src640"/>
         <div class="photo-title">{{photo.title}}</div>
     </div>
+  </div>
+
+
+
+  <div class="photo-edit-container" *ngIf="editMode">
+
+    <div *ngFor="let photo of selectedPhotos" class="edit-container" [ngClass]="{'photo-selected' : photo.isSelected}" >
+      <div *ngIf="photo.deleteMode" class="delete-conf">
+        <div>Supprimer la photo?</div>
+        <div class="delete-conf-button">
+          <div class="btn-i btn-trash" (click)="deleteConfPhoto(photo)"></div>
+          <div class="btn-i btn-cancel" (click)="deleteCancelPhoto(photo)"></div>
+        </div>
+      </div>
+      <div class="image-edit" [ngStyle]="{'background-image': 'url('+ photoBaseUrl + photo.src320 + ')'}" (click)="selectPhoto(photo)">
+        <div class="edit-photo-btn-container">
+          <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto !== photo.idPhoto" (click)="setCover(photo)" class="btn-i btn-fav" click-stop-propagation></div>
+          <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto === photo.idPhoto" (click)="unsetCover(photo)" class="btn-i btn-fav-set" click-stop-propagation></div>
+          <div (click)="updatePhoto(photo)" class="btn-i btn-save" *ngIf="title.dirty || description.dirty" click-stop-propagation></div>
+          <div class="btn-i btn-trash" (click)="deletePhoto(photo)" click-stop-propagation></div>
+        </div>
+      </div>
+
+
+      <div class="check-container">
+        <input type="checkbox" name="check{{photo.id}}" [(ngModel)]="photo.isSelected" value="{{photo.id}}" (change)="isAllSelected()">
+        <label for="check{{photo.id}}"><div></div></label>
+      </div>
+      <div class="webflow-style-input">
+        <input name="title" [(ngModel)]="photo.title" required placeholder="Title" #title="ngModel">
+      </div>
+      <div class="webflow-style-input">
+        <textarea name="description" [(ngModel)]="photo.description" required placeholder="Description" #description="ngModel"></textarea>
+      </div>
+    </div>
+
+    <div>Actions</div>
+    <div>
+      Déplacer vers l'album:
+      <app-selectalbum (selectedAlbum)="setSelectedAlbumToMove($event)" exeptIdAlbum="{{albumService.currentAlbum.id}}"></app-selectalbum>
+
+
+    </div>
+
+
+
   </div>
 

@@ -133,6 +133,10 @@ export class AlbumService {
     });
   }
 
+  deletePhoto(idPhotoToDelete){
+    this.currentAlbum.photos.splice(this.currentAlbum.photos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
+  }
+
   deleteCurrentPhoto(){
     const idPhotoToDelete = this.currentPhoto.idPhoto;
     let photoToShow: PhotoModel = null;
@@ -181,7 +185,11 @@ export class AlbumService {
     // TODO
   }
 
-
+  updateCurrentAlbumFromCache(album: AlbumModel){
+    this.currentAlbum.title = album.title;
+    this.currentAlbum.description = album.description;
+    //TODO
+  }
 
   returnGalery(){
     this.currentPhoto = null;
