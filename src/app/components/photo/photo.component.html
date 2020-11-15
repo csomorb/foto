@@ -25,14 +25,16 @@
       <div class="action-btn">
         <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto !== this.albumService.currentPhoto?.idPhoto" (click)="setCover()" class="btn-i btn-fav"></div>
         <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto === this.albumService.currentPhoto?.idPhoto" (click)="unsetCover()" class="btn-i btn-fav-set"></div>
-        <div *ngIf="!deleteMode" (click)="toDeleteMode()" class="btn-i btn-trash"></div>
-        <div *ngIf="deleteMode" (click)="cancelDeleteMode()" class="btn-i btn-cancel"></div>
+        <div (click)="toDeleteMode()" class="btn-i btn-trash"></div>
         <div *ngIf="!editMode" (click)="toEditMode()" class="btn-i btn-edit"></div>
         <div *ngIf="editMode" (click)="cancelEditMode()" class="btn-i btn-cancel"></div>
       </div>
-      <div *ngIf="deleteMode">
-        Confirmez la suppression de la photo:
-        <div class="btn btn-red" (click)="deletePhoto()">Supprimer</div>
+      <div class="delete-confirmation" *ngIf="deleteMode">
+        <div>Supprimer la photo {{albumService?.currentPhoto?.title}} ?</div>
+        <div  class="delete-conf-button">
+          <div class="btn-i btn-trash" (click)="deletePhoto()"></div>
+          <div class="btn-i btn-cancel" (click)="cancelDeleteMode()"></div>
+        </div>
       </div>
       <form (ngSubmit)="updatePhoto()">
         <div>
@@ -57,7 +59,7 @@
             <owl-date-time #dt1 [startAt]="photo.shootDate" panelClass="test"></owl-date-time>
           </div>
         </div>
-        <div *ngIf="editMode" (click)="updatePhoto()" class="btn btn-save">Enregistrer</div>
+        <div *ngIf="editMode" (click)="updatePhoto()" class="btn-i btn-save btn-align-right"></div>
       </form>
       <div>
         <span class="prop-name">Ajouté le</span><br/>

@@ -75,34 +75,6 @@ h2{
   text-align: center;
 }
 
-.btn-cancel{
-  background-image: url('/assets/icon/delete.svg');
-}
-
-.btn-edit{
-  background-image: url('/assets/icon/edit.svg');
-}
-
-.btn-trash{
-  background-image: url('/assets/icon/trash.svg');
-}
-
-.btn-add-picture{
-  background-image: url('/assets/icon/add-picture.svg');
-}
-
-.btn-sort{
-  background-image: url('/assets/icon/sort.svg');
-}
-
-.btn-fav{
-  background-image: url('/assets/icon/heart.svg');
-}
-
-.btn-fav-set{
-  background-image: url('/assets/icon/heart-check.svg');
-}
-
 .action-conatiner{
   display: flex;
   justify-content: flex-end;
@@ -132,7 +104,6 @@ h2{
   background-color: rgba(73, 73, 73, 0.61);
   border: rgb(44, 44, 44) 1px solid;
 }
-
 
 .check-container{
   display: block;
@@ -192,10 +163,6 @@ h2{
   display: flex;
 }
 
-.btn-save{
-  background-image: url('/assets/icon/save.svg');
-}
-
 .edit-photo-btn-container{
   display: flex;
   justify-content: space-between;
@@ -243,3 +210,43 @@ h2{
   background-color: rgba(124, 123, 123, 0.61);
   box-shadow: 1px 1px 7px 0 #CBCBCB;
 }
+
+.image-detail{
+  display: none;
+  position: relative;
+  padding-left: 5px;
+  top: -39px;
+  margin-bottom: -39px;
+  background-color: rgb(90 90 90 / 39%);
+  font-size: x-small;
+  max-width: 100%;
+  z-index:0;
+  cursor: pointer;
+}
+
+.edit-container:hover .image-detail{
+  display:block;
+}
+
+.hiden-input{
+  display: none;
+}
+
+.delete-confirmation{
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #b7414163;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.modif-album-container{
+  max-width: 600px;
+  margin: 0 auto;
+}
+

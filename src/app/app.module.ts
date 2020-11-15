@@ -18,6 +18,7 @@ import { SelectalbumComponent } from './components/selectalbum/selectalbum.compo
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClickStopPropagationDirective } from './directives/click-stop-propagation.directive';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { ClickStopPropagationDirective } from './directives/click-stop-propagati
     BrowserAnimationsModule,
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
+    ToastrModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]

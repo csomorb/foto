@@ -24,23 +24,28 @@
     </div>
   </div>
   <div class="nav-mobil">
-    <div class="nav-item">
-      <a href="/albums" routerLink="/albums">Albums Racine</a>
+    <div class="nav-mobil-icon" (click)="showHideMobilNav()">
+
     </div>
-    <div class="nav-item">
-      <a href="/albums/4" routerLink="/albums/4">Album 4</a>
-    </div>
-    <div class="nav-item">
-      <a href="/upload" routerLink="/upload">Ajouter des photos</a>
-    </div>
-    <div class="nav-item">
-      <a href="/peoples" routerLink="/peoples">Peoples</a>
-    </div>
-    <div class="nav-item">
-      <a href="/tags" routerLink="/tags">Tags</a>
-    </div>
-    <div class="nav-item">
-      <a href="/connexion" routerLink="/connexion">Connexion</a>
+    <div class="nav-mobil-content" *ngIf="showMobilNav">
+      <div class="nav-item">
+        <a href="/albums" routerLink="/albums">Albums Racine</a>
+      </div>
+      <div class="nav-item">
+        <a href="/albums/4" routerLink="/albums/4">Album 4</a>
+      </div>
+      <div class="nav-item">
+        <a href="/upload" routerLink="/upload">Ajouter des photos</a>
+      </div>
+      <div class="nav-item">
+        <a href="/peoples" routerLink="/peoples">Peoples</a>
+      </div>
+      <div class="nav-item">
+        <a href="/tags" routerLink="/tags">Tags</a>
+      </div>
+      <div class="nav-item">
+        <a href="/connexion" routerLink="/connexion">Connexion</a>
+      </div>
     </div>
   </div>
 </nav>

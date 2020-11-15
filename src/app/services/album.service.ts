@@ -64,7 +64,10 @@ export class AlbumService {
             this.currentAlbum.listAlbum[i] = ssAlbumWithCoverAndPhoto));
         this.parentList = [];
         // On met à jour la liste des parents et on le ratache au cache
-        this.apiService.getAlbumParents(id).subscribe(parents => this.buildParentTree(parents,this.currentAlbum));
+        this.apiService.getAlbumParents(id).subscribe(parents => {
+          this.buildParentTree(parents,this.currentAlbum);
+          this.parentList.unshift({ id :'', title: 'Acceuil'});
+        });
       });
     });
   }
@@ -72,7 +75,7 @@ export class AlbumService {
   buildParentTree(tree, currentAlbum){
     if (tree.parent){
       if (currentAlbum.id === tree.id){
-        this.parentList.push({id : tree.parent.id, title : tree.parent.title});
+        this.parentList.unshift({id : tree.parent.id, title : tree.parent.title});
         console.log(this.parentList);
         let albumParent: AlbumModel = {id: tree.parent.id, title : tree.parent.title, description : tree.parent.description};
         albumParent.listAlbum = currentAlbum;
@@ -83,7 +86,6 @@ export class AlbumService {
       }
     }
     // On ratache à la racine
-    this.parentList = this.parentList.reverse();
     let indexAlbum = this.albumCache.listAlbum.findIndex(a => a.id === currentAlbum.id)
     if (indexAlbum !== -1){
       this.albumCache.listAlbum[indexAlbum] = currentAlbum;
@@ -100,6 +102,7 @@ export class AlbumService {
 
     // si pas encore dans le cache
     // On renvoie l'album avec la photo de couverture et les photos
+    this.parentList = [];
     this.apiService.getRootsAlbums().subscribe(albums => { console.log(albums);
       this.albumCache.listAlbum = albums ;
       this.currentAlbum = this.albumCache;

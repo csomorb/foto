@@ -17,6 +17,19 @@
   display: flex;
 }
 
+@media screen and (max-width: 760px){
+  .photo{
+    display: block;
+  }
+  .photo-detail{
+    width: 100%;
+  }
+  .photo-view-container{
+    width:100%;
+  }
+
+}
+
 
 .photo-navigation{
   display: flex;
@@ -72,33 +85,9 @@
   margin: 10px;
 }
 
-.btn-cancel{
-  background-image: url('/assets/icon/delete.svg');
-}
-
-.btn-edit{
-  background-image: url('/assets/icon/edit.svg');
-}
-
-.btn-trash{
-  background-image: url('/assets/icon/trash.svg');
-}
-
-.btn-fav{
-  background-image: url('/assets/icon/heart.svg');
-}
-
-.btn-fav-set{
-  background-image: url('/assets/icon/heart-check.svg');
-}
-
 .action-btn{
   display: flex;
   justify-content: space-between;
 }
 
-.btn-save{
-  left: 142px;
-  position: relative;
-  margin: 10px;
-}
+
