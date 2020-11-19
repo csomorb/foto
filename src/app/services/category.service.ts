@@ -54,6 +54,7 @@ export class CategoryService {
       console.error("Chargement racine people logic error")
     }
     this.apiService.getPeopleWithPhotos(idPeople).subscribe(people => {
+      console.log(people);
       this.curCat = people;
       this._loadPhotoVideoAfterInit();
       this.parentList = [];

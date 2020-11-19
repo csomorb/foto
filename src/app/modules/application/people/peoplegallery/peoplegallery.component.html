@@ -1,0 +1,141 @@
+<h2 *ngIf="!editMode">{{catService?.curCat?.title}}</h2>
+<p class="album-desc" *ngIf="!editMode">{{catService?.curCat?.description}}</p>
+<form (ngSubmit)="updatePeople()" *ngIf="editMode" >
+  <div class="modif-album-container">
+    <div class="webflow-style-input">
+      <input name="title" [(ngModel)]="people.title" required placeholder="Title">
+    </div>
+    <div class="webflow-style-input">
+      <textarea name="description" [(ngModel)]="people.description" required placeholder="Description"></textarea>
+    </div>
+    <div (click)="updatePeople()" class="btn-i btn-save btn-align-right"></div>
+  </div>
+</form>
+
+<div class="action-conatiner">
+  <div class="select-all" *ngIf="editMode">
+    <div class="check-container">
+      <input type="checkbox" [(ngModel)]="masterSelected" name="list_name" value="m1" (change)="checkUncheckAll()"/>
+      <label for="list_name"><div></div></label>
+    </div>
+    <div (click)="checkUncheckAll()">Select/ Unselect All</div>
+  </div>
+  <div class="nb-selected" *ngIf="editMode">
+    {{nbSelectedItem}} / {{catService.curCat.photos.length}}
+  </div>
+  <div class="btn-i btn-sort" (click)="toTriMode()" *ngIf="!triMode"></div>
+  <div class="btn-i btn-add-people" (click)="toAddMode()"></div>
+  <div class="btn-i btn-cancel" (click)="cancelTriMode()" *ngIf="triMode"></div>
+  <div class="btn-i btn-trash" (click)="toDeleteMode()"></div>
+  <div class="btn-i btn-edit" (click)="toEditMode()" *ngIf="!editMode"></div>
+  <div class="btn-i btn-cancel" (click)="cancelEditMode()" *ngIf="editMode"></div>
+</div>
+<div class="overlay-add-container" *ngIf="addMode">
+  <div class="overlay-form">
+    <div class="webflow-style-input">
+      <input name="title" [(ngModel)]="people.title" required placeholder="Name">
+    </div>
+    <div class="webflow-style-input">
+      <textarea name="description" [(ngModel)]="people.description" required placeholder="Description"></textarea>
+    </div>
+    <div>Date de naissance: </div>
+    <div class="webflow-style-input">
+      <input [owlDateTime]="dtp" [owlDateTimeTrigger]="dtp" placeholder="{{people.birthDay | date:'yyyy/MM/dd'}}" [(ngModel)]="people.birthDay" name="birthDay">
+      <owl-date-time #dtp [pickerType]="'calendar'"></owl-date-time>
+    </div>
+  </div>
+  <div  class="overlay-conf-button">
+    <div class="btn-i btn-cancel" (click)="cancelAddMode()"></div>
+    <div class="btn-i btn-add-people" (click)="createPeople()" ></div>
+  </div>
+</div>
+<div class="delete-confirmation" *ngIf="deleteMode">
+  <div>Supprimer {{catService?.curCat?.title}} ?</div>
+  <div  class="delete-conf-button">
+    <div class="btn-i btn-trash" (click)="deletePeople()"></div>
+    <div class="btn-i btn-cancel" (click)="cancelDeleteMode()"></div>
+  </div>
+</div>
+<div *ngIf="triMode" class="btn-group tri">
+  <div (click)="triPriseDeVueAncienRecent()" class="btn">Tri prise de vu ancien -> récent</div>
+  <div (click)="triPriseDeVueRecentAncien()" class="btn">Tri prise de vu récent -> ancien</div>
+  <div (click)="triAZ()" class="btn">Tri A -> Z</div>
+  <div (click)="triZA()" class="btn">Tri Z -> A</div>
+</div>
+
+<div class="album-container">
+  <div *ngFor="let people of catService?.curCat?.listPeople" class="ss-album" (click)="goToCategory(people.id)">
+    <img *ngIf="people.coverPhoto" [src]="photoBaseUrl + people.coverPhoto?.src150" />
+    <div *ngIf="!people.coverPhoto" class="empty-album"></div>
+    <div class="album-title">{{people.title}}</div>
+  </div>
+</div>
+
+
+
+  <div class="photo-container" *ngIf="!editMode">
+    <div *ngFor="let photo of catService?.curCat?.photos" (click)="loadPhoto(photo)">
+        <img [src]="photoBaseUrl + photo.src640"/>
+        <div class="photo-title">{{photo.title}}</div>
+    </div>
+  </div>
+
+
+
+  <div class="photo-edit-container" *ngIf="editMode">
+
+    <div *ngFor="let photo of selectedPhotos" class="edit-container" [ngClass]="{'photo-selected' : photo.isSelected}" >
+      <div *ngIf="photo.deleteMode" class="delete-conf">
+        <div>Supprimer la photo?</div>
+        <div class="delete-conf-button">
+          <div class="btn-i btn-trash" (click)="deleteConfPhoto(photo)"></div>
+          <div class="btn-i btn-cancel" (click)="deleteCancelPhoto(photo)"></div>
+        </div>
+      </div>
+      <div class="image-edit" [ngStyle]="{'background-image': 'url('+ photoBaseUrl + photo.src320 + ')'}" (click)="selectPhoto(photo)">
+        <div class="edit-photo-btn-container">
+          <!-- <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto !== photo.idPhoto" (click)="setCover(photo)" class="btn-i btn-fav" click-stop-propagation></div> -->
+          <!-- <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto === photo.idPhoto" (click)="unsetCover(photo)" class="btn-i btn-fav-set" click-stop-propagation></div> -->
+          <div (click)="updatePhoto(photo)" class="btn-i btn-save" *ngIf="title.dirty || description.dirty" click-stop-propagation></div>
+          <div [owlDateTimeTrigger]="dt2" class="btn-i btn-calendar"></div>
+          <owl-date-time #dt2 [startAt]="photo.shootDate"  (afterPickerClosed)="updatePhotoDate(photo, dateInput.classList.contains('ng-dirty'))"></owl-date-time>
+          <input [owlDateTime]="dt2" placeholder="Date Time" [(ngModel)]="photo.shootDate" name="shootDate" class="hiden-input" #dateInput>
+          <div class="btn-i btn-trash" (click)="deletePhoto(photo)" click-stop-propagation></div>
+        </div>
+      </div>
+      <div class="image-detail" (click)="selectPhoto(photo)">
+        {{photo.weight | fileSize }}<br/>
+        {{photo.width}} x {{photo.height}} px<br/>
+        {{photo.shootDate |date:'yyyy/MM/dd HH:mm' }}
+      </div>
+      <div class="check-container">
+        <input type="checkbox" name="check{{photo.id}}" [(ngModel)]="photo.isSelected" value="{{photo.id}}" (change)="isAllSelected()">
+        <label for="check{{photo.id}}"><div></div></label>
+      </div>
+      <div class="webflow-style-input">
+        <input name="title" [(ngModel)]="photo.title" required placeholder="Title" #title="ngModel">
+      </div>
+      <div class="webflow-style-input">
+        <textarea name="description" [(ngModel)]="photo.description" required placeholder="Description" #description="ngModel"></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <div *ngIf="editMode">Actions
+    <div>
+      Déplacer vers l'album:
+      <app-selectalbum (selectedAlbum)="setSelectedAlbumToMove($event)" exeptIdAlbum="{{catService?.curCat?.id}}"></app-selectalbum>
+      <div class="btn">Déplacer</div>
+    </div>
+  </div>
+
+    <!--Affichage des sous albums-->
+    Personne présente dans :
+    <div class="album-container">
+      <div *ngFor="let ssAlbum of catService?.curCat?.listAlbum" class="ss-album" (click)="goToCategory(ssAlbum.id)">
+        <img *ngIf="ssAlbum.coverPhoto" [src]="photoBaseUrl + ssAlbum.coverPhoto?.src150" />
+        <div *ngIf="!ssAlbum.coverPhoto" class="empty-album"></div>
+        <div class="album-title">{{ssAlbum.title}}</div>
+      </div>
+    </div>

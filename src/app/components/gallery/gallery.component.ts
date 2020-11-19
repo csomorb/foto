@@ -25,6 +25,7 @@ export class GalleryComponent implements OnInit {
   selectedVideos: Array<any>;
   selectedAlbumToMovePhoto: number;
   nbSelectedItem: number;
+  addMode: boolean;
 
   constructor(public router: Router, public catService: CategoryService, public apiService: ApiService,public toast: ToastrService, public route: ActivatedRoute) { }
 
@@ -32,7 +33,9 @@ export class GalleryComponent implements OnInit {
     this.editMode = false;
     this.deleteMode = false;
     this.triMode = false;
+    this.addMode = false;
     this.selectedPhotos = [];
+    this.selectedVideos = [];
   }
 
   loadPhoto(photo: PhotoModel){
@@ -125,6 +128,14 @@ export class GalleryComponent implements OnInit {
 
   toDeleteMode(){
     this.deleteMode = true;
+  }
+
+  toAddMode(){
+    this.addMode = true;
+  }
+
+  cancelAddMode(){
+    this.addMode = false;
   }
 
   toTriMode(){

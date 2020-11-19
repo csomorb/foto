@@ -11,4 +11,5 @@ export interface PhotoModel extends ItemModel{
   lat?: number;
   long?: number;
   alti?: number;
+  facetag: Array<any>;
 }

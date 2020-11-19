@@ -4,11 +4,13 @@ import { NotFoundComponent } from './modules/general/not-found/not-found.compone
 import { LoginComponent } from './modules/general/login/login.component';
 import { AlbumComponent } from './modules/application/album/album.component';
 import { HomeComponent } from './modules/general/home/home.component';
-import { GalleryComponent } from './components/gallery/gallery.component';
 import { PhotoComponent } from './components/photo/photo.component';
 import { UploaderComponent } from './modules/application/uploader/uploader.component';
 import { PeopleComponent } from './modules/application/people/people.component';
 import { AlbumgalleryComponent } from './modules/application/album/albumgallery/albumgallery.component';
+import { PeoplegalleryComponent } from './modules/application/people/peoplegallery/peoplegallery.component';
+import { TagComponent } from './modules/application/tag/tag.component';
+import { TaggalleryComponent } from './modules/application/tag/taggallery/taggallery.component';
 
 
 const routes: Routes = [
@@ -26,7 +28,32 @@ const routes: Routes = [
       { path: 'photos/:idPhoto', component: PhotoComponent }
       ]
   },
-  { path: 'peoples', component: PeopleComponent },
+  { path: 'peoples', component: PeopleComponent,
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'gallery' },
+      { path: 'gallery', component: PeoplegalleryComponent },
+    ]
+  },
+  { path: 'peoples/:idPeople', component: PeopleComponent ,
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'gallery' },
+      { path: 'gallery', component: PeoplegalleryComponent },
+      { path: 'photos/:idPhoto', component: PhotoComponent }
+      ]
+  },
+  { path: 'tags', component: TagComponent,
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'gallery' },
+      { path: 'gallery', component: TaggalleryComponent },
+    ]
+  },
+  { path: 'tagss/:idTag', component: TagComponent ,
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'gallery' },
+      { path: 'gallery', component: TaggalleryComponent },
+      { path: 'photos/:idPhoto', component: PhotoComponent }
+      ]
+  },
   { path: 'upload', component: UploaderComponent },
   { path: 'upload/:idAlbum', component: UploaderComponent },
   { path: 'login', component: LoginComponent },

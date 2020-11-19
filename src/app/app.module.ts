@@ -21,6 +21,10 @@ import { ClickStopPropagationDirective } from './directives/click-stop-propagati
 import { ToastrModule } from 'ngx-toastr';
 import { PeopleComponent } from './modules/application/people/people.component';
 import { AlbumgalleryComponent } from './modules/application/album/albumgallery/albumgallery.component';
+import { PeoplegalleryComponent } from './modules/application/people/peoplegallery/peoplegallery.component';
+import { TagComponent } from './modules/application/tag/tag.component';
+import { TaggalleryComponent } from './modules/application/tag/taggallery/taggallery.component';
+import { SelectpeopleComponent } from './components/selectpeople/selectpeople.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +42,10 @@ import { AlbumgalleryComponent } from './modules/application/album/albumgallery/
     ClickStopPropagationDirective,
     PeopleComponent,
     AlbumgalleryComponent,
+    PeoplegalleryComponent,
+    TagComponent,
+    TaggalleryComponent,
+    SelectpeopleComponent,
   ],
   imports: [
     BrowserModule,

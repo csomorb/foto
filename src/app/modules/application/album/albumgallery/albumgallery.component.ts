@@ -79,8 +79,6 @@ export class AlbumgalleryComponent extends GalleryComponent implements OnInit  {
   updateAlbum(){
     this.apiService.updateAlbum(this.album).subscribe({
         next: album => {
-          //TODO: regarder si le binding est effectif sinon implémenter mise à jour dans catService
-          // this.catService.updateCurrentAlbumFromCache(album);
           this.editMode = false;
           this.toast.success('L\'album ' + album.title + ' a été mise à jour',
             'Mise à jour',
