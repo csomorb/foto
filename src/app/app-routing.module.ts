@@ -7,6 +7,8 @@ import { HomeComponent } from './modules/general/home/home.component';
 import { GalleryComponent } from './components/gallery/gallery.component';
 import { PhotoComponent } from './components/photo/photo.component';
 import { UploaderComponent } from './modules/application/uploader/uploader.component';
+import { PeopleComponent } from './modules/application/people/people.component';
+import { AlbumgalleryComponent } from './modules/application/album/albumgallery/albumgallery.component';
 
 
 const routes: Routes = [
@@ -14,16 +16,17 @@ const routes: Routes = [
   { path: 'albums', component: AlbumComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
-      { path: 'gallery', component: GalleryComponent },
+      { path: 'gallery', component: AlbumgalleryComponent },
     ]
   },
   { path: 'albums/:idAlbum', component: AlbumComponent ,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
-      { path: 'gallery', component: GalleryComponent },
+      { path: 'gallery', component: AlbumgalleryComponent },
       { path: 'photos/:idPhoto', component: PhotoComponent }
       ]
   },
+  { path: 'peoples', component: PeopleComponent },
   { path: 'upload', component: UploaderComponent },
   { path: 'upload/:idAlbum', component: UploaderComponent },
   { path: 'login', component: LoginComponent },

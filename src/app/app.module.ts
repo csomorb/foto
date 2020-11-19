@@ -19,6 +19,8 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClickStopPropagationDirective } from './directives/click-stop-propagation.directive';
 import { ToastrModule } from 'ngx-toastr';
+import { PeopleComponent } from './modules/application/people/people.component';
+import { AlbumgalleryComponent } from './modules/application/album/albumgallery/albumgallery.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import { ToastrModule } from 'ngx-toastr';
     DropzoneDirective,
     UploaderComponent,
     SelectalbumComponent,
-    ClickStopPropagationDirective
+    ClickStopPropagationDirective,
+    PeopleComponent,
+    AlbumgalleryComponent,
   ],
   imports: [
     BrowserModule,

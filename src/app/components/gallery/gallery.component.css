@@ -41,16 +41,19 @@
 }
 
 .ss-album{
-  margin: 2px;
+  margin: 5px;
   cursor: pointer;
-  width: 250px;
-  height: 250px;
+  width: 150px;
+  height: 150px;
+}
+
+.ss-album:hover{
+  box-shadow: 1px 1px 7px 0 #CBCBCB;
 }
 
 .ss-album img{
-  max-height: 100%;
-  min-width: 100%;
-  object-fit: cover;
+  height: 150px;
+  width: 150px;
 }
 
 .album-title{
@@ -190,12 +193,6 @@ h2{
   justify-content: center;
 }
 
-.delete-conf-button{
-  margin: 5px;
-  display: flex;
-  flex-direction: row;
-}
-
 .image-edit{
   width: 160px;
   height: 160px;
@@ -230,19 +227,6 @@ h2{
 
 .hiden-input{
   display: none;
-}
-
-.delete-confirmation{
-  position: absolute;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #b7414163;
-  z-index: 200;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .modif-album-container{

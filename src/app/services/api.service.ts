@@ -5,7 +5,7 @@ import { environment } from 'src/environments/environment';
 import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
 import { AlbumModel } from '../models/album.model';
 import { Observable } from 'rxjs';
-import { AlbumService } from './album.service';
+import { PeopleModel } from '../models/people.model';
 
 @Injectable({
   providedIn: 'root'
@@ -124,6 +124,57 @@ export class ApiService {
   }
 
   /**
+   * Supprime la personne donnée
+   * @param people
+   */
+  deletePeople(people: PeopleModel){
+    return this.http.delete<any>(`${environment.apiUrl}/peoples/${people.id}`);
+  }
+
+  /**
+   * Met à jour la personne donnée
+   * @param people
+   */
+  updatePeople(people: PeopleModel){
+    let body = people.birthDay ?  {title : people.title, description: people.description, birthDay: people.birthDay } : {title : people.title, description: people.description };
+    return this.http.put<AlbumModel>(`${environment.apiUrl}/peoples/${people.id}`, body);
+  }
+
+  /**
+   * Ajoute une nouvelle personne
+   * @param name
+   * @param description
+   * @param birthDay
+   */
+  postPeople(name: string, description:string, birthDay?: Date){
+    let people = birthDay ?  {title : name, description: description, birthDay: birthDay } : {title : name, description: description };
+    return this.http.post<PeopleModel>(environment.apiUrl + '/peoples/', people);
+  }
+
+  /**
+   * Renvoie les détails d'une personne avec les photos
+   * @param idPeople
+   */
+  getPeopleWithPhotos(idPeople:number){
+    let url = environment.apiUrl + '/peoples/' + idPeople + '/photos';
+    return this.http.get<PeopleModel>(url);
+  }
+
+  /**
+   * Renvoie toutes les personnes avec leur photo de profil et les photos?
+   */
+  getRootsPeoples(){
+    return this.http.get<Array<PeopleModel>>(`${environment.apiUrl}/peoples/roots`);
+  }
+
+  /**
+   * Renvoie toutes les personnes avec leur photo de profil
+   */
+  getPeoples(){
+    return this.http.get<Array<PeopleModel>>(`${environment.apiUrl}/peoples`);
+  }
+
+  /**
    * Créer un nouvel album
    * @param title
    * @param description
@@ -158,5 +209,54 @@ export class ApiService {
     return this.http.request(req);
   }
 
+  /**
+   * Supprime le tag donnée
+   * @param tag
+   */
+  deleteTag(tag: TagModel){
+    return this.http.delete<any>(`${environment.apiUrl}/tags/${tag.id}`);
+  }
+
+  /**
+   * Met à jour le tag donnée
+   * @param tag
+   */
+  updateTag(tag: TagModel){
+    let body = {title : tag.title, description: tag.description};
+    return this.http.put<AlbumModel>(`${environment.apiUrl}/tags/${tag.id}`, body);
+  }
+
+  /**
+   * Ajoute un nouveau tag
+   * @param name
+   * @param description
+   */
+  postTag(title: string, description:string){
+    let tag = {title : name, description: description} ;
+    return this.http.post<TagModel>(environment.apiUrl + '/tags/', tag);
+  }
+
+  /**
+   * Renvoie les détails d'une personne avec les photos
+   * @param idTag
+   */
+  getTagWithPhotos(idTag:number){
+    let url = environment.apiUrl + '/tags/' + idTag + '/photos';
+    return this.http.get<TagModel>(url);
+  }
+
+  /**
+   * Renvoie toutes les tags avec leur photo de profil et les photos?
+   */
+  getRootsTags(){
+    return this.http.get<Array<TagModel>>(`${environment.apiUrl}/tags/roots`);
+  }
+
+  /**
+   * Renvoie toutes les tags avec leur photo de profil
+   */
+  getTags(){
+    return this.http.get<Array<TagModel>>(`${environment.apiUrl}/tags`);
+  }
 
 }

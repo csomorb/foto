@@ -1,5 +1,5 @@
-<h2 *ngIf="!editMode">{{albumService?.currentAlbum?.title}}</h2>
-<p class="album-desc" *ngIf="!editMode">{{albumService?.currentAlbum?.description}}</p>
+<h2 *ngIf="!editMode">{{catService?.curCat?.title}}</h2>
+<p class="album-desc" *ngIf="!editMode">{{catService?.curCat?.description}}</p>
 <form (ngSubmit)="updateAlbum()" *ngIf="editMode" >
   <div class="modif-album-container">
     <div class="webflow-style-input">
@@ -21,7 +21,7 @@
     <div (click)="checkUncheckAll()">Select/ Unselect All</div>
   </div>
   <div class="nb-selected" *ngIf="editMode">
-    {{nbSelectedPhoto}} / {{albumService.currentAlbum.photos.length}}
+    {{nbSelectedItem}} / {{catService.curCat.photos.length}}
   </div>
   <div class="btn-i btn-sort" (click)="toTriMode()" *ngIf="!triMode"></div>
   <div class="btn-i btn-cancel" (click)="cancelTriMode()" *ngIf="triMode"></div>
@@ -31,7 +31,7 @@
   <div class="btn-i btn-cancel" (click)="cancelEditMode()" *ngIf="editMode"></div>
 </div>
 <div class="delete-confirmation" *ngIf="deleteMode">
-  <div>Supprimer l'album {{albumService?.currentAlbum?.title}} ?</div>
+  <div>Supprimer l'album {{catService?.curCat?.title}} ?</div>
   <div  class="delete-conf-button">
     <div class="btn-i btn-trash" (click)="deleteAlbum()"></div>
     <div class="btn-i btn-cancel" (click)="cancelDeleteMode()"></div>
@@ -48,15 +48,15 @@
 
   <!--Affichage des sous albums-->
   <div class="album-container">
-    <div *ngFor="let ssAlbum of albumService?.currentAlbum?.listAlbum" class="ss-album" (click)="goToAlbum(ssAlbum.id)">
-      <img *ngIf="ssAlbum.coverPhoto" [src]="photoBaseUrl + ssAlbum.coverPhoto?.src640" />
+    <div *ngFor="let ssAlbum of catService?.curCat?.listAlbum" class="ss-album" (click)="goToCategory(ssAlbum.id)">
+      <img *ngIf="ssAlbum.coverPhoto" [src]="photoBaseUrl + ssAlbum.coverPhoto?.src150" />
       <div *ngIf="!ssAlbum.coverPhoto" class="empty-album"></div>
       <div class="album-title">{{ssAlbum.title}}</div>
     </div>
   </div>
 
   <div class="photo-container" *ngIf="!editMode">
-    <div *ngFor="let photo of albumService?.currentAlbum?.photos" (click)="loadPhoto(photo)">
+    <div *ngFor="let photo of catService?.curCat?.photos" (click)="loadPhoto(photo)">
         <img [src]="photoBaseUrl + photo.src640"/>
         <div class="photo-title">{{photo.title}}</div>
     </div>
@@ -76,8 +76,8 @@
       </div>
       <div class="image-edit" [ngStyle]="{'background-image': 'url('+ photoBaseUrl + photo.src320 + ')'}" (click)="selectPhoto(photo)">
         <div class="edit-photo-btn-container">
-          <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto !== photo.idPhoto" (click)="setCover(photo)" class="btn-i btn-fav" click-stop-propagation></div>
-          <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto === photo.idPhoto" (click)="unsetCover(photo)" class="btn-i btn-fav-set" click-stop-propagation></div>
+          <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto !== photo.idPhoto" (click)="setCover(photo)" class="btn-i btn-fav" click-stop-propagation></div>
+          <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto === photo.idPhoto" (click)="unsetCover(photo)" class="btn-i btn-fav-set" click-stop-propagation></div>
           <div (click)="updatePhoto(photo)" class="btn-i btn-save" *ngIf="title.dirty || description.dirty" click-stop-propagation></div>
           <div [owlDateTimeTrigger]="dt2" class="btn-i btn-calendar"></div>
           <owl-date-time #dt2 [startAt]="photo.shootDate"  (afterPickerClosed)="updatePhotoDate(photo, dateInput.classList.contains('ng-dirty'))"></owl-date-time>
@@ -104,10 +104,10 @@
     </div>
   </div>
 
-  <div *ngIf="editMode">Actions</div>
+  <div *ngIf="editMode">Actions
     <div>
       Déplacer vers l'album:
-      <app-selectalbum (selectedAlbum)="setSelectedAlbumToMove($event)" exeptIdAlbum="{{albumService.currentAlbum?.id}}"></app-selectalbum>
+      <app-selectalbum (selectedAlbum)="setSelectedAlbumToMove($event)" exeptIdAlbum="{{catService?.curCat?.id}}"></app-selectalbum>
       <div class="btn">Déplacer</div>
     </div>
-
+  </div>

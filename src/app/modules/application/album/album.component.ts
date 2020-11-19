@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiService } from 'src/app/services/api.service';
-import { AlbumService } from 'src/app/services/album.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AlbumModel } from 'src/app/models/album.model';
-import { environment } from 'src/environments/environment';
-import { PhotoModel } from 'src/app/models/photo.model';
-import { VideoModel } from 'src/app/models/video.model';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-album',
@@ -15,20 +11,17 @@ import { VideoModel } from 'src/app/models/video.model';
 
 export class AlbumComponent implements OnInit {
 
-  album: AlbumModel;
-
-  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router,
-    public albumService: AlbumService) {
+  constructor(private route: ActivatedRoute, public catService: CategoryService) {
   }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
       const id = parseInt(params.get('idAlbum'));
       if (id){
-        this.albumService.loadAlbum(id);
+        this.catService.loadAlbum(id);
       }
       else{
-        this.albumService.loadRoot();
+        this.catService.loadRootAlbum();
       }
     });
   }
