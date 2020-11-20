@@ -185,6 +185,38 @@ export class ApiService {
     return this.http.post<AlbumModel>(environment.apiUrl + '/albums/', album);
   }
 
+  /**
+   * Enregistre une personne
+   * @param idPhoto
+   * @param idPeople
+   * @param x
+   * @param y
+   * @param h
+   * @param w
+   */
+  postFace(idPhoto:number, idPeople:number, x:number,y:number,h:number,w:number){
+    let face = {idPhoto : idPhoto,idPeople:idPeople,x:x,y:y,w:w,h:h};
+    return this.http.post<any>(environment.apiUrl + '/faces/', face);
+  }
+
+  /**
+   * Modifie la personne tagée
+   * @param idPhoto
+   * @param idPeople
+   */
+  putFace(idFace:number, idPeople:number){
+    return this.http.put<any>(environment.apiUrl + '/faces/'+idFace + '/people/' + idPeople, {});
+  }
+
+   /**
+   * Supprime la personne tagée
+   * @param idPhoto
+   * @param idPeople
+   */
+  deleteFace(idFace:number, idPeople:number){
+    return this.http.delete<any>(environment.apiUrl + '/faces/'+idFace + '/people/' + idPeople);
+  }
+
 
   /**
    * Upload une photo dans l'album donné avec le titre et la description donné

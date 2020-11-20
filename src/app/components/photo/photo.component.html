@@ -1,36 +1,50 @@
 <div class="photo">
   <div class="photo-view-container">
     <picture>
-      <source media="(max-width: 320px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src320}}">
-      <source media="(max-width: 640px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src640}}">
-      <source media="(max-width: 1280px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src1280}}">
-      <source media="(min-width: 1280px)" srcset="{{photoBaseUrl + albumService?.currentPhoto?.src1920}}">
-      <img [src]="photoBaseUrl + this.albumService?.currentPhoto?.srcOrig" alt="{{ albumService?.currentPhoto?.title}}"/>
+      <source media="(max-width: 320px)" srcset="{{photoBaseUrl + catService?.curPhoto?.src320}}">
+      <source *ngIf="catService?.curPhoto?.src640" media="(max-width: 640px)" srcset="{{photoBaseUrl + catService?.curPhoto?.src640}}">
+      <source *ngIf="catService?.curPhoto?.src1280" media="(max-width: 1280px)" srcset="{{photoBaseUrl + catService?.curPhoto?.src1280}}">
+      <source *ngIf="catService?.curPhoto?.src1920"  media="(min-width: 1280px)" srcset="{{photoBaseUrl + catService?.curPhoto?.src1920}}">
+      <img [src]="photoBaseUrl + this.catService?.curPhoto?.srcOrig" alt="{{ catService?.curPhoto?.title}}" id="imageToFindFaces" #img />
     </picture>
+    <div *ngIf="tagMode">
+      <div *ngFor="let f of catService?.curPhoto?.facesToTag"
+        class="rect"
+        [style.top] = "img.offsetTop+f.y*img.height+'px'"
+        [style.left] = "img.offsetLeft+f.x*img.width+'px'"
+        [style.width] = "f.w*img.width+'px'"
+        [style.height] = "f.h*img.height+'px'"
+        (click)="f.edit=true">
+        <app-selectpeople class="select-people"  [ngStyle]="{'top':(f.h*img?.height)+'px'}" *ngIf="f.edit" (selectedPeopleID)="setSelectedFace($event,f)"></app-selectpeople>
+      </div>
+    </div>
   </div>
   <div class="photo-detail">
     <div class="photo-navigation">
       <div (click)="movePrevPhoto()" class="navigation-item">
-        <img *ngIf="albumService?.prevPhoto" [src]="photoBaseUrl + albumService?.prevPhoto?.src150" alt="Previous picture"/>
-        <div *ngIf="albumService?.prevPhoto" class="arrow arrow-prev"></div>
+        <img *ngIf="catService?.prevPhoto" [src]="photoBaseUrl + catService?.prevPhoto?.src150" alt="Previous picture"/>
+        <div *ngIf="catService?.prevPhoto" class="arrow arrow-prev"></div>
       </div>
       <div (click)="returnGalery()" class="navigation-item arrow arrow-home">
       </div>
       <div (click)="moveNextPhoto()" class="navigation-item">
-        <img *ngIf="albumService?.nextPhoto" [src]="photoBaseUrl + albumService?.nextPhoto?.src150" alt="Next picture"/>
-        <div *ngIf="albumService?.nextPhoto" class="arrow arrow-next"></div>
+        <img *ngIf="catService?.nextPhoto" [src]="photoBaseUrl + catService?.nextPhoto?.src150" alt="Next picture"/>
+        <div *ngIf="catService?.nextPhoto" class="arrow arrow-next"></div>
       </div>
     </div>
     <div class="photo-prop">
       <div class="action-btn">
-        <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto !== this.albumService.currentPhoto?.idPhoto" (click)="setCover()" class="btn-i btn-fav"></div>
-        <div *ngIf="albumService.currentAlbum?.coverPhoto?.idPhoto === this.albumService.currentPhoto?.idPhoto" (click)="unsetCover()" class="btn-i btn-fav-set"></div>
+        <div *ngIf="catService.curCat?.coverPhoto?.idPhoto !== this.catService.curPhoto?.idPhoto" (click)="setCover()" class="btn-i btn-fav"></div>
+        <div *ngIf="catService.curCat?.coverPhoto?.idPhoto === this.catService.curPhoto?.idPhoto" (click)="unsetCover()" class="btn-i btn-fav-set"></div>
         <div (click)="toDeleteMode()" class="btn-i btn-trash"></div>
+        <!-- <div (click)="face(img,canvas)" class="btn-i btn-calendar"></div> -->
+        <div *ngIf="!tagMode" (click)="toTagMode()" class="btn-i btn-people"></div>
+        <div *ngIf="tagMode" (click)="cancelTagMode()" class="btn-i btn-cancel"></div>
         <div *ngIf="!editMode" (click)="toEditMode()" class="btn-i btn-edit"></div>
         <div *ngIf="editMode" (click)="cancelEditMode()" class="btn-i btn-cancel"></div>
       </div>
       <div class="delete-confirmation" *ngIf="deleteMode">
-        <div>Supprimer la photo {{albumService?.currentPhoto?.title}} ?</div>
+        <div>Supprimer la photo {{catService?.curPhoto?.title}} ?</div>
         <div  class="delete-conf-button">
           <div class="btn-i btn-trash" (click)="deletePhoto()"></div>
           <div class="btn-i btn-cancel" (click)="cancelDeleteMode()"></div>
@@ -39,48 +53,55 @@
       <form (ngSubmit)="updatePhoto()">
         <div>
           <span class="prop-name">Titre</span><br/>
-          <span *ngIf="!editMode" class="prop-content">{{albumService?.currentPhoto?.title}}</span>
+          <span *ngIf="!editMode" class="prop-content">{{catService?.curPhoto?.title}}</span>
           <div *ngIf="editMode" class="webflow-style-input">
             <input name="title" [(ngModel)]="photo.title" required placeholder="Title">
           </div>
         </div>
-        <div *ngIf=" editMode || albumService?.currentPhoto?.description">
+        <div *ngIf=" editMode || catService?.curPhoto?.description">
           <span class="prop-name">Description</span><br/>
-          <span *ngIf="!editMode" class="prop-content">{{albumService?.currentPhoto?.description}}</span>
+          <span *ngIf="!editMode" class="prop-content">{{catService?.curPhoto?.description}}</span>
           <div *ngIf="editMode" class="webflow-style-input">
             <textarea name="description" [(ngModel)]="photo.description" placeholder="Description"></textarea>
           </div>
         </div>
         <div>
           <span class="prop-name">Pris le</span><br/>
-          <span *ngIf="!editMode" class="prop-content">{{albumService?.currentPhoto?.shootDate | date:'yyyy/MM/dd HH:mm' }}</span>
+          <span *ngIf="!editMode" class="prop-content">{{catService?.curPhoto?.shootDate | date:'yyyy/MM/dd HH:mm' }}</span>
           <div *ngIf="editMode" class="webflow-style-input">
-            <input [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1" placeholder="{{albumService?.currentPhoto?.shootDate | date:'yyyy/MM/dd HH:mm' }}" [(ngModel)]="photo.shootDate" name="shootDate">
-            <owl-date-time #dt1 [startAt]="photo.shootDate" panelClass="test"></owl-date-time>
+            <input [owlDateTime]="dt1" [owlDateTimeTrigger]="dt1" placeholder="{{catService?.curPhoto?.shootDate | date:'yyyy/MM/dd HH:mm' }}" [(ngModel)]="photo.shootDate" name="shootDate">
+            <owl-date-time #dt1 [startAt]="photo.shootDate"></owl-date-time>
           </div>
         </div>
         <div *ngIf="editMode" (click)="updatePhoto()" class="btn-i btn-save btn-align-right"></div>
       </form>
       <div>
         <span class="prop-name">Ajouté le</span><br/>
-        <span class="prop-content">{{albumService?.currentPhoto?.createAt | date:'yyyy/MM/dd HH:mm' }}</span>
+        <span class="prop-content">{{catService?.curPhoto?.createAt | date:'yyyy/MM/dd HH:mm' }}</span>
       </div>
       <div>
         <span class="prop-name">Modifié le</span><br/>
-        <span class="prop-content">{{albumService?.currentPhoto?.updatedAt | date:'yyyy/MM/dd HH:mm' }}</span>
+        <span class="prop-content">{{catService?.curPhoto?.updatedAt | date:'yyyy/MM/dd HH:mm' }}</span>
       </div>
       <div>
         <span class="prop-name">Poids</span><br/>
-        <span class="prop-content">{{albumService?.currentPhoto?.weight | fileSize }}</span>
+        <span class="prop-content">{{catService?.curPhoto?.weight | fileSize }}</span>
       </div>
-      <div *ngIf="albumService?.currentPhoto?.alti">
+      <div *ngIf="catService?.curPhoto?.alti">
         <span class="prop-name">Altitude</span><br/>
-        <span class="prop-content">{{albumService?.currentPhoto?.alti}} m</span>
+        <span class="prop-content">{{catService?.curPhoto?.alti}} m</span>
       </div>
       <div>
         <span class="prop-name">Dimensions</span><br/>
-        <span class="prop-content">{{albumService?.currentPhoto?.width}} x {{albumService?.currentPhoto?.height}} pixel</span>
+        <span class="prop-content">{{catService?.curPhoto?.width}} x {{catService?.curPhoto?.height}} pixel</span>
+      </div>
+    </div>
+    <div *ngIf="catService?.curPhoto?.peoples.length">
+      <div *ngFor="let p of catService?.curPhoto?.peoples">
+        <div class="people-cover"></div>
+        <div class="people-name">{{p.title}}</div>
       </div>
     </div>
   </div>
 </div>
+

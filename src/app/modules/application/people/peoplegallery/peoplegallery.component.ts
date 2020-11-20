@@ -26,7 +26,7 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
 
   toEditMode(){
     super.toEditMode();
-    this.people = this.catService.curCat;
+    this.people = { ...this.catService.curCat};
   }
 
   toAddMode(){
@@ -58,6 +58,7 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
             if (this.catService.curCat.id === 0){
               this.catService.curCat.listPeople.push(data);
             }
+            this.catService.peopleList.push(data);
             console.log(data);
             const peopleName = data.title;
             this.addMode = false;
@@ -73,7 +74,6 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
           }
       });
     }
-
   }
 
   deletePeople(){
@@ -81,6 +81,7 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
       {
         next: data => {
           const peopleName = this.catService.curCat.title;
+          this.catService.peopleList.splice( this.catService.peopleList.findIndex(p => p.id === this.catService.curCat.id),1);
           this.router.navigateByUrl("peoples/");
           this.deleteMode = false;
           this.toast.success(peopleName,
@@ -100,6 +101,8 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
     this.apiService.updatePeople(this.people).subscribe({
         next: people => {
           this.editMode = false;
+          this.catService.curCat = { ...this.catService.curCat, ...people};
+          this.catService.peopleList[this.catService.peopleList.findIndex(p => p.id === this.people.id)] = this.catService.curCat;
           this.toast.success(people.title + ' a été mise à jour',
             'Mise à jour',
             {timeOut: 3000,});

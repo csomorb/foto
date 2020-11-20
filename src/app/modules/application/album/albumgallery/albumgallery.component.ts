@@ -27,7 +27,7 @@ export class AlbumgalleryComponent extends GalleryComponent implements OnInit  {
 
   toEditMode(){
     super.toEditMode();
-    this.album = this.catService.curCat;
+    this.album = { ...this.catService.curCat};
   }
 
   toDeleteMode(){
@@ -80,6 +80,7 @@ export class AlbumgalleryComponent extends GalleryComponent implements OnInit  {
     this.apiService.updateAlbum(this.album).subscribe({
         next: album => {
           this.editMode = false;
+          this.catService.curCat = { ...album, ...this.catService.curCat };
           this.toast.success('L\'album ' + album.title + ' a été mise à jour',
             'Mise à jour',
             {timeOut: 3000,});

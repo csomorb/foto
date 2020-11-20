@@ -27,10 +27,14 @@ export class CategoryService {
   nextVideo: VideoModel;
   idVideoToLoad: number;
   parentList: Array<any>;
+  peopleList: Array<PeopleModel>;
+  tagList: Array<TagModel>;
 
   constructor(private apiService: ApiService) {
     this.idPhotoToLoad = 0;
     this.idVideoToLoad = 0;
+    this.apiService.getPeoples().subscribe( p => this.peopleList = p);
+    this.apiService.getTags().subscribe( t => this.tagList = t);
   }
 
   /**

@@ -11,7 +11,7 @@ export interface ItemModel {
   createAt: Date;
   updatedAt: Date;
   shootDate: Date;
-  listTag?: Array<TagModel>;
-  listPeople?: Array<PeopleModel>;
-  listAlbum?: Array<AlbumModel>;
+  tags?: Array<TagModel>;
+  peoples?: Array<PeopleModel>;
+  albums?: Array<AlbumModel>;
 }

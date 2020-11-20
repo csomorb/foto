@@ -1,4 +1,5 @@
 import { ItemModel } from './item.model';
+import { FaceModel } from './face.model';
 
 export interface PhotoModel extends ItemModel{
   idPhoto: number;
@@ -11,5 +12,6 @@ export interface PhotoModel extends ItemModel{
   lat?: number;
   long?: number;
   alti?: number;
-  facetag: Array<any>;
+  facesToTag: Array<any>;
+  faces: Array<FaceModel>;
 }
