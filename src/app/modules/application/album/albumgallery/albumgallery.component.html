@@ -111,3 +111,13 @@
       <div class="btn">Déplacer</div>
     </div>
   </div>
+
+  <div *ngIf="catService?.curCat?.listPeople">
+    Liste des personnes présentes:
+    <div class="people-list-container">
+      <div *ngFor="let p of catService.curCat.listPeople" (click)="gotToPeople(p.id)" class="people-container">
+        <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + p?.coverPhoto?.src150 + ')'}"></div>
+        <div class="people-name">{{p.title}}</div>
+      </div>
+    </div>
+  </div>

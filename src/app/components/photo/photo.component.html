@@ -7,7 +7,7 @@
       <source *ngIf="catService?.curPhoto?.src1920"  media="(min-width: 1280px)" srcset="{{photoBaseUrl + catService?.curPhoto?.src1920}}">
       <img [src]="photoBaseUrl + this.catService?.curPhoto?.srcOrig" alt="{{ catService?.curPhoto?.title}}" id="imageToFindFaces" #img />
     </picture>
-    <div *ngIf="tagMode">
+    <ng-container *ngIf="tagMode">
       <div *ngFor="let f of catService?.curPhoto?.facesToTag"
         class="rect"
         [style.top] = "img.offsetTop+f.y*img.height+'px'"
@@ -17,7 +17,17 @@
         (click)="f.edit=true">
         <app-selectpeople class="select-people"  [ngStyle]="{'top':(f.h*img?.height)+'px'}" *ngIf="f.edit" (selectedPeopleID)="setSelectedFace($event,f)"></app-selectpeople>
       </div>
-    </div>
+    </ng-container>
+    <ng-container *ngFor="let f of catService?.curPhoto?.faces">
+      <div *ngIf="f.show"
+      class="box"
+      [style.top] = "img.offsetTop+f.y*img.height+'px'"
+      [style.left] = "img.offsetLeft+f.x*img.width+'px'"
+      [style.width] = "f.w*img.width+'px'"
+      [style.height] = "f.h*img.height+'px'"
+      ><span></span><span></span><span></span><span></span>
+      </div>
+    </ng-container>
   </div>
   <div class="photo-detail">
     <div class="photo-navigation">
@@ -96,9 +106,10 @@
         <span class="prop-content">{{catService?.curPhoto?.width}} x {{catService?.curPhoto?.height}} pixel</span>
       </div>
     </div>
-    <div *ngIf="catService?.curPhoto?.peoples.length">
-      <div *ngFor="let p of catService?.curPhoto?.peoples">
-        <div class="people-cover"></div>
+    <div *ngIf="catService?.curPhoto?.peoples?.length">
+      Personnes présentes:
+      <div *ngFor="let p of catService?.curPhoto?.peoples" (mouseenter) ="showTagedFace(p.id)"  (mouseleave) ="hideTagedFace(p.id)" class="people-container" (click)="gotToPeople(p.id)">
+        <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + p?.coverPhoto?.src150 + ')'}"></div>
         <div class="people-name">{{p.title}}</div>
       </div>
     </div>

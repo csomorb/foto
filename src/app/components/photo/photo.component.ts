@@ -7,7 +7,6 @@ import { ApiService } from 'src/app/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { CategoryService } from 'src/app/services/category.service';
 import { first } from 'rxjs/operators'
-declare const faceapi: any;
 
 export enum KEY_CODE {
   RIGHT_ARROW = 39,
@@ -45,9 +44,7 @@ export class PhotoComponent implements OnInit {
     this.tagMode = false;
     this.editMode = false;
     this.editMode = false;
- //   console.log(faceapi);
     this.facelist = [];
-  //  faceapi.nets.ssdMobilenetv1.loadFromUri('/assets/face');
   }
 
   moveNextPhoto(){
@@ -96,6 +93,10 @@ export class PhotoComponent implements OnInit {
     this.tagMode = false;
   }
 
+  gotToPeople(idPeople){
+    this.router.navigateByUrl("peoples/" + idPeople);
+  }
+
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode === KEY_CODE.RIGHT_ARROW) {
@@ -139,35 +140,14 @@ export class PhotoComponent implements OnInit {
 
   }
 
-
-
-  async face(image, canvas){
-    image.crossOrigin = "Anonymous";
-    const displaySize = { width: image.width, height: image.height }
-    console.log(image);
-    console.log("debut");
-    const detections = await faceapi.detectAllFaces(image);
-    console.log(detections[0].relativeBox);
-    detections.forEach( el => {
-      console.log(image.width);
-      console.log(el);
-      console.log(el.x);
-      let facePosition = {
-        x: (el.relativeBox.x  * image.width),
-        y: (el.relativeBox.y  * image.height),
-        h: el.relativeBox.height * image.height,
-        w: el.relativeBox.width  * image.width
-      };
-      console.log(facePosition);
-      this.facelist.push(facePosition);
-    });
-    faceapi.matchDimensions(canvas, displaySize);
-    const resizedDetections = faceapi.resizeResults(detections, displaySize);
-    console.log(resizedDetections);
-    // draw detections into the canvas
-    faceapi.draw.drawDetections(canvas, resizedDetections)
-
+  showTagedFace(idPeople){
+    this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = true;
   }
+
+  hideTagedFace(idPeople){
+    this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = false;
+  }
+
 
   toDeleteMode(){
     this.deleteMode = true;
@@ -213,27 +193,30 @@ export class PhotoComponent implements OnInit {
   }
 
   setCover(){
-    this.apiService.putCover(this.catService.curCat, this.catService.curPhoto).subscribe(
-      {
-        next: album => {
-          this.catService.curCat.coverPhoto = this.catService.curPhoto;
-          this.toast.success( this.catService.curPhoto.title,
-            'Photo de couverture',
-            {timeOut: 3000,});
-        },
-        error: error => {
-          this.toast.error('La photo de couverture n\'a pas été mise à jour',
-          'Echec de la modification',
-          {timeOut: 4000,});
-          console.error('There was an error in seting cover!', error);
-        }
+    this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => {
+      this.apiService.putCover(this.catService.curCat, this.catService.curPhoto, val[0].path).subscribe(
+        {
+          next: cat => {
+            this.catService.curCat.coverPhoto = this.catService.curPhoto;
+            this.toast.success( this.catService.curPhoto.title,
+              'Photo de couverture',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error('La photo de couverture n\'a pas été mise à jour',
+            'Echec de la modification',
+            {timeOut: 4000,});
+            console.error('There was an error in seting cover!', error);
+          }
+      });
     });
   }
 
   unsetCover(){
-    this.apiService.putNoCover(this.catService.curCat).subscribe(
+    this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => {
+      this.apiService.putNoCover(this.catService.curCat, val[0].path).subscribe(
       {
-        next: album => {
+        next: cat => {
           this.catService.curCat.coverPhoto = null;
           this.toast.success( this.catService.curPhoto.title,
             'Photo de couverture enlevé',
@@ -245,6 +228,7 @@ export class PhotoComponent implements OnInit {
           {timeOut: 4000,});
           console.error('There was an error in seting cover!', error);
         }
+      });
     });
   }
 

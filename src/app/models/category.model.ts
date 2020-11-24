@@ -2,6 +2,7 @@ import { VideoModel } from './video.model';
 import { PhotoModel } from './photo.model';
 import { AlbumModel } from './album.model';
 import { TagModel } from './tag.model';
+import { FaceModel } from './face.model';
 import { PeopleModel } from './people.model';
 
 export interface CategoryModel {
@@ -14,4 +15,5 @@ export interface CategoryModel {
   listAlbum?: Array<AlbumModel>;
   listTag?: Array<TagModel>;
   listPeople?: Array<PeopleModel>;
+  faces?: Array<FaceModel>;
 }

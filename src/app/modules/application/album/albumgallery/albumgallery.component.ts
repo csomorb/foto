@@ -94,41 +94,4 @@ export class AlbumgalleryComponent extends GalleryComponent implements OnInit  {
     });
   }
 
-  setCover(photo){
-    this.apiService.putCover(this.catService.curCat, photo).subscribe(
-      {
-        next: album => {
-          this.catService.curCat.coverPhoto = photo;
-          this.toast.success( photo.title,
-            'Photo de couverture',
-            {timeOut: 3000,});
-        },
-        error: error => {
-          this.toast.error('La photo de couverture n\'a pas été mise à jour',
-          'Echec de la modification',
-          {timeOut: 4000,});
-            console.error('There was an error in seting cover!', error);
-        }
-    });
-  }
-
-  unsetCover(photo){
-    this.apiService.putNoCover(this.catService.curCat).subscribe(
-      {
-        next: album => {
-          this.catService.curCat.coverPhoto = null;
-          this.toast.success( photo.title,
-            'Photo de couverture enlevé',
-            {timeOut: 3000,});
-        },
-        error: error => {
-          this.toast.error('La photo de couverture n\'a pas été enlevé',
-          'Echec de la modification',
-          {timeOut: 4000,});
-            console.error('There was an error in seting cover!', error);
-        }
-    });
-  }
-
-
 }

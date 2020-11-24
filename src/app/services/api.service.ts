@@ -6,6 +6,7 @@ import { HttpClient, HttpRequest, HttpEvent } from '@angular/common/http';
 import { AlbumModel } from '../models/album.model';
 import { Observable } from 'rxjs';
 import { PeopleModel } from '../models/people.model';
+import { CategoryModel } from '../models/category.model';
 
 @Injectable({
   providedIn: 'root'
@@ -65,19 +66,21 @@ export class ApiService {
 
   /**
    * Change la photo de couverture
-   * @param album
+   * @param cat
    * @param photo
+   * @param category nom de la catégorie (tags/albums/peoples)
    */
-  putCover(album: AlbumModel, photo: PhotoModel){
-    return this.http.put<AlbumModel>(`${environment.apiUrl}/albums/${album.id}/cover/${photo.idPhoto}`, null);
+  putCover(cat: CategoryModel, photo: PhotoModel, category: string){
+    return this.http.put<AlbumModel>(`${environment.apiUrl}/${category}/${cat.id}/cover/${photo.idPhoto}`, null);
   }
 
   /**
-   * Supprime la photo de couverture d'un album
-   * @param album
+   * Supprime la photo de couverture
+   * @param cat
+   * @param category nom de la catégorie (tags/albums/peoples)
    */
-  putNoCover(album: AlbumModel){
-    return this.http.put<AlbumModel>(`${environment.apiUrl}/albums/${album.id}/cover/0`, null);
+  putNoCover(cat: CategoryModel, category: string){
+    return this.http.put<AlbumModel>(`${environment.apiUrl}/${category}/${cat.id}/cover/0`, null);
   }
 
   /**

@@ -60,10 +60,35 @@ export class CategoryService {
     this.apiService.getPeopleWithPhotos(idPeople).subscribe(people => {
       console.log(people);
       this.curCat = people;
+
+      this.curCat.photos = [];
+      this.curCat.listAlbum = [];
+      this.curCat.faces.forEach(f =>{
+        this.curCat.photos.push(f.photo);
+        f.photo.albums.forEach(al => {
+          if (this.curCat.listAlbum.findIndex(a => a.id === al.id) === -1){
+            this.curCat.listAlbum.push(al);
+          }
+        });
+      });
+
+      this.curCat.listPeople = [];
+      this.curCat.photos.forEach(p =>{
+        p.peoples = [];
+        p.faces.forEach(f => {
+          f.show = false;
+          p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+          if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
+            this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
+          }
+        });
+      });
+
       this._loadPhotoVideoAfterInit();
       this.parentList = [];
+      this.curCat.videos = [];
     });
-    this.curCat.videos = [];
+
   }
 
   /**
@@ -77,6 +102,19 @@ export class CategoryService {
     this.apiService.getAlbumWithPhotos(id).subscribe(album => {
       this.curCat = album;
       this._loadPhotoVideoAfterInit();
+
+      this.curCat.listPeople = [];
+      this.curCat.photos.forEach(p =>{
+        p.peoples = [];
+        p.faces.forEach(f => {
+          f.show = false;
+          p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+          if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
+            this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
+          }
+        });
+      });
+
       this.apiService.getSSAlbums(id).subscribe(liste => {
         this.curCat.listAlbum = liste.children;
         this.curCat.listAlbum.forEach((ssAlbum, i) =>

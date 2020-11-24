@@ -94,8 +94,8 @@
       </div>
       <div class="image-edit" [ngStyle]="{'background-image': 'url('+ photoBaseUrl + photo.src320 + ')'}" (click)="selectPhoto(photo)">
         <div class="edit-photo-btn-container">
-          <!-- <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto !== photo.idPhoto" (click)="setCover(photo)" class="btn-i btn-fav" click-stop-propagation></div> -->
-          <!-- <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto === photo.idPhoto" (click)="unsetCover(photo)" class="btn-i btn-fav-set" click-stop-propagation></div> -->
+          <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto !== photo.idPhoto" (click)="setCover(photo)" class="btn-i btn-fav" click-stop-propagation></div>
+          <div *ngIf="catService?.curCat?.coverPhoto?.idPhoto === photo.idPhoto" (click)="unsetCover(photo)" class="btn-i btn-fav-set" click-stop-propagation></div>
           <div (click)="updatePhoto(photo)" class="btn-i btn-save" *ngIf="title.dirty || description.dirty" click-stop-propagation></div>
           <div [owlDateTimeTrigger]="dt2" class="btn-i btn-calendar"></div>
           <owl-date-time #dt2 [startAt]="photo.shootDate"  (afterPickerClosed)="updatePhotoDate(photo, dateInput.classList.contains('ng-dirty'))"></owl-date-time>
