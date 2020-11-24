@@ -101,7 +101,7 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
     this.apiService.updatePeople(this.people).subscribe({
         next: people => {
           this.editMode = false;
-          this.catService.curCat = { ...this.catService.curCat, ...people};
+          this.catService.updateCategory(people);
           this.catService.peopleList[this.catService.peopleList.findIndex(p => p.id === this.people.id)] = this.catService.curCat;
           this.toast.success(people.title + ' a été mise à jour',
             'Mise à jour',

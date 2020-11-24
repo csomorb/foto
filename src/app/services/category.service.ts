@@ -15,6 +15,13 @@ export class CategoryService {
    * Current category
    */
   curCat: AlbumModel | PeopleModel | TagModel | CategoryModel;
+
+  curPhotos: Array<PhotoModel>;
+  curVideos: Array<VideoModel>;
+
+  timeYears: Array<number>;
+  timeMonths: Array<any>;
+  timeDays: Array<any>;
   /**
    * Current photo
    */
@@ -47,6 +54,8 @@ export class CategoryService {
       this.curCat.listPeople = peoples;
     });
     this.curCat.videos = [];
+    this.curPhotos = [...this.curCat.photos];
+    this.curVideos = [...this.curCat.videos];
   }
 
   /**
@@ -74,6 +83,7 @@ export class CategoryService {
 
       this.curCat.listPeople = [];
       this.curCat.photos.forEach(p =>{
+        p.shootDate = new Date(p.shootDate);
         p.peoples = [];
         p.faces.forEach(f => {
           f.show = false;
@@ -87,6 +97,8 @@ export class CategoryService {
       this._loadPhotoVideoAfterInit();
       this.parentList = [];
       this.curCat.videos = [];
+      this.curPhotos = [...this.curCat.photos];
+      this.curVideos = [...this.curCat.videos];
     });
 
   }
@@ -105,6 +117,7 @@ export class CategoryService {
 
       this.curCat.listPeople = [];
       this.curCat.photos.forEach(p =>{
+        p.shootDate = new Date(p.shootDate);
         p.peoples = [];
         p.faces.forEach(f => {
           f.show = false;
@@ -128,6 +141,8 @@ export class CategoryService {
         });
       });
       this.curCat.videos = [];
+      this.curPhotos = [...this.curCat.photos];
+      this.curVideos = [...this.curCat.videos];
     });
   }
 
@@ -139,6 +154,8 @@ export class CategoryService {
     this.parentList = [];
     this.apiService.getRootsAlbums().subscribe(albums => { console.log(albums);
       this.curCat.listAlbum = albums;
+      this.curPhotos = [];
+      this.curVideos = [];
     });
   }
 
@@ -193,6 +210,11 @@ export class CategoryService {
         video = updatedVideo;
       }
     });
+    this.curVideos.forEach( video => {
+      if (video.idVideo === updatedVideo.idVideo){
+        video = updatedVideo;
+      }
+    });
   }
 
   /**
@@ -206,6 +228,19 @@ export class CategoryService {
         photo = updatedPhoto;
       }
     });
+    this.curPhotos.forEach( photo => {
+      if (photo.idPhoto === updatedPhoto.idPhoto){
+        photo = updatedPhoto;
+      }
+    });
+  }
+
+  updateCategory(category){
+    this.curCat = { ...this.curCat, ...category };
+  }
+
+  setCover(photo){
+    this.curCat.coverPhoto = photo;
   }
 
   /**
@@ -214,6 +249,7 @@ export class CategoryService {
    */
   deleteVideo(idVideoToDelete){
     this.curCat.videos.splice(this.curCat.videos.findIndex(video => video.idVideo === idVideoToDelete), 1);
+    this.curVideos.splice(this.curVideos.findIndex(video => video.idVideo === idVideoToDelete), 1);
   }
 
   /**
@@ -222,6 +258,7 @@ export class CategoryService {
    */
   deletePhoto(idPhotoToDelete){
     this.curCat.photos.splice(this.curCat.photos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
+    this.curPhotos.splice(this.curPhotos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
   }
 
   /**
@@ -236,7 +273,8 @@ export class CategoryService {
     else if(this.prevVideo){
       videoToShow = this.prevVideo;
     }
-    this.curCat.photos.splice(this.curCat.photos.findIndex(photo => photo.idPhoto === idVideoToDelete), 1);
+    this.curCat.videos.splice(this.curCat.videos.findIndex(video => video.idVideo === idVideoToDelete), 1);
+    this.curVideos.splice(this.curVideos.findIndex(video => video.idVideo === idVideoToDelete), 1);
     if (videoToShow){
       this.curVideo = videoToShow;
       this._getNextPrevVideo(videoToShow);
@@ -259,6 +297,7 @@ export class CategoryService {
       photoToShow = this.prevPhoto;
     }
     this.curCat.photos.splice(this.curCat.photos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
+    this.curPhotos.splice(this.curPhotos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
     if (photoToShow){
       this.curPhoto = photoToShow;
       this._getNextPrevPhoto(photoToShow);
@@ -290,11 +329,11 @@ export class CategoryService {
    * @param idVideo
    */
   loadVideoFromId(idVideo){
-    if (!this.curCat){
+    if (!this.curVideos){
       this.idVideoToLoad = idVideo;
     }
     else{
-      this.curVideo = this.curCat.videos.find(video => video.idVideo === idVideo);
+      this.curVideo = this.curVideos.find(video => video.idVideo === idVideo);
       this._getNextPrevVideo(this.curVideo);
     }
   }
@@ -313,11 +352,11 @@ export class CategoryService {
    * @param idPhoto
    */
   loadPhotoFromId(idPhoto){
-    if (!this.curCat){
+    if (!this.curPhotos){
       this.idPhotoToLoad = idPhoto;
     }
     else{
-      this.curPhoto = this.curCat.photos.find(photo => photo.idPhoto === idPhoto);
+      this.curPhoto = this.curPhotos.find(photo => photo.idPhoto === idPhoto);
       this._getNextPrevPhoto(this.curPhoto);
     }
   }
@@ -335,15 +374,15 @@ export class CategoryService {
   }
 
   private _getNextPrevPhoto(photo: PhotoModel){
-    let currentPosition = this.curCat.photos.indexOf(photo);
-    if (currentPosition < this.curCat.photos.length){
-      this.nextPhoto = this.curCat.photos[currentPosition + 1];
+    let currentPosition = this.curPhotos.indexOf(photo);
+    if (currentPosition < this.curPhotos.length){
+      this.nextPhoto = this.curPhotos[currentPosition + 1];
     }
     else{
       this.nextPhoto = null;
     }
     if (currentPosition > 0){
-      this.prevPhoto = this.curCat.photos[currentPosition - 1];
+      this.prevPhoto = this.curPhotos[currentPosition - 1];
     }
     else{
       this.prevPhoto = null;
@@ -351,15 +390,15 @@ export class CategoryService {
   }
 
   private _getNextPrevVideo(video: VideoModel){
-    let currentPosition = this.curCat.videos.indexOf(video);
-    if (currentPosition < this.curCat.videos.length){
-      this.nextVideo = this.curCat.videos[currentPosition + 1];
+    let currentPosition = this.curVideos.indexOf(video);
+    if (currentPosition < this.curVideos.length){
+      this.nextVideo = this.curVideos[currentPosition + 1];
     }
     else{
       this.nextVideo = null;
     }
     if (currentPosition > 0){
-      this.nextVideo = this.curCat.videos[currentPosition - 1];
+      this.nextVideo = this.curVideos[currentPosition - 1];
     }
     else{
       this.nextVideo = null;
@@ -383,15 +422,66 @@ export class CategoryService {
 
   private _loadPhotoVideoAfterInit(){
     if (this.idPhotoToLoad){
-      this.curPhoto = this.curCat.photos.find(photo => photo.idPhoto === this.idPhotoToLoad);
+      this.curPhoto = this.curPhotos.find(photo => photo.idPhoto === this.idPhotoToLoad);
       this._getNextPrevPhoto(this.curPhoto);
       this.idPhotoToLoad = 0;
     }
     if (this.idVideoToLoad){
-      this.curVideo = this.curCat.videos.find(video => video.idVideo === this.idVideoToLoad);
+      this.curVideo = this.curVideos.find(video => video.idVideo === this.idVideoToLoad);
       this._getNextPrevVideo(this.curVideo);
       this.idVideoToLoad = 0;
     }
+  }
+
+  getYears(){
+    this.timeYears = [];
+    this.timeMonths = [];
+    this.timeDays = [];
+    this.curPhotos.map( p => {
+      let year = p.shootDate.getFullYear();
+      let month = p.shootDate.getMonth();
+      let day = p.shootDate.getDate();
+      if (this.timeYears.indexOf(year) === -1){
+        this.timeYears.push(year);
+      }
+      if (this.timeMonths.findIndex( d => d.y === year && d.m === month) === -1){
+        this.timeMonths.push({ y : year, m: month });
+      }
+      if (this.timeDays.findIndex( d => d.y === year && d.m === month  && d.d === day) === -1){
+        this.timeDays.push({ y : year, m: month, d: day });
+      }
+    });
+    this.timeYears.sort((a,b) => {
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    });
+    this.timeMonths.sort((a,b) => {
+      if (a.y * 100 + a.m < b.y * 100 + b.m) return -1;
+      if (a.y * 100 + a.m > b.y * 100 + b.m) return 1;
+      return 0;
+    });
+    this.timeDays.sort((a,b) => {
+      if (a.y * 10000 + a.m * 100 + a.d < b.y * 10000 + b.m * 100 + b.d) return -1;
+      if (a.y * 10000 + a.m * 100 + a.d > b.y * 10000 + b.m * 100 + b.d) return 1;
+      return 0;
+    });
+  }
+
+  filterYears(year){
+    this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year);
+  }
+
+  filterMonth(year, month){
+    this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month);
+  }
+
+  filterDay(year, month, day){
+    this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month && p.shootDate.getDate() === day );
+  }
+
+  cancelFilter(){
+    this.curPhotos = [...this.curCat.photos];
   }
 
 }

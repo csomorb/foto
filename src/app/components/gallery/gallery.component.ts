@@ -26,6 +26,17 @@ export class GalleryComponent implements OnInit {
   selectedAlbumToMovePhoto: number;
   nbSelectedItem: number;
   addMode: boolean;
+  timeMode: boolean;
+  curTimeLevel: string;
+  curYear: number;
+  curMonth: number;
+  curDay: number;
+  prevYear: number;
+  nextYear: number;
+  prevMonth: number;
+  nextMonth: number;
+  prevDay: number;
+  nextDay: number;
 
   constructor(public router: Router, public catService: CategoryService, public apiService: ApiService,public toast: ToastrService, public route: ActivatedRoute) { }
 
@@ -34,6 +45,7 @@ export class GalleryComponent implements OnInit {
     this.deleteMode = false;
     this.triMode = false;
     this.addMode = false;
+    this.timeMode = false;
     this.selectedPhotos = [];
     this.selectedVideos = [];
   }
@@ -52,13 +64,13 @@ export class GalleryComponent implements OnInit {
   }
 
   triPriseDeVueAncienRecent(){
-    this.catService.curCat.photos.sort((a,b) => {
+    this.catService.curPhotos.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
       if (dateA < dateB) return -1;
       if (dateA > dateB) return 1;
       return 0;
     });
-    this.catService.curCat.videos.sort((a,b) => {
+    this.catService.curVideos.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
       if (dateA < dateB) return -1;
       if (dateA > dateB) return 1;
@@ -68,13 +80,13 @@ export class GalleryComponent implements OnInit {
   }
 
   triPriseDeVueRecentAncien(){
-    this.catService.curCat.photos.sort((a,b) => {
+    this.catService.curPhotos.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
       if (dateA < dateB) return 1;
       if (dateA > dateB) return -1;
       return 0;
     });
-    this.catService.curCat.videos.sort((a,b) => {
+    this.catService.curVideos.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
       if (dateA < dateB) return 1;
       if (dateA > dateB) return -1;
@@ -84,13 +96,13 @@ export class GalleryComponent implements OnInit {
   }
 
   triAZ(){
-    this.catService.curCat.photos.sort((a,b) => {
+    this.catService.curPhotos.sort((a,b) => {
       let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
       if (titleA < titleB) return -1;
       if (titleA > titleB) return 1;
       return 0;
     });
-    this.catService.curCat.videos.sort((a,b) => {
+    this.catService.curVideos.sort((a,b) => {
       let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
       if (titleA < titleB) return -1;
       if (titleA > titleB) return 1;
@@ -100,13 +112,13 @@ export class GalleryComponent implements OnInit {
   }
 
   triZA(){
-    this.catService.curCat.photos.sort((a,b) => {
+    this.catService.curPhotos.sort((a,b) => {
       let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
       if (titleA < titleB) return 1;
       if (titleA > titleB) return -1;
       return 0;
     });
-    this.catService.curCat.videos.sort((a,b) => {
+    this.catService.curVideos.sort((a,b) => {
       let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
       if (titleA < titleB) return 1;
       if (titleA > titleB) return -1;
@@ -117,10 +129,10 @@ export class GalleryComponent implements OnInit {
 
   toEditMode(){
     this.editMode = true;
-    this.selectedPhotos = this.catService.curCat.photos;
+    this.selectedPhotos = this.catService.curPhotos;
     this.selectedPhotos.forEach(photo => photo.isSelected = false);
     this.selectedPhotos.forEach(photo => photo.deleteMode = false);
-    this.selectedVideos = this.catService.curCat.videos;
+    this.selectedVideos = this.catService.curVideos;
     this.selectedVideos.forEach(video => video.isSelected = false);
     this.selectedVideos.forEach(video => video.deleteMode = false);
     this.nbSelectedItem = 0;
@@ -237,7 +249,7 @@ export class GalleryComponent implements OnInit {
       this.apiService.putCover(this.catService.curCat, photo, val[0].path).subscribe(
         {
           next: album => {
-            this.catService.curCat.coverPhoto = photo;
+            this.catService.setCover(photo);
             this.toast.success( photo.title,
               'Photo de couverture',
               {timeOut: 3000,});
@@ -257,7 +269,7 @@ export class GalleryComponent implements OnInit {
       this.apiService.putNoCover(this.catService.curCat, val[0].path).subscribe(
       {
         next: album => {
-          this.catService.curCat.coverPhoto = null;
+          this.catService.setCover(null);
           this.toast.success( photo.title,
             'Photo de couverture enlevé',
             {timeOut: 3000,});
@@ -270,6 +282,109 @@ export class GalleryComponent implements OnInit {
         }
       });
     });
+  }
+
+  toTimeMode(){
+    this.timeMode = true;
+    this.curYear = 0;
+    this.curMonth = 0;
+    this.curDay = 0;
+    this.curTimeLevel = "YEAR";
+    this.catService.cancelFilter();
+    this.catService.getYears();
+    this.prevYear = 0;
+    this.nextYear = 0;
+    this.prevMonth = 0;
+    this.nextMonth = 0;
+    this.prevDay = 0;
+    this.nextDay = 0;
+  }
+
+  cancelTimeMode(){
+    this.timeMode = false;
+    this.catService.cancelFilter();
+    if(this.editMode){
+      this.toEditMode();
+    }
+  }
+
+
+  goToYear(year){
+    this.curYear = year;
+    this.catService.filterYears(year);
+    this.curTimeLevel = "MONTH";
+    let indexCurrentYear = this.catService.timeYears.indexOf(year);
+    if (indexCurrentYear > 0){
+      this.prevYear = this.catService.timeYears[indexCurrentYear -1];
+    }
+    else{
+      this.prevYear = 0;
+    }
+    if (indexCurrentYear + 1  < this.catService.timeYears.length){
+      this.nextYear = this.catService.timeYears[indexCurrentYear + 1];
+    }
+    else{
+      this.nextYear = 0;
+    }
+    if(this.editMode){
+      this.toEditMode();
+    }
+  }
+
+  goToMonth(year, month){
+    this.catService.filterMonth(year, month);
+    this.curYear = year;
+    this.curMonth = month;
+    this.curTimeLevel = "DAY";
+
+    let indexCurrentMonth = this.catService.timeMonths.findIndex( d=> d.y === year && d.m === month);
+    if (indexCurrentMonth > 0){
+      this.prevYear = this.catService.timeMonths[indexCurrentMonth -1].y;
+      this.prevMonth = this.catService.timeMonths[indexCurrentMonth -1].m;
+    }
+    else{
+      this.prevYear = 0;
+    }
+    if (indexCurrentMonth + 1 < this.catService.timeMonths.length){
+      this.nextYear = this.catService.timeMonths[indexCurrentMonth + 1].y;
+      this.nextMonth = this.catService.timeMonths[indexCurrentMonth + 1].m;
+    }
+    else{
+      this.nextYear = 0;
+    }
+    if(this.editMode){
+      this.toEditMode();
+    }
+  }
+
+  goToDay(year, month, day){
+    this.catService.filterDay(year, month, day);
+    this.curYear = year;
+    this.curMonth = month;
+    this.curDay = day;
+    this.curTimeLevel = "DAY-SELECT";
+
+    let indexCurrentMonth = this.catService.timeDays.findIndex( d=> d.y === year && d.m === month && d.d === day);
+    console.log(indexCurrentMonth);
+    if (indexCurrentMonth > 0){
+      this.prevYear = this.catService.timeDays[indexCurrentMonth -1].y;
+      this.prevMonth = this.catService.timeDays[indexCurrentMonth -1].m;
+      this.prevDay = this.catService.timeDays[indexCurrentMonth -1].d;
+    }
+    else{
+      this.prevYear = 0;
+    }
+    if (indexCurrentMonth + 1 < this.catService.timeDays.length){
+      this.nextYear = this.catService.timeDays[indexCurrentMonth + 1].y;
+      this.nextMonth = this.catService.timeDays[indexCurrentMonth + 1].m;
+      this.nextDay = this.catService.timeDays[indexCurrentMonth + 1].d;
+    }
+    else{
+      this.nextYear = 0;
+    }
+    if(this.editMode){
+      this.toEditMode();
+    }
   }
 
 }

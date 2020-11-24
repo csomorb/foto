@@ -179,7 +179,7 @@ export class PhotoComponent implements OnInit {
           this.toast.success(photoTitle,
             'Photo supprimé',
             {timeOut: 3000,});
-          if (this.catService.curCat.photos.length === 0){
+          if (this.catService.curPhotos.length === 0){
             this.returnGalery();
           }
         },

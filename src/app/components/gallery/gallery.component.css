@@ -267,3 +267,36 @@ h2{
   display: flex;
   flex-wrap: wrap;
 }
+
+.times-container{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px;
+}
+
+.time-container{
+  padding: 7px;
+    cursor: pointer;
+    border: 1px solid white;
+    margin: 4px;
+}
+
+.time-line{
+  margin-left: 20px;
+  flex-grow: 2;
+}
+
+.time-line span{
+  cursor: pointer;
+}
+
+.move-left-date{
+  margin-right: auto;
+  cursor: pointer;
+}
+
+.move-right-date{
+  margin-left: auto;
+  cursor: pointer;
+}

@@ -20,9 +20,14 @@
     </div>
     <div (click)="checkUncheckAll()">Select/ Unselect All</div>
   </div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='YEAR'"><span (clicl)="toTimeMode()">Date de création</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='MONTH'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span></div>
+  <div class="time-line" *ngIf="timeMode && (curTimeLevel==='DAY' || curTimeLevel==='DAY-SELECT')"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
   <div class="nb-selected" *ngIf="editMode">
-    {{nbSelectedItem}} / {{catService.curCat.photos.length}}
+    {{nbSelectedItem}} / {{catService.curPhotos.length}}
   </div>
+  <div class="btn-i btn-calendar" (click)="toTimeMode()" *ngIf="!timeMode"></div>
+  <div class="btn-i btn-folder" (click)="cancelTimeMode()" *ngIf="timeMode"></div>
   <div class="btn-i btn-sort" (click)="toTriMode()" *ngIf="!triMode"></div>
   <div class="btn-i btn-cancel" (click)="cancelTriMode()" *ngIf="triMode"></div>
   <div class="btn-i btn-add-picture" (click)="addPhoto()"></div>
@@ -55,8 +60,42 @@
     </div>
   </div>
 
+  <div *ngIf="timeMode" class="times-container">
+    <ng-container *ngIf="curTimeLevel === 'YEAR'">
+      <div *ngFor="let y of catService.timeYears" class="time-container" (click)="goToYear(y)">{{y}}</div>
+    </ng-container>
+    <ng-container *ngIf="curTimeLevel === 'MONTH'">
+      <div *ngIf="prevYear" (click)="goToYear(prevYear)" class="move-left-date">&lt;&lt; {{prevYear}}</div>
+      <div *ngIf="!prevYear" class="move-left-date"></div>
+      <ng-container *ngFor="let d of catService.timeMonths" >
+        <div *ngIf="d.y === curYear" class="time-container" (click)="goToMonth(d.y,d.m)">{{d.m | month}} </div>
+      </ng-container>
+      <div *ngIf="nextYear" (click)="goToYear(nextYear)" class="move-right-date"> {{nextYear}} &gt;&gt;</div>
+      <div *ngIf="!nextYear" class="move-right-date"></div>
+    </ng-container>
+    <ng-container *ngIf="curTimeLevel === 'DAY'">
+      <div *ngIf="prevYear" (click)="goToMonth(prevYear,prevMonth)" class="move-left-date">&lt;&lt; {{prevYear}} {{prevMonth | month}}</div>
+      <div *ngIf="!prevYear" class="move-left-date"></div>
+      <ng-container *ngFor="let d of catService.timeDays" >
+        <div *ngIf="d.y === curYear && d.m === curMonth" class="time-container" (click)="goToDay(d.y,d.m,d.d)">{{d.d}} </div>
+      </ng-container>
+      <div *ngIf="nextYear" (click)="goToMonth(nextYear, nextMonth)" class="move-right-date"> {{nextYear}} {{nextMonth | month}} &gt;&gt;</div>
+      <div *ngIf="!nextYear" class="move-right-date"></div>
+    </ng-container>
+    <ng-container *ngIf="curTimeLevel === 'DAY-SELECT'">
+      <div *ngIf="prevYear" (click)="goToDay(prevYear,prevMonth,prevDay)" class="move-left-date">&lt;&lt; {{prevYear}} {{prevMonth | month}} {{prevDay}} </div>
+      <div *ngIf="!prevYear" class="move-left-date"></div>
+      <ng-container *ngFor="let d of catService.timeDays" >
+        <div *ngIf="d.y === curYear && d.m === curMonth" class="time-container" (click)="goToDay(d.y,d.m,d.d)">{{d.d}} </div>
+      </ng-container>
+      <div *ngIf="nextYear" (click)="goToDay(nextYear, nextMonth, nextDay)" class="move-right-date"> {{nextYear}} {{nextMonth | month}} {{nextDay}} &gt;&gt;</div>
+      <div *ngIf="!nextYear" class="move-right-date"></div>
+    </ng-container>
+  </div>
+
+
   <div class="photo-container" *ngIf="!editMode">
-    <div *ngFor="let photo of catService?.curCat?.photos" (click)="loadPhoto(photo)">
+    <div *ngFor="let photo of catService?.curPhotos" (click)="loadPhoto(photo)">
         <img [src]="photoBaseUrl + photo.src640"/>
         <div class="photo-title">{{photo.title}}</div>
     </div>

@@ -5,7 +5,6 @@ import { GalleryComponent } from 'src/app/components/gallery/gallery.component';
 import { AlbumModel } from 'src/app/models/album.model';
 import { ApiService } from 'src/app/services/api.service';
 import { CategoryService } from 'src/app/services/category.service';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-albumgallery',
@@ -23,6 +22,7 @@ export class AlbumgalleryComponent extends GalleryComponent implements OnInit  {
 
   ngOnInit(): void {
     super.ngOnInit();
+
   }
 
   toEditMode(){
@@ -80,7 +80,7 @@ export class AlbumgalleryComponent extends GalleryComponent implements OnInit  {
     this.apiService.updateAlbum(this.album).subscribe({
         next: album => {
           this.editMode = false;
-          this.catService.curCat = { ...album, ...this.catService.curCat };
+          this.catService.updateCategory(album);
           this.toast.success('L\'album ' + album.title + ' a été mise à jour',
             'Mise à jour',
             {timeOut: 3000,});

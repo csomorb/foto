@@ -25,6 +25,7 @@ import { PeoplegalleryComponent } from './modules/application/people/peoplegalle
 import { TagComponent } from './modules/application/tag/tag.component';
 import { TaggalleryComponent } from './modules/application/tag/taggallery/taggallery.component';
 import { SelectpeopleComponent } from './components/selectpeople/selectpeople.component';
+import { MonthPipe } from './pipes/month.pipe';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { SelectpeopleComponent } from './components/selectpeople/selectpeople.co
     TagComponent,
     TaggalleryComponent,
     SelectpeopleComponent,
+    MonthPipe,
   ],
   imports: [
     BrowserModule,
