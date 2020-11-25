@@ -246,3 +246,11 @@
 
   }
 }
+
+.edit-btn-container{
+  display: flex;
+}
+
+.edit-btn-container > div{
+  margin-top: 5px;
+}

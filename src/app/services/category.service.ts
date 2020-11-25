@@ -52,8 +52,10 @@ export class CategoryService {
     this.parentList = [];
     this.apiService.getRootsPeoples().subscribe(peoples => { console.log(peoples);
       this.curCat.listPeople = peoples;
+
     });
     this.curCat.videos = [];
+    this.curCat.photos = [];
     this.curPhotos = [...this.curCat.photos];
     this.curVideos = [...this.curCat.videos];
   }
@@ -74,11 +76,12 @@ export class CategoryService {
       this.curCat.listAlbum = [];
       this.curCat.faces.forEach(f =>{
         this.curCat.photos.push(f.photo);
-        f.photo.albums.forEach(al => {
-          if (this.curCat.listAlbum.findIndex(a => a.id === al.id) === -1){
-            this.curCat.listAlbum.push(al);
-          }
-        });
+        // f.photo.albums.forEach(al => {
+        //   // utile???? -> non je ne crois pas
+        //   if (this.curCat.listAlbum.findIndex(a => a.id === al.id) === -1){
+        //     this.curCat.listAlbum.push(al);
+        //   }
+        // });
       });
 
       this.curCat.listPeople = [];
@@ -88,17 +91,16 @@ export class CategoryService {
         p.faces.forEach(f => {
           f.show = false;
           p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-          if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
-            this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
-          }
+          // if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
+          //   this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
+          // }
         });
       });
-
-      this._loadPhotoVideoAfterInit();
       this.parentList = [];
       this.curCat.videos = [];
       this.curPhotos = [...this.curCat.photos];
       this.curVideos = [...this.curCat.videos];
+      this._loadPhotoVideoAfterInit();
     });
 
   }
@@ -113,8 +115,6 @@ export class CategoryService {
     }
     this.apiService.getAlbumWithPhotos(id).subscribe(album => {
       this.curCat = album;
-      this._loadPhotoVideoAfterInit();
-
       this.curCat.listPeople = [];
       this.curCat.photos.forEach(p =>{
         p.shootDate = new Date(p.shootDate);
@@ -143,6 +143,7 @@ export class CategoryService {
       this.curCat.videos = [];
       this.curPhotos = [...this.curCat.photos];
       this.curVideos = [...this.curCat.videos];
+      this._loadPhotoVideoAfterInit();
     });
   }
 

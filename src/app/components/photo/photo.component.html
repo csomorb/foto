@@ -83,7 +83,11 @@
             <owl-date-time #dt1 [startAt]="photo.shootDate"></owl-date-time>
           </div>
         </div>
-        <div *ngIf="editMode" (click)="updatePhoto()" class="btn-i btn-save btn-align-right"></div>
+        <div *ngIf="editMode" class="edit-btn-container">
+          <div class="btn-i btn-rotate-left" (click)="rotateLeft()"></div>
+          <div class="btn-i btn-rotate-right" (click)="rotateRight()"></div>
+          <div (click)="updatePhoto()" class="btn-i btn-save btn-align-right"></div>
+        </div>
       </form>
       <div>
         <span class="prop-name">Ajouté le</span><br/>

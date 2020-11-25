@@ -69,6 +69,14 @@ a{
   background-image: url('/assets/icon/folder.svg');
 }
 
+.btn-rotate-left{
+  background-image: url('/assets/icon/rotate-left.svg');
+}
+
+.btn-rotate-right{
+  background-image: url('/assets/icon/rotate-right.svg');
+}
+
 .btn {
   background: linear-gradient(180deg, rgb(95 95 95 / 75%) 0%, rgb(60 60 66 / 75%) 100%);
   border-radius: 0;

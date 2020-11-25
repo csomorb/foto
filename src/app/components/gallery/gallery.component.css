@@ -300,3 +300,18 @@ h2{
   margin-left: auto;
   cursor: pointer;
 }
+
+.action-container{
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px;
+}
+
+.move-photo{
+  display: flex;
+  flex-direction: column;
+  width: 350px;
+  margin-right: 20px;
+  border: 1px solid #ffffff2b;
+  padding: 10px;
+}

@@ -1,7 +1,7 @@
 <form (ngSubmit)="addAlbum(albumForm.value)" #albumForm="ngForm" class="flex-column">
   <div class="cadre">
     <div class="text-cadre">
-      <p *ngIf="!modeAdd">Sélectionner un album: </p>
+      <!-- <p *ngIf="!modeAdd">Sélectionner un album: </p> -->
       <p *ngIf="modeAdd">Sélectionner l'album parent: </p>
     </div>
     <div class="cadre-content">

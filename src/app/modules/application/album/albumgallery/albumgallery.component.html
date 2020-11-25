@@ -22,7 +22,8 @@
   </div>
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='YEAR'"><span (clicl)="toTimeMode()">Date de création</span></div>
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='MONTH'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span></div>
-  <div class="time-line" *ngIf="timeMode && (curTimeLevel==='DAY' || curTimeLevel==='DAY-SELECT')"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY-SELECT'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span> / {{curDay}}</div>
   <div class="nb-selected" *ngIf="editMode">
     {{nbSelectedItem}} / {{catService.curPhotos.length}}
   </div>
@@ -40,6 +41,13 @@
   <div  class="delete-conf-button">
     <div class="btn-i btn-trash" (click)="deleteAlbum()"></div>
     <div class="btn-i btn-cancel" (click)="cancelDeleteMode()"></div>
+  </div>
+</div>
+<div class="delete-confirmation" *ngIf="deleteMultipleMode">
+  <div>Supprimer les {{nbSelectedItem}} photos ?</div>
+  <div  class="delete-conf-button">
+    <div class="btn-i btn-trash" (click)="deleteMultiple()"></div>
+    <div class="btn-i btn-cancel" (click)="cancelDeletMultipleMode()"></div>
   </div>
 </div>
 <div *ngIf="triMode" class="btn-group tri">
@@ -101,8 +109,6 @@
     </div>
   </div>
 
-
-
   <div class="photo-edit-container" *ngIf="editMode">
 
     <div *ngFor="let photo of selectedPhotos" class="edit-container" [ngClass]="{'photo-selected' : photo.isSelected}" >
@@ -143,18 +149,26 @@
     </div>
   </div>
 
-  <div *ngIf="editMode">Actions
-    <div>
+  <div *ngIf="editMode && nbSelectedItem" class="action-container">
+    <div class="btn-i btn-rotate-left" (click)="rotateLeft()"></div>
+    <div class="btn-i btn-rotate-right" (click)="rotateRight()"></div>
+    <div class="btn-i btn-trash" (click)="toDeletMultipleMode()"></div>
+    <div class="move-photo">
       Déplacer vers l'album:
       <app-selectalbum (selectedAlbum)="setSelectedAlbumToMove($event)" exeptIdAlbum="{{catService?.curCat?.id}}"></app-selectalbum>
-      <div class="btn">Déplacer</div>
+      <div class="btn  btn-align-right" (click)="moveToAlbum()">Déplacer</div>
+    </div>
+    <div class="move-photo">
+      Associer à l'album:
+      <app-selectalbum (selectedAlbum)="setSelectedAlbumToCopy($event)" exeptIdAlbum="{{catService?.curCat?.id}}"></app-selectalbum>
+      <div class="btn btn-align-right" (click)="copyToAlbum()">Associer</div>
     </div>
   </div>
 
-  <div *ngIf="catService?.curCat?.listPeople">
+  <div *ngIf="catService?.curCat?.id && catService?.curPhotos">
     Liste des personnes présentes:
     <div class="people-list-container">
-      <div *ngFor="let p of catService.curCat.listPeople" (click)="gotToPeople(p.id)" class="people-container">
+      <div *ngFor="let p of catService?.curPhotos | finduniqpeople" (click)="gotToPeople(p.id)" class="people-container">
         <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + p?.coverPhoto?.src150 + ')'}"></div>
         <div class="people-name">{{p.title}}</div>
       </div>

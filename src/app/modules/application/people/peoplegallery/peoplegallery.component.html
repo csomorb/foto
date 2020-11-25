@@ -22,7 +22,8 @@
   </div>
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='YEAR'"><span (clicl)="toTimeMode()">Date de création</span></div>
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='MONTH'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span></div>
-  <div class="time-line" *ngIf="timeMode && (curTimeLevel==='DAY' || curTimeLevel==='DAY-SELECT')"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY-SELECT'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span> / {{curDay}}</div>
   <div class="nb-selected" *ngIf="editMode">
     {{nbSelectedItem}} / {{catService.curCat.photos.length}}
   </div>
@@ -61,6 +62,13 @@
     <div class="btn-i btn-cancel" (click)="cancelDeleteMode()"></div>
   </div>
 </div>
+<div class="delete-confirmation" *ngIf="deleteMultipleMode">
+  <div>Supprimer les {{nbSelectedItem}} photos ?</div>
+  <div  class="delete-conf-button">
+    <div class="btn-i btn-trash" (click)="deleteMultiple()"></div>
+    <div class="btn-i btn-cancel" (click)="cancelDeletMultipleMode()"></div>
+  </div>
+</div>
 <div *ngIf="triMode" class="btn-group tri">
   <div (click)="triPriseDeVueAncienRecent()" class="btn">Tri prise de vu ancien -> récent</div>
   <div (click)="triPriseDeVueRecentAncien()" class="btn">Tri prise de vu récent -> ancien</div>
@@ -68,8 +76,9 @@
   <div (click)="triZA()" class="btn">Tri Z -> A</div>
 </div>
 
-<div class="album-container">
+<div class="album-container" *ngIf="!catService?.curCat?.id">
   <div *ngFor="let people of catService?.curCat?.listPeople" class="ss-album" (click)="goToCategory(people.id)">
+    <div class="nb-face">{{people.faces.length}}</div>
     <img *ngIf="people.coverPhoto" [src]="photoBaseUrl + people.coverPhoto?.src150" />
     <div *ngIf="!people.coverPhoto" class="empty-album"></div>
     <div class="album-title">{{people.title}}</div>
@@ -159,20 +168,31 @@
     </div>
   </div>
 
-  <div *ngIf="editMode">Actions
-    <div>
+  <div *ngIf="editMode && nbSelectedItem" class="action-container">
+    <div class="btn-i btn-rotate-left" (click)="rotateLeft()"></div>
+    <div class="btn-i btn-rotate-right" (click)="rotateRight()"></div>
+    <div class="btn-i btn-trash" (click)="toDeletMultipleMode()"></div>
+    <div class="move-photo">
       Déplacer vers l'album:
       <app-selectalbum (selectedAlbum)="setSelectedAlbumToMove($event)" exeptIdAlbum="{{catService?.curCat?.id}}"></app-selectalbum>
-      <div class="btn">Déplacer</div>
+      <div class="btn  btn-align-right" (click)="moveToAlbum()">Déplacer</div>
+    </div>
+    <div class="move-photo">
+      Associer à l'album:
+      <app-selectalbum (selectedAlbum)="setSelectedAlbumToCopy($event)" exeptIdAlbum="{{catService?.curCat?.id}}"></app-selectalbum>
+      <div class="btn btn-align-right" (click)="copyToAlbum()">Associer</div>
     </div>
   </div>
 
-    <!--Affichage des sous albums-->
-    Personne présente dans :
-    <div class="album-container">
-      <div *ngFor="let ssAlbum of catService?.curCat?.listAlbum" class="ss-album" (click)="goToCategory(ssAlbum.id)">
+  <!--Affichage des sous albums-->
+  <div *ngIf="catService?.curCat?.id">
+    Personne présente dans les albums :
+    <div class="album-container" >
+      <div *ngFor="let ssAlbum of catService?.curPhotos | finduniqalbum" class="ss-album" (click)="goToAlbum(ssAlbum.id)">
         <img *ngIf="ssAlbum.coverPhoto" [src]="photoBaseUrl + ssAlbum.coverPhoto?.src150" />
         <div *ngIf="!ssAlbum.coverPhoto" class="empty-album"></div>
         <div class="album-title">{{ssAlbum.title}}</div>
       </div>
     </div>
+  </div>
+

@@ -26,6 +26,9 @@ import { TagComponent } from './modules/application/tag/tag.component';
 import { TaggalleryComponent } from './modules/application/tag/taggallery/taggallery.component';
 import { SelectpeopleComponent } from './components/selectpeople/selectpeople.component';
 import { MonthPipe } from './pipes/month.pipe';
+import { FinduniqalbumPipe } from './pipes/finduniqalbum.pipe';
+import { FinduniqpeoplePipe } from './pipes/finduniqpeople.pipe';
+import { FinduniqtagPipe } from './pipes/finduniqtag.pipe';
 
 @NgModule({
   declarations: [
@@ -48,6 +51,9 @@ import { MonthPipe } from './pipes/month.pipe';
     TaggalleryComponent,
     SelectpeopleComponent,
     MonthPipe,
+    FinduniqalbumPipe,
+    FinduniqpeoplePipe,
+    FinduniqtagPipe,
   ],
   imports: [
     BrowserModule,

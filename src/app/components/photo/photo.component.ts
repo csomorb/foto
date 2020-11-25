@@ -165,6 +165,56 @@ export class PhotoComponent implements OnInit {
     this.tagMode = false;
   }
 
+  rotateLeft(){
+    this.apiService.rotateLeft(this.catService.curPhoto).subscribe(
+      {
+        next: data => {
+          data.srcOrig+="?" + new Date().getTime();
+          data.src150+="?" + new Date().getTime();
+          data.src320+="?" + new Date().getTime();
+          data.src640+="?" + new Date().getTime();
+          data.src1280+="?" + new Date().getTime();
+          data.src1920+="?" + new Date().getTime();
+          data.shootDate = this.catService.curPhoto.shootDate;
+          this.catService.updatePhoto(data);
+          this.toast.success(data.title,
+            'Enregistré',
+            {timeOut: 3000,});
+        },
+        error: error => {
+          this.toast.error(this.catService.curPhoto.title,
+          'Echec de la modification',
+          {timeOut: 4000,});
+          console.error('There was an error in rotation!', error);
+        }
+    });
+  }
+
+  rotateRight(){
+    this.apiService.rotateRight(this.catService.curPhoto).subscribe(
+      {
+        next: data => {
+          data.srcOrig+="?" + new Date().getTime();
+          data.src150+="?" + new Date().getTime();
+          data.src320+="?" + new Date().getTime();
+          data.src640+="?" + new Date().getTime();
+          data.src1280+="?" + new Date().getTime();
+          data.src1920+="?" + new Date().getTime();
+          data.shootDate = this.catService.curPhoto.shootDate;
+          this.catService.updatePhoto(data);
+          this.toast.success(data.title,
+            'Enregistré',
+            {timeOut: 3000,});
+        },
+        error: error => {
+          this.toast.error(this.catService.curPhoto.title,
+          'Echec de la modification',
+          {timeOut: 4000,});
+          console.error('There was an error in rotation!', error);
+        }
+    });
+  }
+
   deletePhoto(){
     this.apiService.deletePhoto(this.catService.curPhoto).subscribe(
       {

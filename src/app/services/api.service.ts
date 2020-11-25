@@ -294,4 +294,38 @@ export class ApiService {
     return this.http.get<Array<TagModel>>(`${environment.apiUrl}/tags`);
   }
 
+  /**
+   * Rotation gauche
+   * @param photo
+   */
+  rotateLeft(photo: PhotoModel){
+    return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${photo.idPhoto}/rotate-left`, {});
+  }
+
+  /**
+   * Rotation droite
+   * @param photo
+   */
+  rotateRight(photo: PhotoModel){
+    return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${photo.idPhoto}/rotate-right`, {});
+  }
+
+  /**
+   * Déplace la photo dans l'album
+   * @param idPhoto
+   * @param idAlbum
+   */
+  putMovePhotoToAlbum(idPhoto:number, idAlbum:number){
+    return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${idPhoto}/move-to-album/${idAlbum}`, {});
+  }
+
+  /**
+   * Copie la photo dans l'album
+   * @param idPhoto
+   * @param idAlbum
+   */
+  putCopyPhotoToAlbum(idPhoto:number, idAlbum:number){
+    return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${idPhoto}/copy-to-album/${idAlbum}`, {});
+  }
+
 }

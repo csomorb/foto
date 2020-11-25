@@ -1,6 +1,8 @@
+<div class="select-album-container">
+  Sélectionnez l'album :
+  <app-selectalbum (selectedAlbum)="setSelectedAlbum($event)" defaultSelectedIdALbum="{{defaultSelectedIdAlbum}}"></app-selectalbum>
+</div>
 
-
-<app-selectalbum (selectedAlbum)="setSelectedAlbum($event)" defaultSelectedIdALbum="{{defaultSelectedIdAlbum}}"></app-selectalbum>
 
 
 <div class="dropzone files-container"

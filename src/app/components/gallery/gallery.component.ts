@@ -4,7 +4,6 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryService } from 'src/app/services/category.service';
 import { ApiService } from 'src/app/services/api.service';
-import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { first } from 'rxjs/operators'
 
@@ -21,9 +20,11 @@ export class GalleryComponent implements OnInit {
   editMode: boolean;
   deleteMode: boolean;
   triMode: boolean;
+  deleteMultipleMode: boolean;
   selectedPhotos: Array<any>;
   selectedVideos: Array<any>;
   selectedAlbumToMovePhoto: number;
+  selectedAlbumToCopyPhoto: number;
   nbSelectedItem: number;
   addMode: boolean;
   timeMode: boolean;
@@ -58,6 +59,14 @@ export class GalleryComponent implements OnInit {
   goToCategory(id){
     this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+id));
   }
+
+  goToAlbum(id){
+     this.router.navigateByUrl('/albums/'+id);
+  }
+
+  goToTag(id){
+    this.router.navigateByUrl('/tags/'+id);
+ }
 
   gotToPeople(id){
     this.router.navigateByUrl('/peoples/'+id);
@@ -162,6 +171,14 @@ export class GalleryComponent implements OnInit {
     this.triMode = false;
   }
 
+  toDeletMultipleMode(){
+    this.deleteMultipleMode = true;
+  }
+
+  cancelDeletMultipleMode(){
+    this.deleteMultipleMode = false;
+  }
+
   cancelDeleteMode(){
     this.deleteMode = false;
   }
@@ -173,8 +190,9 @@ export class GalleryComponent implements OnInit {
     for (var i = 0; i < this.selectedVideos.length; i++) {
       this.selectedVideos[i].isSelected = this.masterSelected;
     }
-    this.nbSelectedItem = this.selectedPhotos.reduce((a, photo)=> {return photo.isSelected?a+1:a;} ,0);
-    this.nbSelectedItem = this.selectedVideos.reduce((a, video)=> {return video.isSelected?a+1:a;} ,0);
+    this.nbSelectedItem = 0;
+    this.nbSelectedItem += this.selectedPhotos.reduce((a, photo)=> {return photo.isSelected?a+1:a;} ,0);
+    this.nbSelectedItem += this.selectedVideos.reduce((a, video)=> {return video.isSelected?a+1:a;} ,0);
   }
 
   isAllSelected() {
@@ -183,8 +201,9 @@ export class GalleryComponent implements OnInit {
     }) && this.selectedVideos.every(function(item:any) {
       return item.isSelected == true;
     });
-    this.nbSelectedItem = this.selectedPhotos.reduce((a, photo)=> {return photo.isSelected?a+1:a;} ,0);
-    this.nbSelectedItem = this.selectedVideos.reduce((a, video)=> {return video.isSelected?a+1:a;} ,0);
+    this.nbSelectedItem = 0;
+    this.nbSelectedItem += this.selectedPhotos.reduce((a, photo)=> {return photo.isSelected?a+1:a;} ,0);
+    this.nbSelectedItem += this.selectedVideos.reduce((a, video)=> {return video.isSelected?a+1:a;} ,0);
   }
 
   deletePhoto(photo){
@@ -215,6 +234,14 @@ export class GalleryComponent implements OnInit {
     });
   }
 
+  deleteMultiple(){
+    this.selectedPhotos.forEach( p =>{
+      if(p.isSelected)
+        this.deleteConfPhoto(p);
+    });
+    this.cancelDeletMultipleMode();
+  }
+
   updatePhotoDate(photo, dateChanged){
     if(dateChanged){
       this.updatePhoto(photo);
@@ -242,6 +269,10 @@ export class GalleryComponent implements OnInit {
 
   setSelectedAlbumToMove(idAlbum){
     this.selectedAlbumToMovePhoto = idAlbum;
+  }
+
+  setSelectedAlbumToCopy(idAlbum){
+    this.selectedAlbumToCopyPhoto = idAlbum;
   }
 
   setCover(photo){
@@ -365,7 +396,6 @@ export class GalleryComponent implements OnInit {
     this.curTimeLevel = "DAY-SELECT";
 
     let indexCurrentMonth = this.catService.timeDays.findIndex( d=> d.y === year && d.m === month && d.d === day);
-    console.log(indexCurrentMonth);
     if (indexCurrentMonth > 0){
       this.prevYear = this.catService.timeDays[indexCurrentMonth -1].y;
       this.prevMonth = this.catService.timeDays[indexCurrentMonth -1].m;
@@ -385,6 +415,108 @@ export class GalleryComponent implements OnInit {
     if(this.editMode){
       this.toEditMode();
     }
+  }
+
+  rotateLeft(){
+    this.selectedPhotos.forEach( p =>{
+      if(p.isSelected)
+      this.apiService.rotateLeft(p).subscribe(
+        {
+          next: data => {
+            data.srcOrig+="?" + new Date().getTime();
+            data.src150+="?" + new Date().getTime();
+            data.src320+="?" + new Date().getTime();
+            data.src640+="?" + new Date().getTime();
+            data.src1280+="?" + new Date().getTime();
+            data.src1920+="?" + new Date().getTime();
+            data.shootDate = p.shootDate;
+            this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
+            this.catService.updatePhoto(data);
+            this.toast.success(data.title,
+              'Enregistré',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error(p.title,
+            'Echec de la modification',
+            {timeOut: 4000,});
+            console.error('There was an error in rotation!', error);
+          }
+      });
+    });
+  }
+
+  rotateRight(){
+    this.selectedPhotos.forEach( p =>{
+      if(p.isSelected)
+      this.apiService.rotateRight(p).subscribe(
+        {
+          next: data => {
+            data.srcOrig+="?" + new Date().getTime();
+            data.src150+="?" + new Date().getTime();
+            data.src320+="?" + new Date().getTime();
+            data.src640+="?" + new Date().getTime();
+            data.src1280+="?" + new Date().getTime();
+            data.src1920+="?" + new Date().getTime();
+            data.shootDate = p.shootDate;
+            this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
+            this.catService.updatePhoto(data);
+            this.toast.success(data.title,
+              'Enregistré',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error(p.title,
+            'Echec de la modification',
+            {timeOut: 4000,});
+            console.error('There was an error in rotation!', error);
+          }
+      });
+    });
+  }
+
+  moveToAlbum(){
+    this.selectedPhotos.forEach( p =>{
+      if(p.isSelected)
+      this.apiService.putMovePhotoToAlbum(p.idPhoto, this.selectedAlbumToMovePhoto).subscribe(
+        {
+          next: data => {
+            this.catService.deletePhoto(data.idPhoto);
+            this.selectedPhotos.splice(this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto),1);
+            this.toast.success(data.title,
+              'Déplacé',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error(p.title,
+            'Echec du déplacement',
+            {timeOut: 4000,});
+            console.error('There was an error in moving photo!', error);
+          }
+      });
+    });
+  }
+
+  copyToAlbum(){
+    this.selectedPhotos.forEach( p =>{
+      if(p.isSelected)
+      this.apiService.putCopyPhotoToAlbum(p.idPhoto, this.selectedAlbumToCopyPhoto).subscribe(
+        {
+          next: data => {
+            data.shootDate = p.shootDate;
+            this.catService.updatePhoto(data);
+            this.toast.success(data.title,
+              'Copié',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error(p.title,
+            'Echec de la copie',
+            {timeOut: 4000,});
+            console.error('There was an error in moving photo!', error);
+          }
+      });
+    });
   }
 
 }
