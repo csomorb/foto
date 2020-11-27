@@ -49,6 +49,37 @@ export class GalleryComponent implements OnInit {
     this.timeMode = false;
     this.selectedPhotos = [];
     this.selectedVideos = [];
+
+    this.catService.selectedCoordinates.subscribe( coord => {
+      console.log(coord);
+      if (this.editMode && this.nbSelectedItem){
+        this.selectedPhotos.forEach( p =>{
+          if(p.isSelected){
+            p.long = coord[0];
+            p.lat = coord[1];
+            this.apiService.putPhoto(p).subscribe(
+              {
+                next: data => {
+                  data.shootDate = p.shootDate;
+                  this.catService.geoTagMode = false;
+                  this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
+                  this.catService.updatePhoto(data);
+                  this.toast.success(data.title,
+                    'Enregistré',
+                    {timeOut: 3000,});
+                },
+                error: error => {
+                  this.toast.error(p.title,
+                  'Echec de la modification',
+                  {timeOut: 4000,});
+                  console.error('There was an error in rotation!', error);
+                }
+            });
+          }
+        });
+      }
+    });
+
   }
 
   loadPhoto(photo: PhotoModel){
@@ -149,6 +180,7 @@ export class GalleryComponent implements OnInit {
 
   cancelEditMode(){
     this.editMode = false;
+    this.cancelGeoMode();
   }
 
   toDeleteMode(){
@@ -517,6 +549,14 @@ export class GalleryComponent implements OnInit {
           }
       });
     });
+  }
+
+  cancelGeoMode(){
+    this.catService.geoTagMode = false;
+  }
+
+  toGeoMode(){
+    this.catService.geoTagMode = true;
   }
 
 }

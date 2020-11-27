@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { AlbumModel } from '../models/album.model';
 import { CategoryModel } from '../models/category.model';
 import { PeopleModel } from '../models/people.model';
@@ -6,6 +7,8 @@ import { PhotoModel } from '../models/photo.model';
 import { TagModel } from '../models/tag.model';
 import { VideoModel } from '../models/video.model';
 import { ApiService } from './api.service';
+import { MarkerModel } from '../models/marker.model';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -37,9 +40,16 @@ export class CategoryService {
   peopleList: Array<PeopleModel>;
   tagList: Array<TagModel>;
 
+  markersSource : BehaviorSubject<Array<MarkerModel>> = new BehaviorSubject([]);
+  markers = this.markersSource.asObservable();
+  selectedCoordinates = new Subject();
+  geoTagMode: boolean;
+
+
   constructor(private apiService: ApiService) {
     this.idPhotoToLoad = 0;
     this.idVideoToLoad = 0;
+    this.geoTagMode = false;
     this.apiService.getPeoples().subscribe( p => this.peopleList = p);
     this.apiService.getTags().subscribe( t => this.tagList = t);
   }
@@ -100,6 +110,7 @@ export class CategoryService {
       this.curCat.videos = [];
       this.curPhotos = [...this.curCat.photos];
       this.curVideos = [...this.curCat.videos];
+      this.updateMarkerFromCurPhotos();
       this._loadPhotoVideoAfterInit();
     });
 
@@ -143,6 +154,7 @@ export class CategoryService {
       this.curCat.videos = [];
       this.curPhotos = [...this.curCat.photos];
       this.curVideos = [...this.curCat.videos];
+      this.updateMarkerFromCurPhotos();
       this._loadPhotoVideoAfterInit();
     });
   }
@@ -223,7 +235,13 @@ export class CategoryService {
    * @param photo Photo avec les champs mise à jour
    */
   updatePhoto(updatedPhoto: PhotoModel){
-    this.curPhoto = updatedPhoto;
+    if (this.curPhoto){
+      this.curPhoto = updatedPhoto;
+      this.updateMarkerFromCurPhoto();
+    }
+    else{
+      this.updateMarkerFromCurPhotos()
+    }
     this.curCat.photos.forEach( photo => {
       if (photo.idPhoto === updatedPhoto.idPhoto){
         photo = updatedPhoto;
@@ -260,6 +278,7 @@ export class CategoryService {
   deletePhoto(idPhotoToDelete){
     this.curCat.photos.splice(this.curCat.photos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
     this.curPhotos.splice(this.curPhotos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
+    this.updateMarkerFromCurPhotos()
   }
 
   /**
@@ -372,6 +391,8 @@ export class CategoryService {
     this.curVideo = null;
     this.nextVideo = null;
     this.prevVideo = null;
+    this.geoTagMode = false;
+    this.updateMarkerFromCurPhotos();
   }
 
   private _getNextPrevPhoto(photo: PhotoModel){
@@ -388,6 +409,7 @@ export class CategoryService {
     else{
       this.prevPhoto = null;
     }
+    this.updateMarkerFromCurPhoto();
   }
 
   private _getNextPrevVideo(video: VideoModel){
@@ -426,6 +448,7 @@ export class CategoryService {
       this.curPhoto = this.curPhotos.find(photo => photo.idPhoto === this.idPhotoToLoad);
       this._getNextPrevPhoto(this.curPhoto);
       this.idPhotoToLoad = 0;
+      this.updateMarkerFromCurPhoto();
     }
     if (this.idVideoToLoad){
       this.curVideo = this.curVideos.find(video => video.idVideo === this.idVideoToLoad);
@@ -471,18 +494,51 @@ export class CategoryService {
 
   filterYears(year){
     this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year);
+    this.updateMarkerFromCurPhotos();
   }
 
   filterMonth(year, month){
     this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month);
+    this.updateMarkerFromCurPhotos();
   }
 
   filterDay(year, month, day){
     this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month && p.shootDate.getDate() === day );
+    this.updateMarkerFromCurPhotos();
   }
 
   cancelFilter(){
     this.curPhotos = [...this.curCat.photos];
+    this.updateMarkerFromCurPhotos();
+  }
+
+  updateMarkers(markers: Array<MarkerModel>){
+    this.markersSource.next(markers);
+  }
+
+  addMarker(marker: MarkerModel){
+    const updatedValue = [...this.markersSource.value, marker];
+    this.markersSource.next(updatedValue);
+  }
+
+  updateMarkerFromCurPhotos(){
+    let markers: Array<MarkerModel> = [];
+    this.curPhotos.forEach( p => {
+      if(p.lat){
+        markers.push({idPhoto: p.idPhoto, lat: p.lat, long: p.long, src320: p.src320, title: p.title} as MarkerModel);
+      }
+    });
+    this.updateMarkers(markers);
+  }
+
+  updateMarkerFromCurPhoto(){
+    if (this.curPhoto.lat){
+      this.updateMarkers([{idPhoto: this.curPhoto.idPhoto, lat: this.curPhoto.lat, long: this.curPhoto.long, src320: this.curPhoto.src320, title: this.curPhoto.title} as MarkerModel]);
+    }
+    else{
+      this.updateMarkers([]);
+    }
+
   }
 
 }

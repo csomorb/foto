@@ -73,6 +73,10 @@ a{
   background-image: url('/assets/icon/rotate-left.svg');
 }
 
+.btn-geotag{
+  background-image: url('/assets/icon/geotag.svg');
+}
+
 .btn-rotate-right{
   background-image: url('/assets/icon/rotate-right.svg');
 }
@@ -730,4 +734,9 @@ input, textarea, select {
   padding: 0;
   position: absolute;
   width: 1px;
+}
+
+.map {
+  width: 100%;
+  height:400px;
 }

@@ -171,6 +171,8 @@
   <div *ngIf="editMode && nbSelectedItem" class="action-container">
     <div class="btn-i btn-rotate-left" (click)="rotateLeft()"></div>
     <div class="btn-i btn-rotate-right" (click)="rotateRight()"></div>
+    <div *ngIf="!catService.geoTagMode" (click)="toGeoMode()" class="btn-i btn-geotag"></div>
+    <div *ngIf="catService.geoTagMode" (click)="cancelGeoMode()" class="btn-i btn-cancel"></div>
     <div class="btn-i btn-trash" (click)="toDeletMultipleMode()"></div>
     <div class="move-photo">
       Déplacer vers l'album:

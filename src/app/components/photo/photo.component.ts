@@ -45,6 +45,29 @@ export class PhotoComponent implements OnInit {
     this.editMode = false;
     this.editMode = false;
     this.facelist = [];
+
+    this.catService.selectedCoordinates.subscribe( coord => {
+      console.log(coord);
+      this.catService.curPhoto.long = coord[0];
+      this.catService.curPhoto.lat = coord[1];
+      this.apiService.putPhoto(this.catService.curPhoto).subscribe(
+        {
+          next: data => {
+            data.shootDate = this.catService.curPhoto.shootDate;
+            this.catService.geoTagMode = false;
+            this.catService.updatePhoto(data);
+            this.toast.success(data.title,
+              'Enregistré',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error(this.catService.curPhoto.title,
+            'Echec de la modification',
+            {timeOut: 4000,});
+            console.error('There was an error in rotation!', error);
+          }
+      });
+    });
   }
 
   moveNextPhoto(){
@@ -146,6 +169,14 @@ export class PhotoComponent implements OnInit {
 
   hideTagedFace(idPeople){
     this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = false;
+  }
+
+  cancelGeoMode(){
+    this.catService.geoTagMode = false;
+  }
+
+  toGeoMode(){
+    this.catService.geoTagMode = true;
   }
 
 

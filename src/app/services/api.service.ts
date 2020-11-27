@@ -31,7 +31,9 @@ export class ApiService {
     let body = {
       title: photo.title,
       description: photo.description,
-      shootDate: photo.shootDate
+      shootDate: photo.shootDate,
+      lat: photo.lat,
+      long: photo.long
     };
     return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${photo.idPhoto}`, body);
   }

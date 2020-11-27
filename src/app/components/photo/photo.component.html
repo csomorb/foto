@@ -49,6 +49,8 @@
         <div (click)="toDeleteMode()" class="btn-i btn-trash"></div>
         <!-- <div (click)="face(img,canvas)" class="btn-i btn-calendar"></div> -->
         <div *ngIf="!tagMode" (click)="toTagMode()" class="btn-i btn-people"></div>
+        <div *ngIf="!catService.geoTagMode" (click)="toGeoMode()" class="btn-i btn-geotag"></div>
+        <div *ngIf="catService.geoTagMode" (click)="cancelGeoMode()" class="btn-i btn-cancel"></div>
         <div *ngIf="tagMode" (click)="cancelTagMode()" class="btn-i btn-cancel"></div>
         <div *ngIf="!editMode" (click)="toEditMode()" class="btn-i btn-edit"></div>
         <div *ngIf="editMode" (click)="cancelEditMode()" class="btn-i btn-cancel"></div>

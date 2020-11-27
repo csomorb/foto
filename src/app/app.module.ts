@@ -29,6 +29,7 @@ import { MonthPipe } from './pipes/month.pipe';
 import { FinduniqalbumPipe } from './pipes/finduniqalbum.pipe';
 import { FinduniqpeoplePipe } from './pipes/finduniqpeople.pipe';
 import { FinduniqtagPipe } from './pipes/finduniqtag.pipe';
+import { MapComponent } from './components/map/map.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { FinduniqtagPipe } from './pipes/finduniqtag.pipe';
     FinduniqalbumPipe,
     FinduniqpeoplePipe,
     FinduniqtagPipe,
+    MapComponent,
   ],
   imports: [
     BrowserModule,
