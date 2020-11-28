@@ -385,7 +385,7 @@ export class CategoryService {
    * Retourne à la galérie
    */
   returnGalery(){
-    this.curPhoto = null;
+    // this.curPhoto = null;
     this.nextPhoto = null;
     this.prevPhoto = null;
     this.curVideo = null;

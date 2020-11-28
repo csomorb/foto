@@ -315,3 +315,29 @@ h2{
   border: 1px solid #ffffff2b;
   padding: 10px;
 }
+
+.page-number{
+  margin: 6px;
+  padding: 8px;
+  border: 1px solid white;
+}
+
+.page-selected{
+  background-color: #22b8e080;
+  border: 1px solid #748da8de;
+}
+
+.page-navigation-conatiner{
+  display:flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-navigation-conatiner > div{
+  cursor: pointer;
+}
+
+.page-next-prev{
+  margin-left: 15px;
+  margin-right: 15px;
+}

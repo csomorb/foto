@@ -120,7 +120,7 @@
 
 
   <div class="photo-container" *ngIf="!editMode">
-    <div *ngFor="let photo of catService?.curPhotos" (click)="loadPhoto(photo)">
+    <div *ngFor="let photo of catService?.curPhotos | slice : (currentPage-1) * nbItemPerPage : currentPage * nbItemPerPage" (click)="loadPhoto(photo)">
         <img [src]="photoBaseUrl + photo.src640"/>
         <div class="photo-title">{{photo.title}}</div>
     </div>
@@ -130,7 +130,7 @@
 
   <div class="photo-edit-container" *ngIf="editMode">
 
-    <div *ngFor="let photo of selectedPhotos" class="edit-container" [ngClass]="{'photo-selected' : photo.isSelected}" >
+    <div *ngFor="let photo of selectedPhotos | slice : (currentPage-1) * nbItemPerPage : currentPage * nbItemPerPage" class="edit-container" [ngClass]="{'photo-selected' : photo.isSelected}" >
       <div *ngIf="photo.deleteMode" class="delete-conf">
         <div>Supprimer la photo?</div>
         <div class="delete-conf-button">
@@ -166,6 +166,15 @@
       </div>
 
     </div>
+  </div>
+
+  <div class="page-navigation-conatiner" *ngIf="catService?.curPhotos?.length > nbItemPerPage">
+    <div *ngIf="currentPage > 1" (click)="goToPage(currentPage-1)" class="page-next-prev">&lt;&lt;</div>
+    <div *ngFor="let i of [].constructor((catService?.curPhotos?.length - catService?.curPhotos?.length % nbItemPerPage) / nbItemPerPage + 1); let page = index"
+      (click)="goToPage(page+1)" class="page-number" [ngClass]="{'page-selected': currentPage === page +1}">
+        {{ page + 1 }}
+    </div>
+    <div *ngIf="catService?.curPhotos?.length > nbItemPerPage * (currentPage-1) + nbItemPerPage" (click)="goToPage(currentPage+1)">&gt;&gt;</div>
   </div>
 
   <div *ngIf="editMode && nbSelectedItem" class="action-container">

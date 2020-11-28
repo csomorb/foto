@@ -38,6 +38,8 @@ export class GalleryComponent implements OnInit {
   nextMonth: number;
   prevDay: number;
   nextDay: number;
+  nbItemPerPage: number;
+  currentPage: number;
 
   constructor(public router: Router, public catService: CategoryService, public apiService: ApiService,public toast: ToastrService, public route: ActivatedRoute) { }
 
@@ -49,9 +51,18 @@ export class GalleryComponent implements OnInit {
     this.timeMode = false;
     this.selectedPhotos = [];
     this.selectedVideos = [];
+    this.nbItemPerPage = 40;
+
+     if (this.catService.curPhoto){
+      let index = this.catService.curPhotos.findIndex(p => p.idPhoto === this.catService.curPhoto.idPhoto);
+      this.currentPage =  ( index - index % this.nbItemPerPage ) / this.nbItemPerPage + 1;
+      this.catService.curPhoto = null;
+     }
+     else{
+      this.currentPage = 1;
+     }
 
     this.catService.selectedCoordinates.subscribe( coord => {
-      console.log(coord);
       if (this.editMode && this.nbSelectedItem){
         this.selectedPhotos.forEach( p =>{
           if(p.isSelected){
@@ -348,6 +359,7 @@ export class GalleryComponent implements OnInit {
   }
 
   toTimeMode(){
+    this.currentPage = 1;
     this.timeMode = true;
     this.curYear = 0;
     this.curMonth = 0;
@@ -364,6 +376,7 @@ export class GalleryComponent implements OnInit {
   }
 
   cancelTimeMode(){
+    this.currentPage = 1;
     this.timeMode = false;
     this.catService.cancelFilter();
     if(this.editMode){
@@ -373,6 +386,7 @@ export class GalleryComponent implements OnInit {
 
 
   goToYear(year){
+    this.currentPage = 1;
     this.curYear = year;
     this.catService.filterYears(year);
     this.curTimeLevel = "MONTH";
@@ -395,6 +409,7 @@ export class GalleryComponent implements OnInit {
   }
 
   goToMonth(year, month){
+    this.currentPage = 1;
     this.catService.filterMonth(year, month);
     this.curYear = year;
     this.curMonth = month;
@@ -421,6 +436,7 @@ export class GalleryComponent implements OnInit {
   }
 
   goToDay(year, month, day){
+    this.currentPage = 1;
     this.catService.filterDay(year, month, day);
     this.curYear = year;
     this.curMonth = month;
@@ -557,6 +573,10 @@ export class GalleryComponent implements OnInit {
 
   toGeoMode(){
     this.catService.geoTagMode = true;
+  }
+
+  goToPage(pageNumber: number){
+    this.currentPage = pageNumber;
   }
 
 }
