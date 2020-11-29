@@ -115,18 +115,7 @@ export class GalleryComponent implements OnInit {
   }
 
   triPriseDeVueAncienRecent(){
-    this.catService.curPhotos.sort((a,b) => {
-      let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
-      if (dateA < dateB) return -1;
-      if (dateA > dateB) return 1;
-      return 0;
-    });
-    this.catService.curVideos.sort((a,b) => {
-      let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
-      if (dateA < dateB) return -1;
-      if (dateA > dateB) return 1;
-      return 0;
-    });
+    this.catService.triPriseDeVueAncienRecent();
     this.triMode = false;
   }
 
@@ -365,14 +354,29 @@ export class GalleryComponent implements OnInit {
     this.curMonth = 0;
     this.curDay = 0;
     this.curTimeLevel = "YEAR";
-    this.catService.cancelFilter();
-    this.catService.getYears();
     this.prevYear = 0;
     this.nextYear = 0;
     this.prevMonth = 0;
     this.nextMonth = 0;
     this.prevDay = 0;
     this.nextDay = 0;
+    this.catService.cancelFilter();
+    this.catService.getYears();
+  }
+
+  toAllYears(){
+    this.currentPage = 1;
+    this.curTimeLevel = "YEAR";
+    this.curYear = 0;
+    this.curMonth = 0;
+    this.curDay = 0;
+    this.prevYear = 0;
+    this.nextYear = 0;
+    this.prevMonth = 0;
+    this.nextMonth = 0;
+    this.prevDay = 0;
+    this.nextDay = 0;
+    this.catService.cancelFilter();
   }
 
   cancelTimeMode(){

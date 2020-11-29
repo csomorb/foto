@@ -30,6 +30,16 @@ export class AlbumgalleryComponent extends GalleryComponent implements OnInit  {
     this.album = { ...this.catService.curCat};
   }
 
+  cancelTimeMode(){
+    super.cancelTimeMode();
+    this.catService.cancelAlbumTimePhotos();
+  }
+
+  toTimeMode(){
+    super.toTimeMode();
+    this.catService.loadAlbumTimePhotos();
+  }
+
   toDeleteMode(){
     if (this.catService.curCat.listAlbum.length > 0){
       this.toast.warning('Supprimez d\'abord les sous albums',

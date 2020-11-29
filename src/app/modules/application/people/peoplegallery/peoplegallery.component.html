@@ -20,10 +20,10 @@
     </div>
     <div (click)="checkUncheckAll()">Select/ Unselect All</div>
   </div>
-  <div class="time-line" *ngIf="timeMode && curTimeLevel==='YEAR'"><span (clicl)="toTimeMode()">Date de création</span></div>
-  <div class="time-line" *ngIf="timeMode && curTimeLevel==='MONTH'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span></div>
-  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
-  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY-SELECT'"><span (clicl)="toTimeMode()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span> / {{curDay}}</div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='YEAR'"><span (click)="toAllYears()">Date de création</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='MONTH'"><span (click)="toAllYears()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY'"><span (click)="toAllYears()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
+  <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY-SELECT'"><span (click)="toAllYears()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span> / {{curDay}}</div>
   <div class="nb-selected" *ngIf="editMode">
     {{nbSelectedItem}} / {{catService.curCat.photos.length}}
   </div>

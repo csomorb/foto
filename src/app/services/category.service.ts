@@ -20,6 +20,8 @@ export class CategoryService {
   curCat: AlbumModel | PeopleModel | TagModel | CategoryModel;
 
   curPhotos: Array<PhotoModel>;
+  curAlbumPhotos: Array<PhotoModel>;
+  curAlbumVideos: Array<VideoModel>;
   curVideos: Array<VideoModel>;
 
   timeYears: Array<number>;
@@ -44,7 +46,7 @@ export class CategoryService {
   markers = this.markersSource.asObservable();
   selectedCoordinates = new Subject();
   geoTagMode: boolean;
-
+  displayMap: boolean;
 
   constructor(private apiService: ApiService) {
     this.idPhotoToLoad = 0;
@@ -52,12 +54,14 @@ export class CategoryService {
     this.geoTagMode = false;
     this.apiService.getPeoples().subscribe( p => this.peopleList = p);
     this.apiService.getTags().subscribe( t => this.tagList = t);
+    this.displayMap = false;
   }
 
   /**
    * Charge toutes les personnes
    */
   loadRootPeople(){
+    this.displayMap = false;
     this.curCat = {id: 0, title: "Personnes", description : "Liste des personnes taguées", listPeople : []} as CategoryModel;
     this.parentList = [];
     this.apiService.getRootsPeoples().subscribe(peoples => { console.log(peoples);
@@ -78,6 +82,7 @@ export class CategoryService {
     if (idPeople === 0){
       console.error("Chargement racine people logic error")
     }
+    this.displayMap = true;
     this.apiService.getPeopleWithPhotos(idPeople).subscribe(people => {
       console.log(people);
       this.curCat = people;
@@ -121,6 +126,7 @@ export class CategoryService {
    * @param id idAlbum
    */
   loadAlbum(id){
+    this.displayMap = true;
     if (id === 0){
       console.error("Chargement racine logic error")
     }
@@ -133,9 +139,9 @@ export class CategoryService {
         p.faces.forEach(f => {
           f.show = false;
           p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-          if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
-            this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
-          }
+          // if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
+          //   this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
+          // }
         });
       });
 
@@ -163,13 +169,72 @@ export class CategoryService {
    * Charge les albums à la racine
    */
   loadRootAlbum(){
-    this.curCat = {id: 0, title: "Acceuil", description : "Bienvenu sur l'album photo", listAlbum : []} as CategoryModel;
+    this.displayMap = false;
+    this.curCat = {id: 0, title: "Acceuil", description : "Bienvenu sur l'album photo", listAlbum : [], photos: []} as CategoryModel;
     this.parentList = [];
     this.apiService.getRootsAlbums().subscribe(albums => { console.log(albums);
       this.curCat.listAlbum = albums;
       this.curPhotos = [];
       this.curVideos = [];
     });
+  }
+
+  /**
+   * Charge toutes les photos pour la timeline
+   */
+  loadAlbumTimePhotos(){
+    this.apiService.getAlbumsTimePhotos(this.curCat.id,100).subscribe( albums =>{
+      let nbPhotos = 0;
+      this.curAlbumPhotos = [...this.curPhotos];
+      this.curAlbumVideos = [...this.curVideos];;
+      albums.forEach(album => {
+        nbPhotos += album.photos.length;
+        album.photos.forEach(p =>{
+          p.shootDate = new Date(p.shootDate);
+          p.peoples = [];
+          if (p.faces)
+          p.faces.forEach(f => {
+            f.show = false;
+            p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+          });
+        });
+        this.curPhotos.push(...album.photos);
+        this.curCat.photos.push(...album.photos);
+      });
+      this.getYears();
+      if (nbPhotos > 99){
+        this.apiService.getAlbumsTimePhotos(this.curCat.id,0).subscribe( albums =>{
+          albums.forEach(album => {
+            album.photos.forEach(p =>{
+              p.shootDate = new Date(p.shootDate);
+              p.peoples = [];
+              if (p.faces)
+              p.faces.forEach(f => {
+                f.show = false;
+                p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+              });
+            });
+            this.curPhotos.push(...album.photos);
+            this.curCat.photos.push(...album.photos);
+          });
+          this.getYears();
+          this.updateMarkerFromCurPhotos();
+        });
+      }
+      else{
+        this.updateMarkerFromCurPhotos();
+      }
+    })
+  }
+
+  /**
+   * Renviens en mode album
+   */
+  cancelAlbumTimePhotos(){
+    this.curPhotos = [...this.curAlbumPhotos];
+    this.curCat.photos = [...this.curAlbumPhotos];
+    this.curVideos = [...this.curAlbumVideos];
+    this.curCat.videos = [...this.curAlbumVideos];
   }
 
   /**
@@ -432,7 +497,6 @@ export class CategoryService {
     if (tree.parent){
       if (currentAlbum.id === tree.id){
         this.parentList.unshift({id : tree.parent.id, title : tree.parent.title});
-        console.log(this.parentList);
         let albumParent: AlbumModel = {id: tree.parent.id, title : tree.parent.title, description : tree.parent.description};
         albumParent.listAlbum = currentAlbum;
         this._buildParentTree(tree.parent,albumParent);
@@ -490,25 +554,30 @@ export class CategoryService {
       if (a.y * 10000 + a.m * 100 + a.d > b.y * 10000 + b.m * 100 + b.d) return 1;
       return 0;
     });
+    this.triPriseDeVueAncienRecent();
   }
 
   filterYears(year){
     this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year);
+    this.triPriseDeVueAncienRecent();
     this.updateMarkerFromCurPhotos();
   }
 
   filterMonth(year, month){
     this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month);
+    this.triPriseDeVueAncienRecent();
     this.updateMarkerFromCurPhotos();
   }
 
   filterDay(year, month, day){
     this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month && p.shootDate.getDate() === day );
+    this.triPriseDeVueAncienRecent();
     this.updateMarkerFromCurPhotos();
   }
 
   cancelFilter(){
     this.curPhotos = [...this.curCat.photos];
+    this.triPriseDeVueAncienRecent();
     this.updateMarkerFromCurPhotos();
   }
 
@@ -539,6 +608,21 @@ export class CategoryService {
       this.updateMarkers([]);
     }
 
+  }
+
+  triPriseDeVueAncienRecent(){
+    this.curPhotos.sort((a,b) => {
+      let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
+      if (dateA < dateB) return -1;
+      if (dateA > dateB) return 1;
+      return 0;
+    });
+    this.curVideos.sort((a,b) => {
+      let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
+      if (dateA < dateB) return -1;
+      if (dateA > dateB) return 1;
+      return 0;
+    });
   }
 
 }

@@ -54,7 +54,7 @@ export class MapComponent implements OnInit {
   @ViewChild('popupContent', { static: true }) popupContentElement: ElementRef;
   photoBaseUrl: string = environment.apiUrl;
 
-  constructor(private catService: CategoryService, private apiService: ApiService,
+  constructor(public catService: CategoryService, private apiService: ApiService,
     private toast: ToastrService) {
 
     let resolutions = [];
@@ -194,7 +194,7 @@ export class MapComponent implements OnInit {
           this.map.getView().animate({zoom: 13}, {center: fromLonLat([markers[0].long,markers[0].lat])});
         }
         else{
-          this.map.getView().fit(this.markerSource.getExtent(), {padding: [50,0,0,0], duration: 1000});
+          this.map.getView().fit(this.markerSource.getExtent(), {padding: [50,0,0,0], duration: 1000, maxZoom:17});
         }
       }
     })
@@ -224,8 +224,9 @@ export class MapComponent implements OnInit {
           let coordinates = feature.getGeometry().getCoordinates();
           popup.setPosition(coordinates);
           console.log(feature);
-          this.popupElement.nativeElement.innerHTML = '<img src="'+ this.photoBaseUrl + feature.values_.src320 + '" /><div class="title-overlay">'+ feature.values_.title+'</div>';
-          this.map.getView().fit(feature.getGeometry(), {padding: [150,10,0,10], duration: 1000, minResolution: 10});
+          this.popupElement.nativeElement.innerHTML = '<img src="'+ this.photoBaseUrl + feature.values_.src320
+          + '" /><div style="position: relative;margin-top:-23px;background-color: #8b8b8b42;text-align:center;">'+ feature.values_.title+'</div>';
+          this.map.getView().fit(feature.getGeometry(), {padding: [200,10,0,10], duration: 1000, minResolution: 10});
 
         }
         else{

@@ -30,9 +30,6 @@
   margin-left: -11px;
 }
 
-.title-overlay{
-  position: relative;
-  margin-top: -23px;
-  background-color: #8b8b8b42;
-  text-align: center;
+.hide-map{
+  display: none;
 }

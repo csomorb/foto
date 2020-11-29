@@ -1,14 +1,18 @@
 <div *ngIf="selectedPeople" class="people-selected">
-  <div class="people-cover"></div>
+  <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + selectedPeople?.coverPhoto?.src150 + ')'}"></div>
   <div class="people-name">{{selectedPeople.title}}</div>
   <div class="btn-i btn-cancel btn-align-right" (click)="cancelSelect()"></div>
 </div>
 <div *ngIf="!selectedPeople">
-  <input name="search" type="text" [(ngModel)]="search" (keyup)="searchPeople()"/>
-  <div class="btn-i btn-add-people" *ngIf="!listPeoplesResult?.length && search" (click)="toModeAdd()"></div>
+  <div class="webflow-style-input">
+    <input name="search" type="text" [(ngModel)]="search" (keyup)="searchPeople()"/>
+  </div>
+  <div class="add-conatiner" *ngIf="!listPeoplesResult?.length && search">
+    <div class="btn-i btn-add-people" (click)="toModeAdd()"></div>
+  </div>
   <div class="people-list">
     <div *ngFor="let p of listPeoplesResult" (click)="selectPeople(p)" class="people-option">
-      <div class="people-cover"></div>
+      <div class="people-cover"  [ngStyle]="{'background-image': 'url(' + photoBaseUrl + p?.coverPhoto?.src150 + ')'}"></div>
       <div class="people-name">{{p.title}}</div>
     </div>
   </div>

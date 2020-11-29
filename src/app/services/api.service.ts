@@ -215,11 +215,10 @@ export class ApiService {
 
    /**
    * Supprime la personne tagée
-   * @param idPhoto
-   * @param idPeople
+   * @param idFAce
    */
-  deleteFace(idFace:number, idPeople:number){
-    return this.http.delete<any>(environment.apiUrl + '/faces/'+idFace + '/people/' + idPeople);
+  deleteFace(idFace:number){
+    return this.http.delete<any>(environment.apiUrl + '/faces/'+idFace);
   }
 
 
@@ -329,5 +328,18 @@ export class ApiService {
   putCopyPhotoToAlbum(idPhoto:number, idAlbum:number){
     return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${idPhoto}/copy-to-album/${idAlbum}`, {});
   }
+
+   /**
+   * Renvoie la liste de tous les albums avec la photo de couverture
+   */
+  getAlbumsTimePhotos(idAlbum,limit){
+    if (idAlbum === 0){
+      return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums/photos-child/${limit}`);
+    }
+    else{
+      return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums/${idAlbum}/photos-child/${limit}`);
+    }
+  }
+
 
 }

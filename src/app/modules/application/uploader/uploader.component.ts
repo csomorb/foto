@@ -5,6 +5,7 @@ import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-uploader',
@@ -23,7 +24,7 @@ export class UploaderComponent implements OnInit {
   totalSize: number;
   totalUploadedSize: number;
 
-  constructor(private apiService: ApiService,private fb: FormBuilder, private route: ActivatedRoute,private toast: ToastrService) {
+  constructor(private apiService: ApiService,private fb: FormBuilder, private route: ActivatedRoute,private toast: ToastrService, private catService: CategoryService) {
   }
 
   uploadFiles() {
@@ -85,6 +86,7 @@ export class UploaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.catService.displayMap = false;
     this.totalUploadedSize = 0;
     this.totalSize = 0;
     this.route.paramMap.subscribe((params: ParamMap) => {

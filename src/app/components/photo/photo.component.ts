@@ -81,27 +81,52 @@ export class PhotoComponent implements OnInit {
 
   setSelectedFace(e,f){
     console.log("POST FACETAG");
-    this.apiService.postFace(this.catService.curPhoto.idPhoto,e,f.x,f.y,f.h,f.w).subscribe(
-      {
-        next: res => {
-          console.log(res);
-          this.catService.curPhoto.faces.push(res);
-          this.catService.curPhoto.facesToTag.splice(this.catService.curPhoto.facesToTag.findIndex(t => t.x === f.x && t.y === f.y),1);
-          // this.catService.curPhoto.listPeople.push(res.people);
-          // TODO à modifier
-          this.catService.updatePhoto(this.catService.curPhoto);
+    if (e === 0){
+      this.apiService.deleteFace(f.facesId).subscribe(
+        {
+          next: res => {
+            this.catService.curPhoto.facesToTag.push({x:f.x, y:f.y, w:f.w,h:f.h})
+            this.catService.curPhoto.faces.splice(this.catService.curPhoto.faces.findIndex(t => t.x === f.x && t.y === f.y),1);
+            this.catService.curPhoto.peoples.splice(this.catService.curPhoto.peoples.findIndex(p => p.id === f.idPeople),1);
+            this.catService.updatePhoto(this.catService.curPhoto);
+            this.toast.success( '',
+              'Enregistré',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error('Non enregistré',
+            'Echec de la modification',
+            {timeOut: 4000,});
+            console.error('There was an error in seting cover!', error);
+          }
+      });
+    }
+    else{
+      this.apiService.postFace(this.catService.curPhoto.idPhoto,e,f.x,f.y,f.h,f.w).subscribe(
+        {
+          next: res => {
+            console.log(res);
+            this.catService.curPhoto.faces.push(res);
+            this.catService.curPhoto.facesToTag.splice(this.catService.curPhoto.facesToTag.findIndex(t => t.x === f.x && t.y === f.y),1);
+            // this.catService.curPhoto.listPeople.push(res.people);
+            // TODO à modifier
+            this.catService.updatePhoto(this.catService.curPhoto);
+            this.catService.curPhoto.peoples.push(res.people);
 
-          this.toast.success( res.people.title,
-            'Enregistré',
-            {timeOut: 3000,});
-        },
-        error: error => {
-          this.toast.error('Non enregistré',
-          'Echec de la modification',
-          {timeOut: 4000,});
-          console.error('There was an error in seting cover!', error);
-        }
-    });
+
+            this.toast.success( res.people.title,
+              'Enregistré',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error('Non enregistré',
+            'Echec de la modification',
+            {timeOut: 4000,});
+            console.error('There was an error in seting cover!', error);
+          }
+      });
+    }
+
     console.log(e);
     console.log(f);
     // TODO: mise à jour du list people et passage
@@ -163,12 +188,17 @@ export class PhotoComponent implements OnInit {
 
   }
 
+  showFace(idPeople){
+    this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = true;
+  }
+
   showTagedFace(idPeople){
     this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = true;
   }
 
   hideTagedFace(idPeople){
-    this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = false;
+    if (!this.tagMode)
+      this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = false;
   }
 
   cancelGeoMode(){
@@ -194,6 +224,7 @@ export class PhotoComponent implements OnInit {
 
   cancelTagMode(){
     this.tagMode = false;
+    this.catService.curPhoto.faces.forEach(f => f.show = false);
   }
 
   rotateLeft(){
