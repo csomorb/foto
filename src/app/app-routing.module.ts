@@ -5,6 +5,7 @@ import { LoginComponent } from './modules/general/login/login.component';
 import { AlbumComponent } from './modules/application/album/album.component';
 import { HomeComponent } from './modules/general/home/home.component';
 import { PhotoComponent } from './components/photo/photo.component';
+import { VideoComponent } from './components/video/video.component';
 import { UploaderComponent } from './modules/application/uploader/uploader.component';
 import { PeopleComponent } from './modules/application/people/people.component';
 import { AlbumgalleryComponent } from './modules/application/album/albumgallery/albumgallery.component';
@@ -25,7 +26,8 @@ const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: AlbumgalleryComponent },
-      { path: 'photos/:idPhoto', component: PhotoComponent }
+      { path: 'photos/:idPhoto', component: PhotoComponent },
+      { path: 'videos/:idVideo', component: VideoComponent }
       ]
   },
   { path: 'peoples', component: PeopleComponent,
@@ -38,7 +40,8 @@ const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: PeoplegalleryComponent },
-      { path: 'photos/:idPhoto', component: PhotoComponent }
+      { path: 'photos/:idPhoto', component: PhotoComponent },
+      { path: 'videos/:idVideo', component: VideoComponent }
       ]
   },
   { path: 'tags', component: TagComponent,
@@ -51,7 +54,8 @@ const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: TaggalleryComponent },
-      { path: 'photos/:idPhoto', component: PhotoComponent }
+      { path: 'photos/:idPhoto', component: PhotoComponent },
+      { path: 'videos/:idVideo', component: VideoComponent }
       ]
   },
   { path: 'upload', component: UploaderComponent },

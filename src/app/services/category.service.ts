@@ -9,6 +9,7 @@ import { VideoModel } from '../models/video.model';
 import { ApiService } from './api.service';
 import { MarkerModel } from '../models/marker.model';
 import { Subject } from 'rxjs';
+import { ItemModel } from '../models/item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,10 +20,10 @@ export class CategoryService {
    */
   curCat: AlbumModel | PeopleModel | TagModel | CategoryModel;
 
-  curPhotos: Array<PhotoModel>;
-  curAlbumPhotos: Array<PhotoModel>;
-  curAlbumVideos: Array<VideoModel>;
-  curVideos: Array<VideoModel>;
+  curItems: Array<ItemModel>;
+  curAlbumItems: Array<ItemModel>;
+  // curAlbumVideos: Array<VideoModel>;
+  // curVideos: Array<VideoModel>;
 
   timeYears: Array<number>;
   timeMonths: Array<any>;
@@ -30,14 +31,21 @@ export class CategoryService {
   /**
    * Current photo
    */
-  curPhoto: PhotoModel;
-  prevPhoto: PhotoModel;
-  nextPhoto: PhotoModel;
+  // curPhoto: PhotoModel;
+  // prevPhoto: PhotoModel;
+  // nextPhoto: PhotoModel;
+  // idPhotoToLoad: number;
+  // curVideo: VideoModel;
+  // prevVideo: VideoModel;
+  // nextVideo: VideoModel;
+  // idVideoToLoad: number;
+
+  curItem: ItemModel;
+  nextItem: ItemModel;
+  prevItem: ItemModel;
   idPhotoToLoad: number;
-  curVideo: VideoModel;
-  prevVideo: VideoModel;
-  nextVideo: VideoModel;
   idVideoToLoad: number;
+
   parentList: Array<any>;
   peopleList: Array<PeopleModel>;
   tagList: Array<TagModel>;
@@ -68,10 +76,7 @@ export class CategoryService {
       this.curCat.listPeople = peoples;
 
     });
-    this.curCat.videos = [];
-    this.curCat.photos = [];
-    this.curPhotos = [...this.curCat.photos];
-    this.curVideos = [...this.curCat.videos];
+    this.curItems = [];
   }
 
   /**
@@ -86,37 +91,23 @@ export class CategoryService {
     this.apiService.getPeopleWithPhotos(idPeople).subscribe(people => {
       console.log(people);
       this.curCat = people;
-
-      this.curCat.photos = [];
-      this.curCat.listAlbum = [];
+      this.curCat.items = [];
       this.curCat.faces.forEach(f =>{
-        this.curCat.photos.push(f.photo);
-        // f.photo.albums.forEach(al => {
-        //   // utile???? -> non je ne crois pas
-        //   if (this.curCat.listAlbum.findIndex(a => a.id === al.id) === -1){
-        //     this.curCat.listAlbum.push(al);
-        //   }
-        // });
+        f.photo.shootDate = new Date(f.photo.shootDate);
+        f.photo.peoples = [];
+        f.photo.faces.forEach(fa => {
+          fa.show = false;
+          f.photo.peoples.push(this.peopleList.find( s => s.id === fa.idPeople));
+        });
+        this.curCat.items.push(f.photo);
       });
 
-      this.curCat.listPeople = [];
-      this.curCat.photos.forEach(p =>{
-        p.shootDate = new Date(p.shootDate);
-        p.peoples = [];
-        p.faces.forEach(f => {
-          f.show = false;
-          p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-          // if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
-          //   this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
-          // }
-        });
-      });
+      //TODO: videos
+
       this.parentList = [];
-      this.curCat.videos = [];
-      this.curPhotos = [...this.curCat.photos];
-      this.curVideos = [...this.curCat.videos];
-      this.updateMarkerFromCurPhotos();
-      this._loadPhotoVideoAfterInit();
+      this.curItems = [...this.curCat.items];
+      this.updateMarkerFromCurItems();
+      this._loadItemAfterInit();
     });
 
   }
@@ -132,19 +123,24 @@ export class CategoryService {
     }
     this.apiService.getAlbumWithPhotos(id).subscribe(album => {
       this.curCat = album;
-      this.curCat.listPeople = [];
       this.curCat.photos.forEach(p =>{
         p.shootDate = new Date(p.shootDate);
         p.peoples = [];
+        if(p.faces)
         p.faces.forEach(f => {
           f.show = false;
           p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-          // if (this.curCat.listPeople.findIndex(s => s.id === f.idPeople) === -1){
-          //   this.curCat.listPeople.push(this.peopleList.find( s => s.id === f.idPeople));
-          // }
         });
       });
-
+      this.curCat.videos.forEach(v =>{
+        v.shootDate = new Date(v.shootDate);
+        v.peoples = [];
+        if(v.faces)
+        v.faces.forEach(f => {
+          f.show = false;
+          v.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+        });
+      });
       this.apiService.getSSAlbums(id).subscribe(liste => {
         this.curCat.listAlbum = liste.children;
         this.curCat.listAlbum.forEach((ssAlbum, i) =>
@@ -157,11 +153,11 @@ export class CategoryService {
           //this.parentList.unshift({ id :'', title: 'Acceuil'});
         });
       });
-      this.curCat.videos = [];
-      this.curPhotos = [...this.curCat.photos];
-      this.curVideos = [...this.curCat.videos];
-      this.updateMarkerFromCurPhotos();
-      this._loadPhotoVideoAfterInit();
+      this.curCat.items = [...this.curCat.photos,...this.curCat.videos];
+      this.curItems = [...this.curCat.items];
+      this.triPriseDeVueAncienRecent();
+      this.updateMarkerFromCurItems();
+      this._loadItemAfterInit();
     });
   }
 
@@ -174,8 +170,7 @@ export class CategoryService {
     this.parentList = [];
     this.apiService.getRootsAlbums().subscribe(albums => { console.log(albums);
       this.curCat.listAlbum = albums;
-      this.curPhotos = [];
-      this.curVideos = [];
+      this.curItems = [];
     });
   }
 
@@ -183,12 +178,12 @@ export class CategoryService {
    * Charge toutes les photos pour la timeline
    */
   loadAlbumTimePhotos(){
-    this.apiService.getAlbumsTimePhotos(this.curCat.id,100).subscribe( albums =>{
-      let nbPhotos = 0;
-      this.curAlbumPhotos = [...this.curPhotos];
-      this.curAlbumVideos = [...this.curVideos];;
+    this.apiService.getAlbumsTimeItems(this.curCat.id,100).subscribe( albums =>{
+      let nbItems = 0;
+      this.curAlbumItems = [...this.curCat.items];
       albums.forEach(album => {
-        nbPhotos += album.photos.length;
+        nbItems += album.photos.length;
+        nbItems += album.videos.length;
         album.photos.forEach(p =>{
           p.shootDate = new Date(p.shootDate);
           p.peoples = [];
@@ -198,12 +193,23 @@ export class CategoryService {
             p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
           });
         });
-        this.curPhotos.push(...album.photos);
-        this.curCat.photos.push(...album.photos);
+        album.videos.forEach(v =>{
+          v.shootDate = new Date(v.shootDate);
+          v.peoples = [];
+          if (v.faces)
+          v.faces.forEach(f => {
+            f.show = false;
+            v.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+          });
+        });
+        this.curItems.push(...album.photos);
+        this.curItems.push(...album.videos);
+        this.curCat.items.push(...album.photos);
+        this.curCat.items.push(...album.videos);
       });
       this.getYears();
-      if (nbPhotos > 99){
-        this.apiService.getAlbumsTimePhotos(this.curCat.id,0).subscribe( albums =>{
+      if (nbItems > 99){
+        this.apiService.getAlbumsTimeItems(this.curCat.id,0).subscribe( albums =>{
           albums.forEach(album => {
             album.photos.forEach(p =>{
               p.shootDate = new Date(p.shootDate);
@@ -214,15 +220,26 @@ export class CategoryService {
                 p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
               });
             });
-            this.curPhotos.push(...album.photos);
-            this.curCat.photos.push(...album.photos);
+            album.videos.forEach(v =>{
+              v.shootDate = new Date(v.shootDate);
+              v.peoples = [];
+              if (v.faces)
+              v.faces.forEach(f => {
+                f.show = false;
+                v.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+              });
+            });
+            this.curItems.push(...album.photos);
+            this.curItems.push(...album.videos);
+            this.curCat.items.push(...album.photos);
+            this.curCat.items.push(...album.videos);
           });
           this.getYears();
-          this.updateMarkerFromCurPhotos();
+          this.updateMarkerFromCurItems();
         });
       }
       else{
-        this.updateMarkerFromCurPhotos();
+        this.updateMarkerFromCurItems();
       }
     })
   }
@@ -231,49 +248,29 @@ export class CategoryService {
    * Renviens en mode album
    */
   cancelAlbumTimePhotos(){
-    this.curPhotos = [...this.curAlbumPhotos];
-    this.curCat.photos = [...this.curAlbumPhotos];
-    this.curVideos = [...this.curAlbumVideos];
-    this.curCat.videos = [...this.curAlbumVideos];
+    this.curItems = [...this.curAlbumItems];
+    this.curCat.items = [...this.curAlbumItems];
   }
 
+
   /**
-   * Pass à la vidéo suivante si disponible
+   * Pass à l'item suivante si disponible
    */
-  moveNextVideo(){
-    if(this.nextVideo){
-      this.curVideo = this.nextVideo;
-      this._getNextPrevVideo(this.curVideo);
+  moveNextItem(){
+    if(this.nextItem){
+      console.log(this.nextItem);
+      this.curItem = this.nextItem;
+      this._getNextPrevItem(this.curItem);
     }
   }
 
   /**
-   * Pass à la vidéo précédente si disponible
+   * Pass à l'item précédente si disponible
    */
-  movePrevVideo(){
-    if(this.prevVideo){
-      this.curVideo = this.prevVideo;
-      this._getNextPrevVideo(this.curVideo);
-    }
-  }
-
-  /**
-   * Pass à la photo suivante si disponible
-   */
-  moveNextPhoto(){
-    if(this.nextPhoto){
-      this.curPhoto = this.nextPhoto;
-      this._getNextPrevPhoto(this.curPhoto);
-    }
-  }
-
-  /**
-   * Pass à la photo précédente si disponible
-   */
-  movePrevPhoto(){
-    if(this.prevPhoto){
-      this.curPhoto = this.prevPhoto;
-      this._getNextPrevPhoto(this.curPhoto);
+  movePrevItem(){
+    if(this.prevItem){
+      this.curItem = this.prevItem;
+      this._getNextPrevItem(this.curItem);
     }
   }
 
@@ -282,13 +279,19 @@ export class CategoryService {
    * @param video Vidéo avec les champs mise à jour
    */
   updateVideo(updatedVideo: VideoModel){
-    this.curVideo = updatedVideo;
-    this.curCat.videos.forEach( video => {
+    if (this.curItem){
+      this.curItem = updatedVideo;
+      this.updateMarkerFromCurItem();
+    }
+    else{
+      this.updateMarkerFromCurItems()
+    }
+    this.curCat.items.forEach( video => {
       if (video.idVideo === updatedVideo.idVideo){
         video = updatedVideo;
       }
     });
-    this.curVideos.forEach( video => {
+    this.curItems.forEach( video => {
       if (video.idVideo === updatedVideo.idVideo){
         video = updatedVideo;
       }
@@ -300,19 +303,19 @@ export class CategoryService {
    * @param photo Photo avec les champs mise à jour
    */
   updatePhoto(updatedPhoto: PhotoModel){
-    if (this.curPhoto){
-      this.curPhoto = updatedPhoto;
-      this.updateMarkerFromCurPhoto();
+    if (this.curItem){
+      this.curItem = updatedPhoto;
+      this.updateMarkerFromCurItem();
     }
     else{
-      this.updateMarkerFromCurPhotos()
+      this.updateMarkerFromCurItems()
     }
-    this.curCat.photos.forEach( photo => {
+    this.curCat.items.forEach( photo => {
       if (photo.idPhoto === updatedPhoto.idPhoto){
         photo = updatedPhoto;
       }
     });
-    this.curPhotos.forEach( photo => {
+    this.curItems.forEach( photo => {
       if (photo.idPhoto === updatedPhoto.idPhoto){
         photo = updatedPhoto;
       }
@@ -332,8 +335,8 @@ export class CategoryService {
    * @param idVideoToDelete
    */
   deleteVideo(idVideoToDelete){
-    this.curCat.videos.splice(this.curCat.videos.findIndex(video => video.idVideo === idVideoToDelete), 1);
-    this.curVideos.splice(this.curVideos.findIndex(video => video.idVideo === idVideoToDelete), 1);
+    this.curCat.items.splice(this.curCat.items.findIndex(video => video.idVideo === idVideoToDelete), 1);
+    this.curItems.splice(this.curItems.findIndex(video => video.idVideo === idVideoToDelete), 1);
   }
 
   /**
@@ -341,108 +344,79 @@ export class CategoryService {
    * @param idPhotoToDelete
    */
   deletePhoto(idPhotoToDelete){
-    this.curCat.photos.splice(this.curCat.photos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
-    this.curPhotos.splice(this.curPhotos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
-    this.updateMarkerFromCurPhotos()
+    this.curCat.items.splice(this.curCat.items.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
+    this.curItems.splice(this.curItems.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
+    this.updateMarkerFromCurItems()
   }
 
-  /**
-   * Supprime la vidéo en cours de visio
-   */
-  deleteCurrentVideo(){
-    const idVideoToDelete = this.curVideo.idVideo;
-    let videoToShow: VideoModel = null;
-    if (this.nextVideo){
-      videoToShow = this.nextVideo;
-    }
-    else if(this.prevVideo){
-      videoToShow = this.prevVideo;
-    }
-    this.curCat.videos.splice(this.curCat.videos.findIndex(video => video.idVideo === idVideoToDelete), 1);
-    this.curVideos.splice(this.curVideos.findIndex(video => video.idVideo === idVideoToDelete), 1);
-    if (videoToShow){
-      this.curVideo = videoToShow;
-      this._getNextPrevVideo(videoToShow);
-    }
-    else{
-      this.curVideo = null;
-    }
-  }
 
   /**
-   * Supprime la photo en cours de visio
+   * Supprime l'item en cours de visio
    */
   deleteCurrentPhoto(){
-    const idPhotoToDelete = this.curPhoto.idPhoto;
-    let photoToShow: PhotoModel = null;
-    if (this.nextPhoto){
-      photoToShow = this.nextPhoto;
+    const t = this.curItem.idPhoto ? "photo" : "video";
+    const idItemToDelete = this.curItem.idPhoto ? this.curItem.idPhoto : this.curItem.idVideo;
+    let itemToShow: ItemModel = null;
+    if (this.nextItem){
+      itemToShow = this.nextItem;
     }
-    else if(this.prevPhoto){
-      photoToShow = this.prevPhoto;
+    else if(this.prevItem){
+      itemToShow = this.prevItem;
     }
-    this.curCat.photos.splice(this.curCat.photos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
-    this.curPhotos.splice(this.curPhotos.findIndex(photo => photo.idPhoto === idPhotoToDelete), 1);
-    if (photoToShow){
-      this.curPhoto = photoToShow;
-      this._getNextPrevPhoto(photoToShow);
+    if (t === "photo"){
+      this.curCat.items.splice(this.curCat.items.findIndex(photo => photo.idPhoto === idItemToDelete), 1);
+      this.curItems.splice(this.curItems.findIndex(photo => photo.idPhoto === idItemToDelete), 1);
+    }
+    if (t === "video"){
+      this.curCat.items.splice(this.curCat.items.findIndex(video => video.idVideo === idItemToDelete), 1);
+      this.curItems.splice(this.curItems.findIndex(video => video.idVideo === idItemToDelete), 1);
+    }
+    if (itemToShow){
+      this.curItem = itemToShow;
+      this._getNextPrevItem(itemToShow);
     }
     else{
-      this.curPhoto = null;
+      this.curItem = null;
     }
-    if (this.curCat.coverPhoto && this.curCat.coverPhoto.idPhoto === idPhotoToDelete){
-      if (this.curCat.photos.length > 0){
-        this.curCat.coverPhoto = this.curCat.photos[0];
-      }
-      else{
-        this.curCat.coverPhoto = null;
-      }
+    if (this.curCat.coverPhoto && this.curCat.coverPhoto.idPhoto === idItemToDelete && t === "photo"){
+      this.curCat.coverPhoto = null;
     }
-  }
-
-  /**
-   * Charge la video donnée
-   * @param video
-   */
-  loadVideo(video: VideoModel){
-    this.curVideo = video;
-    this._getNextPrevVideo(video);
   }
 
   /**
    * Charge la vidéo à partir de son id, si la catégorie n'est pas encore chargé, on le charge au chargement de la catégorie
    * @param idVideo
    */
-  loadVideoFromId(idVideo){
-    if (!this.curVideos){
+  loadVideoFromId(idVideo: number){
+    if (!this.curItems){
       this.idVideoToLoad = idVideo;
     }
     else{
-      this.curVideo = this.curVideos.find(video => video.idVideo === idVideo);
-      this._getNextPrevVideo(this.curVideo);
+      this.curItem = this.curItems.find(video => video.idVideo === idVideo);
+      this._getNextPrevItem(this.curItem);
     }
   }
 
   /**
-   * Charge la photo donnée
-   * @param photo
+   * Charge l'item' donnée
+   * @param item
    */
-  loadPhoto(photo: PhotoModel){
-    this.curPhoto = photo;
-    this._getNextPrevPhoto(photo);
+  loadItem(item: ItemModel){
+    this.curItem = item;
+    this._getNextPrevItem(item);
   }
 
   /**
    * Charge la photo à partir de son id, si la catégorie n'est pas encore chargé, on le charge au chargement de la catégorie
    * @param idPhoto
    */
-  loadPhotoFromId(idPhoto){
-    if (!this.curPhotos){
+  loadPhotoFromId(idPhoto: number){
+    if (!this.curItems){
       this.idPhotoToLoad = idPhoto;
     }
     else{
-      this.curPhoto = this.curPhotos.find(photo => photo.idPhoto === idPhoto);
-      this._getNextPrevPhoto(this.curPhoto);
+      this.curItem = this.curItems.find(photo => photo.idPhoto === idPhoto);
+      this._getNextPrevItem(this.curItem);
     }
   }
 
@@ -451,46 +425,34 @@ export class CategoryService {
    */
   returnGalery(){
     // this.curPhoto = null;
-    this.nextPhoto = null;
-    this.prevPhoto = null;
-    this.curVideo = null;
-    this.nextVideo = null;
-    this.prevVideo = null;
+    this.nextItem = null;
+    this.prevItem = null;
+    this.curItem = null;
     this.geoTagMode = false;
-    this.updateMarkerFromCurPhotos();
+    this.updateMarkerFromCurItems();
   }
 
-  private _getNextPrevPhoto(photo: PhotoModel){
-    let currentPosition = this.curPhotos.indexOf(photo);
-    if (currentPosition < this.curPhotos.length){
-      this.nextPhoto = this.curPhotos[currentPosition + 1];
+  private _getNextPrevItem(item: ItemModel){
+    let currentPosition = 0;
+    if (item.idPhoto){
+      currentPosition = this.curItems.findIndex(i => i.idPhoto === item.idPhoto);
+    }
+    else if (item.idVideo){
+      currentPosition = this.curItems.findIndex(i => i.idVideo === item.idVideo);
+    }
+    if (currentPosition < this.curItems.length){
+      this.nextItem = this.curItems[currentPosition + 1];
     }
     else{
-      this.nextPhoto = null;
+      this.nextItem = null;
     }
     if (currentPosition > 0){
-      this.prevPhoto = this.curPhotos[currentPosition - 1];
+      this.prevItem = this.curItems[currentPosition - 1];
     }
     else{
-      this.prevPhoto = null;
+      this.prevItem = null;
     }
-    this.updateMarkerFromCurPhoto();
-  }
-
-  private _getNextPrevVideo(video: VideoModel){
-    let currentPosition = this.curVideos.indexOf(video);
-    if (currentPosition < this.curVideos.length){
-      this.nextVideo = this.curVideos[currentPosition + 1];
-    }
-    else{
-      this.nextVideo = null;
-    }
-    if (currentPosition > 0){
-      this.nextVideo = this.curVideos[currentPosition - 1];
-    }
-    else{
-      this.nextVideo = null;
-    }
+    this.updateMarkerFromCurItem();
   }
 
   private _buildParentTree(tree, currentAlbum){
@@ -507,17 +469,18 @@ export class CategoryService {
     }
   }
 
-  private _loadPhotoVideoAfterInit(){
+  private _loadItemAfterInit(){
     if (this.idPhotoToLoad){
-      this.curPhoto = this.curPhotos.find(photo => photo.idPhoto === this.idPhotoToLoad);
-      this._getNextPrevPhoto(this.curPhoto);
+      this.curItem = this.curItems.find(photo => photo.idPhoto === this.idPhotoToLoad);
+      this._getNextPrevItem(this.curItem);
       this.idPhotoToLoad = 0;
-      this.updateMarkerFromCurPhoto();
+      this.updateMarkerFromCurItem();
     }
     if (this.idVideoToLoad){
-      this.curVideo = this.curVideos.find(video => video.idVideo === this.idVideoToLoad);
-      this._getNextPrevVideo(this.curVideo);
+      this.curItem = this.curItems.find(video => video.idVideo === this.idVideoToLoad);
+      this._getNextPrevItem(this.curItem);
       this.idVideoToLoad = 0;
+      this.updateMarkerFromCurItem();
     }
   }
 
@@ -525,7 +488,7 @@ export class CategoryService {
     this.timeYears = [];
     this.timeMonths = [];
     this.timeDays = [];
-    this.curPhotos.map( p => {
+    this.curItems.map( p => {
       let year = p.shootDate.getFullYear();
       let month = p.shootDate.getMonth();
       let day = p.shootDate.getDate();
@@ -558,27 +521,27 @@ export class CategoryService {
   }
 
   filterYears(year){
-    this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year);
+    this.curItems = this.curCat.items.filter( p => p.shootDate.getFullYear() === year);
     this.triPriseDeVueAncienRecent();
-    this.updateMarkerFromCurPhotos();
+    this.updateMarkerFromCurItems();
   }
 
   filterMonth(year, month){
-    this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month);
+    this.curItems = this.curCat.items.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month);
     this.triPriseDeVueAncienRecent();
-    this.updateMarkerFromCurPhotos();
+    this.updateMarkerFromCurItems();
   }
 
   filterDay(year, month, day){
-    this.curPhotos = this.curCat.photos.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month && p.shootDate.getDate() === day );
+    this.curItems = this.curCat.items.filter( p => p.shootDate.getFullYear() === year && p.shootDate.getMonth() === month && p.shootDate.getDate() === day );
     this.triPriseDeVueAncienRecent();
-    this.updateMarkerFromCurPhotos();
+    this.updateMarkerFromCurItems();
   }
 
   cancelFilter(){
-    this.curPhotos = [...this.curCat.photos];
+    this.curItems = [...this.curCat.items];
     this.triPriseDeVueAncienRecent();
-    this.updateMarkerFromCurPhotos();
+    this.updateMarkerFromCurItems();
   }
 
   updateMarkers(markers: Array<MarkerModel>){
@@ -590,19 +553,25 @@ export class CategoryService {
     this.markersSource.next(updatedValue);
   }
 
-  updateMarkerFromCurPhotos(){
+  updateMarkerFromCurItems(){
     let markers: Array<MarkerModel> = [];
-    this.curPhotos.forEach( p => {
-      if(p.lat){
-        markers.push({idPhoto: p.idPhoto, lat: p.lat, long: p.long, src320: p.src320, title: p.title} as MarkerModel);
+    this.curItems.forEach( i => {
+      if(i.lat){
+        let idItem = i.idPhoto ? i.idPhoto : i.idVideo;
+        let src = i.idPhoto ? i.src320 : i.srcOrig;
+        let t = i.idPhoto ? "p" : "v";
+        markers.push({idItem, lat: i.lat, long: i.long, src, title: i.title, t} as MarkerModel);
       }
     });
     this.updateMarkers(markers);
   }
 
-  updateMarkerFromCurPhoto(){
-    if (this.curPhoto.lat){
-      this.updateMarkers([{idPhoto: this.curPhoto.idPhoto, lat: this.curPhoto.lat, long: this.curPhoto.long, src320: this.curPhoto.src320, title: this.curPhoto.title} as MarkerModel]);
+  updateMarkerFromCurItem(){
+    if (this.curItem.lat){
+      let idItem = this.curItem.idPhoto ? this.curItem.idPhoto : this.curItem.idVideo;
+      let src = this.curItem.idPhoto ? this.curItem.src320 : this.curItem.srcOrig;
+      let t = this.curItem.idPhoto ? "p" : "v";
+      this.updateMarkers([{idItem, lat: this.curItem.lat, long: this.curItem.long, src, title: this.curItem.title, t} as MarkerModel]);
     }
     else{
       this.updateMarkers([]);
@@ -611,16 +580,37 @@ export class CategoryService {
   }
 
   triPriseDeVueAncienRecent(){
-    this.curPhotos.sort((a,b) => {
+    this.curItems.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
       if (dateA < dateB) return -1;
       if (dateA > dateB) return 1;
       return 0;
     });
-    this.curVideos.sort((a,b) => {
+  }
+
+  triPriseDeVueRecentAncien(){
+    this.curItems.sort((a,b) => {
       let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
-      if (dateA < dateB) return -1;
-      if (dateA > dateB) return 1;
+      if (dateA < dateB) return 1;
+      if (dateA > dateB) return -1;
+      return 0;
+    });
+  }
+
+  triAZ(){
+    this.curItems.sort((a,b) => {
+      let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
+      if (titleA < titleB) return -1;
+      if (titleA > titleB) return 1;
+      return 0;
+    });
+  }
+
+  triZA(){
+    this.curItems.sort((a,b) => {
+      let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
+      if (titleA < titleB) return 1;
+      if (titleA > titleB) return -1;
       return 0;
     });
   }

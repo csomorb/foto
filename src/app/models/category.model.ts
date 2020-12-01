@@ -4,6 +4,7 @@ import { AlbumModel } from './album.model';
 import { TagModel } from './tag.model';
 import { FaceModel } from './face.model';
 import { PeopleModel } from './people.model';
+import { ItemModel } from './item.model';
 
 export interface CategoryModel {
   id:number;
@@ -16,4 +17,5 @@ export interface CategoryModel {
   listTag?: Array<TagModel>;
   listPeople?: Array<PeopleModel>;
   faces?: Array<FaceModel>;
+  items?: Array<ItemModel>;
 }

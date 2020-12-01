@@ -6,6 +6,7 @@ import { CategoryService } from 'src/app/services/category.service';
 import { ApiService } from 'src/app/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { first } from 'rxjs/operators'
+import { ItemModel } from 'src/app/models/item.model';
 
 @Component({
   selector: 'app-gallery',
@@ -21,8 +22,7 @@ export class GalleryComponent implements OnInit {
   deleteMode: boolean;
   triMode: boolean;
   deleteMultipleMode: boolean;
-  selectedPhotos: Array<any>;
-  selectedVideos: Array<any>;
+  selectedItems: Array<any>;
   selectedAlbumToMovePhoto: number;
   selectedAlbumToCopyPhoto: number;
   nbSelectedItem: number;
@@ -49,14 +49,17 @@ export class GalleryComponent implements OnInit {
     this.triMode = false;
     this.addMode = false;
     this.timeMode = false;
-    this.selectedPhotos = [];
-    this.selectedVideos = [];
+    this.selectedItems = [];
     this.nbItemPerPage = 40;
 
-     if (this.catService.curPhoto){
-      let index = this.catService.curPhotos.findIndex(p => p.idPhoto === this.catService.curPhoto.idPhoto);
+     if (this.catService.curItem){
+      let index = 0;
+      if(this.catService.curItem.idPhoto)
+        index = this.catService.curItems.findIndex(p => p.idPhoto === this.catService.curItem.idPhoto);
+      if(this.catService.curItem.idVideo)
+        index = this.catService.curItems.findIndex(v => v.idVideo === this.catService.curItem.idVideo);
       this.currentPage =  ( index - index % this.nbItemPerPage ) / this.nbItemPerPage + 1;
-      this.catService.curPhoto = null;
+      this.catService.curItem = null;
      }
      else{
       this.currentPage = 1;
@@ -64,23 +67,43 @@ export class GalleryComponent implements OnInit {
 
     this.catService.selectedCoordinates.subscribe( coord => {
       if (this.editMode && this.nbSelectedItem){
-        this.selectedPhotos.forEach( p =>{
-          if(p.isSelected){
-            p.long = coord[0];
-            p.lat = coord[1];
-            this.apiService.putPhoto(p).subscribe(
+        this.selectedItems.forEach( i =>{
+          if(i.isSelected){
+            i.long = coord[0];
+            i.lat = coord[1];
+            if(i.idPhoto)
+            this.apiService.putPhoto(i).subscribe(
               {
                 next: data => {
-                  data.shootDate = p.shootDate;
+                  data.shootDate = i.shootDate;
                   this.catService.geoTagMode = false;
-                  this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
+                  this.selectedItems[this.selectedItems.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedItems[this.selectedItems.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
                   this.catService.updatePhoto(data);
                   this.toast.success(data.title,
                     'Enregistré',
                     {timeOut: 3000,});
                 },
                 error: error => {
-                  this.toast.error(p.title,
+                  this.toast.error(i.title,
+                  'Echec de la modification',
+                  {timeOut: 4000,});
+                  console.error('There was an error in rotation!', error);
+                }
+            });
+            if(i.idVideo)
+            this.apiService.putVideo(i).subscribe(
+              {
+                next: data => {
+                  data.shootDate = i.shootDate;
+                  this.catService.geoTagMode = false;
+                  this.selectedItems[this.selectedItems.findIndex(v => v.idVideo === data.idVideo)] = { ...this.selectedItems[this.selectedItems.findIndex(v => v.idVideo === data.idVideo)], ...data};
+                  this.catService.updateVideo(data);
+                  this.toast.success(data.title,
+                    'Enregistré',
+                    {timeOut: 3000,});
+                },
+                error: error => {
+                  this.toast.error(i.title,
                   'Echec de la modification',
                   {timeOut: 4000,});
                   console.error('There was an error in rotation!', error);
@@ -93,9 +116,14 @@ export class GalleryComponent implements OnInit {
 
   }
 
-  loadPhoto(photo: PhotoModel){
-    this.catService.loadPhoto(photo);
-    this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+this.catService.curCat.id +'/photos/' + photo.idPhoto));
+  loadItem(item: ItemModel){
+    this.catService.loadItem(item);
+    if (item.idPhoto){
+      this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+this.catService.curCat.id +'/photos/' + item.idPhoto));
+    }
+    else if(item.idVideo){
+      this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+this.catService.curCat.id +'/videos/' + item.idVideo));
+    }
   }
 
   goToCategory(id){
@@ -120,61 +148,25 @@ export class GalleryComponent implements OnInit {
   }
 
   triPriseDeVueRecentAncien(){
-    this.catService.curPhotos.sort((a,b) => {
-      let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
-      if (dateA < dateB) return 1;
-      if (dateA > dateB) return -1;
-      return 0;
-    });
-    this.catService.curVideos.sort((a,b) => {
-      let dateA = new Date(a.shootDate), dateB = new Date(b.shootDate);
-      if (dateA < dateB) return 1;
-      if (dateA > dateB) return -1;
-      return 0;
-    });
+    this.catService.triPriseDeVueRecentAncien();
     this.triMode = false;
   }
 
   triAZ(){
-    this.catService.curPhotos.sort((a,b) => {
-      let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
-      if (titleA < titleB) return -1;
-      if (titleA > titleB) return 1;
-      return 0;
-    });
-    this.catService.curVideos.sort((a,b) => {
-      let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
-      if (titleA < titleB) return -1;
-      if (titleA > titleB) return 1;
-      return 0;
-    });
+    this.catService.triAZ();
     this.triMode = false;
   }
 
   triZA(){
-    this.catService.curPhotos.sort((a,b) => {
-      let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
-      if (titleA < titleB) return 1;
-      if (titleA > titleB) return -1;
-      return 0;
-    });
-    this.catService.curVideos.sort((a,b) => {
-      let titleA = a.title.toLowerCase(), titleB = b.title.toLowerCase();
-      if (titleA < titleB) return 1;
-      if (titleA > titleB) return -1;
-      return 0;
-    });
+    this.catService.triZA();
     this.triMode = false;
   }
 
+
   toEditMode(){
     this.editMode = true;
-    this.selectedPhotos = this.catService.curPhotos;
-    this.selectedPhotos.forEach(photo => photo.isSelected = false);
-    this.selectedPhotos.forEach(photo => photo.deleteMode = false);
-    this.selectedVideos = this.catService.curVideos;
-    this.selectedVideos.forEach(video => video.isSelected = false);
-    this.selectedVideos.forEach(video => video.deleteMode = false);
+    this.selectedItems = this.catService.curItems;
+    this.selectedItems.forEach(i => {i.isSelected = false; i.deleteMode = false});
     this.nbSelectedItem = 0;
   }
 
@@ -216,26 +208,17 @@ export class GalleryComponent implements OnInit {
   }
 
   checkUncheckAll() {
-    for (var i = 0; i < this.selectedPhotos.length; i++) {
-      this.selectedPhotos[i].isSelected = this.masterSelected;
+    for (var i = 0; i < this.selectedItems.length; i++) {
+      this.selectedItems[i].isSelected = this.masterSelected;
     }
-    for (var i = 0; i < this.selectedVideos.length; i++) {
-      this.selectedVideos[i].isSelected = this.masterSelected;
-    }
-    this.nbSelectedItem = 0;
-    this.nbSelectedItem += this.selectedPhotos.reduce((a, photo)=> {return photo.isSelected?a+1:a;} ,0);
-    this.nbSelectedItem += this.selectedVideos.reduce((a, video)=> {return video.isSelected?a+1:a;} ,0);
+    this.nbSelectedItem += this.selectedItems.reduce((a, i)=> {return i.isSelected?a+1:a;} ,0);
   }
 
   isAllSelected() {
-    this.masterSelected = this.selectedPhotos.every(function(item:any) {
+    this.masterSelected = this.selectedItems.every(function(item:any) {
         return item.isSelected == true;
-    }) && this.selectedVideos.every(function(item:any) {
-      return item.isSelected == true;
     });
-    this.nbSelectedItem = 0;
-    this.nbSelectedItem += this.selectedPhotos.reduce((a, photo)=> {return photo.isSelected?a+1:a;} ,0);
-    this.nbSelectedItem += this.selectedVideos.reduce((a, video)=> {return video.isSelected?a+1:a;} ,0);
+    this.nbSelectedItem += this.selectedItems.reduce((a, i)=> {return i.isSelected?a+1:a;} ,0);
   }
 
   deletePhoto(photo){
@@ -267,7 +250,7 @@ export class GalleryComponent implements OnInit {
   }
 
   deleteMultiple(){
-    this.selectedPhotos.forEach( p =>{
+    this.selectedItems.forEach( p =>{
       if(p.isSelected)
         this.deleteConfPhoto(p);
     });
@@ -470,8 +453,8 @@ export class GalleryComponent implements OnInit {
   }
 
   rotateLeft(){
-    this.selectedPhotos.forEach( p =>{
-      if(p.isSelected)
+    this.selectedItems.forEach( p =>{
+      if(p.isSelected && p.idPhoto)
       this.apiService.rotateLeft(p).subscribe(
         {
           next: data => {
@@ -482,7 +465,7 @@ export class GalleryComponent implements OnInit {
             data.src1280+="?" + new Date().getTime();
             data.src1920+="?" + new Date().getTime();
             data.shootDate = p.shootDate;
-            this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
+            this.selectedItems[this.selectedItems.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedItems[this.selectedItems.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
             this.catService.updatePhoto(data);
             this.toast.success(data.title,
               'Enregistré',
@@ -499,8 +482,8 @@ export class GalleryComponent implements OnInit {
   }
 
   rotateRight(){
-    this.selectedPhotos.forEach( p =>{
-      if(p.isSelected)
+    this.selectedItems.forEach( p =>{
+      if(p.isSelected && p.idPhoto)
       this.apiService.rotateRight(p).subscribe(
         {
           next: data => {
@@ -511,7 +494,7 @@ export class GalleryComponent implements OnInit {
             data.src1280+="?" + new Date().getTime();
             data.src1920+="?" + new Date().getTime();
             data.shootDate = p.shootDate;
-            this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedPhotos[this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
+            this.selectedItems[this.selectedItems.findIndex(ph => ph.idPhoto === data.idPhoto)] = { ...this.selectedItems[this.selectedItems.findIndex(ph => ph.idPhoto === data.idPhoto)], ...data};
             this.catService.updatePhoto(data);
             this.toast.success(data.title,
               'Enregistré',
@@ -528,13 +511,30 @@ export class GalleryComponent implements OnInit {
   }
 
   moveToAlbum(){
-    this.selectedPhotos.forEach( p =>{
-      if(p.isSelected)
+    this.selectedItems.forEach( p =>{
+      if(p.isSelected && p.idPhoto)
       this.apiService.putMovePhotoToAlbum(p.idPhoto, this.selectedAlbumToMovePhoto).subscribe(
         {
           next: data => {
             this.catService.deletePhoto(data.idPhoto);
-            this.selectedPhotos.splice(this.selectedPhotos.findIndex(ph => ph.idPhoto === data.idPhoto),1);
+            this.selectedItems.splice(this.selectedItems.findIndex(ph => ph.idPhoto === data.idPhoto),1);
+            this.toast.success(data.title,
+              'Déplacé',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error(p.title,
+            'Echec du déplacement',
+            {timeOut: 4000,});
+            console.error('There was an error in moving photo!', error);
+          }
+      });
+      if(p.isSelected && p.idVideo)
+      this.apiService.putMoveVideoToAlbum(p.idVideo, this.selectedAlbumToMovePhoto).subscribe(
+        {
+          next: data => {
+            this.catService.deleteVideo(data.idVideo);
+            this.selectedItems.splice(this.selectedItems.findIndex(v => v.idVideo === data.idVideo),1);
             this.toast.success(data.title,
               'Déplacé',
               {timeOut: 3000,});
@@ -550,13 +550,30 @@ export class GalleryComponent implements OnInit {
   }
 
   copyToAlbum(){
-    this.selectedPhotos.forEach( p =>{
-      if(p.isSelected)
+    this.selectedItems.forEach( p =>{
+      if(p.isSelected && p.idPhoto)
       this.apiService.putCopyPhotoToAlbum(p.idPhoto, this.selectedAlbumToCopyPhoto).subscribe(
         {
           next: data => {
             data.shootDate = p.shootDate;
             this.catService.updatePhoto(data);
+            this.toast.success(data.title,
+              'Copié',
+              {timeOut: 3000,});
+          },
+          error: error => {
+            this.toast.error(p.title,
+            'Echec de la copie',
+            {timeOut: 4000,});
+            console.error('There was an error in moving photo!', error);
+          }
+      });
+      if(p.isSelected && p.idVideo)
+      this.apiService.putCopyVideoToAlbum(p.idVideo, this.selectedAlbumToCopyPhoto).subscribe(
+        {
+          next: data => {
+            data.shootDate = p.shootDate;
+            this.catService.updateVideo(data);
             this.toast.success(data.title,
               'Copié',
               {timeOut: 3000,});

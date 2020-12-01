@@ -7,6 +7,7 @@ import { AlbumModel } from '../models/album.model';
 import { Observable } from 'rxjs';
 import { PeopleModel } from '../models/people.model';
 import { CategoryModel } from '../models/category.model';
+import { VideoModel } from '../models/video.model';
 
 @Injectable({
   providedIn: 'root'
@@ -39,11 +40,34 @@ export class ApiService {
   }
 
   /**
+   * Modifie la vidéo donnée
+   * @param video
+   */
+  putVideo(video: VideoModel){
+    let body = {
+      title: video.title,
+      description: video.description,
+      shootDate: video.shootDate,
+      lat: video.lat,
+      long: video.long
+    };
+    return this.http.put<VideoModel>(`${environment.apiUrl}/videos/${video.idVideo}`, body);
+  }
+
+  /**
    * Supprime la photo donnée
    * @param photo
    */
   deletePhoto(photo: PhotoModel){
     return this.http.delete<any>(`${environment.apiUrl}/photos/${photo.idPhoto}`);
+  }
+
+  /**
+   * Supprime la video donnée
+   * @param video
+   */
+  deleteVideo(video: VideoModel){
+    return this.http.delete<any>(`${environment.apiUrl}/videos/${video.idVideo}`);
   }
 
   /**
@@ -229,7 +253,7 @@ export class ApiService {
    * @param title
    * @param description
    */
-  upload(file: File, idAlbum: number, title: string, description: string): Observable<HttpEvent<any>>{
+  uploadPhoto(file: File, idAlbum: number, title: string, description: string): Observable<HttpEvent<any>>{
     const formData: FormData = new FormData();
 
     formData.append('file', file);
@@ -242,6 +266,28 @@ export class ApiService {
       responseType: 'json'
     });
 
+    return this.http.request(req);
+  }
+
+   /**
+   * Upload une video dans l'album donné avec le titre et la description donné
+   * @param file
+   * @param idAlbum
+   * @param title
+   * @param description
+   */
+  uploadVideo(file: File, idAlbum: number, title: string, description: string): Observable<HttpEvent<any>>{
+    const formData: FormData = new FormData();
+
+    formData.append('file', file);
+    formData.append('idAlbum',idAlbum.toString());
+    formData.append('title', title);
+    formData.append('description', description);
+
+    const req = new HttpRequest('POST', `${environment.apiUrl}/videos/upload`, formData, {
+      reportProgress: true,
+      responseType: 'json'
+    });
     return this.http.request(req);
   }
 
@@ -329,10 +375,28 @@ export class ApiService {
     return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${idPhoto}/copy-to-album/${idAlbum}`, {});
   }
 
+  /**
+   * Déplace la video dans l'album
+   * @param idVideo
+   * @param idAlbum
+   */
+  putMoveVideoToAlbum(idVideo:number, idAlbum:number){
+    return this.http.put<VideoModel>(`${environment.apiUrl}/videos/${idVideo}/move-to-album/${idAlbum}`, {});
+  }
+
+  /**
+   * Copie la video dans l'album
+   * @param idVideo
+   * @param idAlbum
+   */
+  putCopyVideoToAlbum(idVideo:number, idAlbum:number){
+    return this.http.put<VideoModel>(`${environment.apiUrl}/videos/${idVideo}/copy-to-album/${idAlbum}`, {});
+  }
+
    /**
    * Renvoie la liste de tous les albums avec la photo de couverture
    */
-  getAlbumsTimePhotos(idAlbum,limit){
+  getAlbumsTimeItems(idAlbum,limit){
     if (idAlbum === 0){
       return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums/photos-child/${limit}`);
     }

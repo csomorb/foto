@@ -184,7 +184,9 @@ export class MapComponent implements OnInit {
         let iconFeature = new Feature({
           geometry: new Point(fromLonLat([markers[i].long,markers[i].lat])),
           title: markers[i].title,
-          src320: markers[i].src320
+          src: markers[i].src,
+          t: markers[i].t,
+          idItem:markers[i].idItem
         });
         iconFeature.setStyle(this.iconStyle);
         this.markerSource.addFeature(iconFeature);
@@ -224,8 +226,12 @@ export class MapComponent implements OnInit {
           let coordinates = feature.getGeometry().getCoordinates();
           popup.setPosition(coordinates);
           console.log(feature);
-          this.popupElement.nativeElement.innerHTML = '<img src="'+ this.photoBaseUrl + feature.values_.src320
+          if (feature.values_.t === 'p')
+          this.popupElement.nativeElement.innerHTML = '<img src="'+ this.photoBaseUrl + feature.values_.src
           + '" /><div style="position: relative;margin-top:-23px;background-color: #8b8b8b42;text-align:center;">'+ feature.values_.title+'</div>';
+          else
+          this.popupElement.nativeElement.innerHTML = '<img src="'+ this.photoBaseUrl +'/videos/'+feature.values_.idItem + '/t1.jpg'
+          + '" style="max-width:150px;height:auto;"/><div style="position: relative;margin-top:-23px;background-color: #8b8b8b42;text-align:center;">'+ feature.values_.title+'</div>';
           this.map.getView().fit(feature.getGeometry(), {padding: [200,10,0,10], duration: 1000, minResolution: 10});
 
         }

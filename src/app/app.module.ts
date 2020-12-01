@@ -30,6 +30,7 @@ import { FinduniqalbumPipe } from './pipes/finduniqalbum.pipe';
 import { FinduniqpeoplePipe } from './pipes/finduniqpeople.pipe';
 import { FinduniqtagPipe } from './pipes/finduniqtag.pipe';
 import { MapComponent } from './components/map/map.component';
+import { VideoComponent } from './components/video/video.component';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { MapComponent } from './components/map/map.component';
     FinduniqpeoplePipe,
     FinduniqtagPipe,
     MapComponent,
+    VideoComponent,
   ],
   imports: [
     BrowserModule,

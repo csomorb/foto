@@ -25,7 +25,7 @@
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY'"><span (click)="toAllYears()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY-SELECT'"><span (click)="toAllYears()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span> / {{curDay}}</div>
   <div class="nb-selected" *ngIf="editMode">
-    {{nbSelectedItem}} / {{catService.curPhotos.length}}
+    {{nbSelectedItem}} / {{catService.curItems.length}}
   </div>
   <div class="btn-i btn-calendar" (click)="toTimeMode()" *ngIf="!timeMode"></div>
   <div class="btn-i btn-folder" (click)="cancelTimeMode()" *ngIf="timeMode"></div>
@@ -44,7 +44,7 @@
   </div>
 </div>
 <div class="delete-confirmation" *ngIf="deleteMultipleMode">
-  <div>Supprimer les {{nbSelectedItem}} photos ?</div>
+  <div>Supprimer les {{nbSelectedItem}} éléments?</div>
   <div  class="delete-conf-button">
     <div class="btn-i btn-trash" (click)="deleteMultiple()"></div>
     <div class="btn-i btn-cancel" (click)="cancelDeletMultipleMode()"></div>
@@ -101,17 +101,17 @@
     </ng-container>
   </div>
 
-
   <div class="photo-container" *ngIf="!editMode">
-    <div *ngFor="let photo of catService?.curPhotos | slice : (currentPage-1) * nbItemPerPage : currentPage * nbItemPerPage" (click)="loadPhoto(photo)">
-        <img [src]="photoBaseUrl + photo.src640"/>
-        <div class="photo-title">{{photo.title}}</div>
+    <div *ngFor="let item of catService?.curItems | slice : (currentPage-1) * nbItemPerPage : currentPage * nbItemPerPage" (click)="loadItem(item)">
+        <img *ngIf="item.idPhoto" [src]="photoBaseUrl + item.src640"/>
+        <img *ngIf="item.idVideo" [src]="photoBaseUrl + '/videos/'+item.idVideo+'/t1.jpg'"/>
+        <div class="photo-title">{{item.title}}</div>
     </div>
   </div>
 
   <div class="photo-edit-container" *ngIf="editMode">
 
-    <div *ngFor="let photo of selectedPhotos | slice : (currentPage-1) * nbItemPerPage : currentPage * nbItemPerPage" class="edit-container" [ngClass]="{'photo-selected' : photo.isSelected}" >
+    <div *ngFor="let photo of selectedItems | slice : (currentPage-1) * nbItemPerPage : currentPage * nbItemPerPage" class="edit-container" [ngClass]="{'photo-selected' : photo.isSelected}" >
       <div *ngIf="photo.deleteMode" class="delete-conf">
         <div>Supprimer la photo?</div>
         <div class="delete-conf-button">
@@ -149,13 +149,13 @@
     </div>
   </div>
 
-  <div class="page-navigation-conatiner" *ngIf="catService?.curPhotos?.length > nbItemPerPage">
+  <div class="page-navigation-conatiner" *ngIf="catService?.curItems?.length > nbItemPerPage">
     <div *ngIf="currentPage > 1" (click)="goToPage(currentPage-1)" class="page-next-prev">&lt;&lt;</div>
-    <div *ngFor="let i of [].constructor((catService?.curPhotos?.length - catService?.curPhotos?.length % nbItemPerPage) / nbItemPerPage + 1); let page = index"
+    <div *ngFor="let i of [].constructor((catService?.curItems?.length - catService?.curItems?.length % nbItemPerPage) / nbItemPerPage + 1); let page = index"
       (click)="goToPage(page+1)" class="page-number" [ngClass]="{'page-selected': currentPage === page +1}">
         {{ page + 1 }}
     </div>
-    <div *ngIf="catService?.curPhotos?.length > nbItemPerPage * (currentPage-1) + nbItemPerPage" (click)="goToPage(currentPage+1)">&gt;&gt;</div>
+    <div *ngIf="catService?.curItems?.length > nbItemPerPage * (currentPage-1) + nbItemPerPage" (click)="goToPage(currentPage+1)">&gt;&gt;</div>
   </div>
 
   <div *ngIf="editMode && nbSelectedItem" class="action-container">
@@ -176,10 +176,10 @@
     </div>
   </div>
 
-  <div *ngIf="catService?.curCat?.id && catService?.curPhotos">
+  <div *ngIf="catService?.curCat?.id && catService?.curItems">
     Liste des personnes présentes:
     <div class="people-list-container">
-      <div *ngFor="let p of catService?.curPhotos | finduniqpeople" (click)="gotToPeople(p.id)" class="people-container">
+      <div *ngFor="let p of catService?.curItems | finduniqpeople" (click)="gotToPeople(p.id)" class="people-container">
         <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + p?.coverPhoto?.src150 + ')'}"></div>
         <div class="people-name">{{p.title}}</div>
       </div>

@@ -1,7 +1,8 @@
 export interface MarkerModel {
   title: string;
-  idPhoto: number;
+  idItem: number;
   lat: number;
   long: number;
-  src320: string;
+  src?: string;
+  t:string;
 }

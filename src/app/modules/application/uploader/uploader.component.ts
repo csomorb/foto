@@ -15,7 +15,6 @@ import { CategoryService } from 'src/app/services/category.service';
 export class UploaderComponent implements OnInit {
 
   isHovering: boolean;
-  progressInfos = [];
   message = '';
   fileInfos: Observable<any>;
   selectedAlbum: number;
@@ -30,10 +29,11 @@ export class UploaderComponent implements OnInit {
   uploadFiles() {
     this.message = '';
     if (!this.selectedAlbum){
-      this.message = 'Veuillez sélectionner un album';
+      this.toast.error('',
+        'Sélectionnez un album',
+        {timeOut: 3000,});
       return;
     }
-
     for (let i = 0; i < this.files.length; i++) {
       console.log(this.files[i])
       if (!this.files[i].loaded){
@@ -46,43 +46,71 @@ export class UploaderComponent implements OnInit {
   }
 
   upload(idx, file) {
-    this.progressInfos[idx] = { value: 0, fileName: file.name };
-
-    console.log(file.photoForm);
-    this.apiService.upload(file,this.selectedAlbum,file.photoForm.value.title,file.photoForm.value.description).subscribe(
-      event => {
-        if (event.type === HttpEventType.UploadProgress) {
-
-          this.progressInfos[idx].value = Math.round(100 * event.loaded / event.total);
-          console.log(event.total);
-          this.files[idx].uploadProgress = Math.round(100 * event.loaded / event.total);
-          this.files[idx].uploadedSize = event.loaded;
+    if (file.type.includes('video')){
+      this.apiService.uploadVideo(file,this.selectedAlbum,file.itemForm.value.title,file.itemForm.value.description).subscribe(
+        event => {
+          if (event.type === HttpEventType.UploadProgress) {
+            this.files[idx].uploadProgress = Math.round(100 * event.loaded / event.total);
+            this.files[idx].uploadedSize = event.loaded;
+            this.totalUploadedSize = this.files.reduce( (x, f) => f.uploadedSize + x, 0);
+          } else if (event instanceof HttpResponse) {
+            // this.fileInfos = this.uploadService.getFiles();
+            this.toast.success('Uploaded',
+            event.body.originalFileName,
+            {timeOut: 2000,});
+            this.files[idx].loaded = true;
+            // this.files[idx].loading = false;
+            console.log(idx);
+            console.log('reponse: ');
+            console.log(event);
+          }
+          else{
+            console.log(event);
+          }
+        },
+        err => {
+          console.log(err);
+          this.files[idx].uploadProgress = 0;
+          this.files[idx].uploadedSize = 0;
+          this.files[idx].loading = false;
           this.totalUploadedSize = this.files.reduce( (x, f) => f.uploadedSize + x, 0);
-        } else if (event instanceof HttpResponse) {
-          // this.fileInfos = this.uploadService.getFiles();
-          this.toast.success('Uploaded',
-          event.body.originalFileName,
-          {timeOut: 2000,});
-          this.files[idx].loaded = true;
-          // this.files[idx].loading = false;
-          console.log(idx);
-          console.log('reponse: ');
-          console.log(event);
-        }
-        else{
-          console.log(event);
-        }
-      },
-      err => {
-        console.log(err);
-        this.files[idx].uploadProgress = 0;
-        this.files[idx].uploadedSize = 0;
-        this.files[idx].loading = false;
-        this.progressInfos[idx].value = 0;
-        this.toast.success(file.name,
-        'Could not upload the file',
-        {timeOut: 3000,});
-      });
+          this.toast.error(file.name,
+          'Could not upload the file',
+          {timeOut: 3000,});
+        });
+    }
+    if (file.type.includes('image')){
+      this.apiService.uploadPhoto(file,this.selectedAlbum,file.itemForm.value.title,file.itemForm.value.description).subscribe(
+        event => {
+          if (event.type === HttpEventType.UploadProgress) {
+            this.files[idx].uploadProgress = Math.round(100 * event.loaded / event.total);
+            this.files[idx].uploadedSize = event.loaded;
+            this.totalUploadedSize = this.files.reduce( (x, f) => f.uploadedSize + x, 0);
+          } else if (event instanceof HttpResponse) {
+            // this.fileInfos = this.uploadService.getFiles();
+            this.toast.success('Uploaded',
+            event.body.originalFileName,
+            {timeOut: 2000,});
+            this.files[idx].loaded = true;
+            // this.files[idx].loading = false;
+            console.log(idx);
+            console.log('reponse: ');
+            console.log(event);
+          }
+          else{
+            console.log(event);
+          }
+        },
+        err => {
+          console.log(err);
+          this.files[idx].uploadProgress = 0;
+          this.files[idx].uploadedSize = 0;
+          this.files[idx].loading = false;
+          this.toast.error(file.name,
+          'Could not upload the file',
+          {timeOut: 3000,});
+        });
+    }
   }
 
   ngOnInit(): void {
@@ -110,21 +138,34 @@ export class UploaderComponent implements OnInit {
   }
 
   onDrop(files: FileList) {
+    console.log(files);
     for (let i = 0; i < files.length; i++) {
-      let reader = new FileReader();
-      reader.onload = (even:any) => {
-        //TODO : a délocaliser quand visible dans le viewport
+      if (files[i].type.includes('image')){
+        let reader = new FileReader();
+        reader.onload = (even:any) => {
+          //TODO : a délocaliser quand visible dans le viewport
+          this.files.push(files.item(i));
+          this.files[this.files.length - 1].data = even.target.result;
+          this.files[this.files.length - 1].loaded = false;
+          this.files[this.files.length - 1].loading = false;
+          this.files[this.files.length - 1].itemForm = this.fb.group({
+            title: files.item(i).name,
+            description: ''
+            });
+        }
+        this.totalSize += files[i].size;
+        reader.readAsDataURL(files.item(i));
+      }
+      if (files[i].type.includes('video')){
+        this.totalSize += files[i].size;
         this.files.push(files.item(i));
-        this.files[this.files.length - 1].data = even.target.result;
         this.files[this.files.length - 1].loaded = false;
         this.files[this.files.length - 1].loading = false;
-        this.files[this.files.length - 1].photoForm = this.fb.group({
+        this.files[this.files.length - 1].itemForm = this.fb.group({
           title: files.item(i).name,
           description: ''
           });
       }
-      this.totalSize += files[i].size;
-      reader.readAsDataURL(files.item(i));
     }
   }
 

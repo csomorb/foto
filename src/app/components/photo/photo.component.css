@@ -1,94 +1,6 @@
-.photo-detail{
-  width: 300px;
-}
-
-.photo-view-container{
-  width: calc(100% - 300px);
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.photo-view-container img{
+.item-view-container img{
   max-width: 100%;
   height: auto;
-}
-
-.photo{
-  display: flex;
-}
-
-@media screen and (max-width: 760px){
-  .photo{
-    display: block;
-  }
-  .photo-detail{
-    width: 100%;
-  }
-  .photo-view-container{
-    width:100%;
-  }
-
-}
-
-
-.photo-navigation{
-  display: flex;
-  justify-content: center;
-}
-
-.navigation-item{
-  width: 90px;
-  height: 90px;
-  margin: 5px;
-}
-
-.navigation-item img{
-  width: 90px;
-  height: auto;
-}
-
-.arrow{
-  background-position: center;
-  background-size: 40px;
-  background-repeat: no-repeat;
-  width: 90px;
-  height: 90px;
-  transition: background-size 0.5s;
-  cursor: pointer;
-}
-
-.arrow:hover{
-  background-size: 70px;
-}
-
-.arrow-home{
-  background-image: url(/assets/icon/156-up-arrow-1.svg);
-}
-
-.arrow-prev{
-  background-image: url(/assets/icon/152-left-arrow.svg);
-  position: relative;
-  top: -90px;
-}
-
-.arrow-next{
-  background-image: url(/assets/icon/155-right-arrow.svg);
-  position: relative;
-  top: -90px;
-}
-
-.prop-content{
-  margin-left: 15px;
-}
-
-.photo-prop{
-  margin: 10px;
-}
-
-.action-btn{
-  display: flex;
-  justify-content: space-between;
 }
 
 .rect{
@@ -164,10 +76,6 @@
 
 .box-taged{
   position: sticky;
-}
-
-.absolute{
-  position: absolute;
 }
 
 /* .box:hover:before{
@@ -255,10 +163,6 @@
   }
 }
 
-.edit-btn-container{
-  display: flex;
-}
-
-.edit-btn-container > div{
+.flex > div{
   margin-top: 5px;
 }

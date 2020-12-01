@@ -26,7 +26,7 @@ export class PhotoComponent implements OnInit {
   editMode: boolean;
   deleteMode: boolean;
   tagMode:boolean;
-  facetracker;
+  newFace: any;
   facelist:Array<any>; //{total: 1, width: 39, height: 39, x: 195, y: 624}
 
 
@@ -41,42 +41,72 @@ export class PhotoComponent implements OnInit {
       this.catService.loadPhotoFromId(idPhoto);
       // setTimeout( () => console.log("wait to load children"), 500);
     });
+    this.newFace = null;
     this.tagMode = false;
     this.editMode = false;
     this.editMode = false;
     this.facelist = [];
 
     this.catService.selectedCoordinates.subscribe( coord => {
-      console.log(coord);
-      this.catService.curPhoto.long = coord[0];
-      this.catService.curPhoto.lat = coord[1];
-      this.apiService.putPhoto(this.catService.curPhoto).subscribe(
-        {
-          next: data => {
-            data.shootDate = this.catService.curPhoto.shootDate;
-            this.catService.geoTagMode = false;
-            this.catService.updatePhoto(data);
-            this.toast.success(data.title,
-              'Enregistré',
-              {timeOut: 3000,});
-          },
-          error: error => {
-            this.toast.error(this.catService.curPhoto.title,
-            'Echec de la modification',
-            {timeOut: 4000,});
-            console.error('There was an error in rotation!', error);
-          }
-      });
+      if (this.catService.curItem.idPhoto){
+        this.catService.curItem.long = coord[0];
+        this.catService.curItem.lat = coord[1];
+        this.apiService.putPhoto(this.catService.curItem as PhotoModel).subscribe(
+          {
+            next: data => {
+              data.shootDate = this.catService.curItem.shootDate;
+              this.catService.geoTagMode = false;
+              this.catService.updatePhoto(data);
+              this.toast.success(data.title,
+                'Enregistré',
+                {timeOut: 3000,});
+            },
+            error: error => {
+              this.toast.error(this.catService.curItem.title,
+              'Echec de la modification',
+              {timeOut: 4000,});
+              console.error('There was an error in rotation!', error);
+            }
+        });
+      }
     });
   }
 
   moveNextPhoto(){
-    let previousPhotoId = this.catService.curPhoto.idPhoto;
-    this.catService.moveNextPhoto();
-    let cururl = this.location.path().replace( "photos/"+previousPhotoId, "photos/" + this.catService.curPhoto.idPhoto );
-    this.location.go(cururl);
-    this.photo = this.catService.curPhoto;
-    this.tagMode = false;
+    let previousPhotoId = this.catService.curItem.idPhoto;
+    this.catService.moveNextItem();
+    if(this.catService.curItem.idPhoto){
+      let cururl = this.location.path().replace( "photos/"+previousPhotoId, "photos/" + this.catService.curItem.idPhoto );
+      this.location.go(cururl);
+      this.photo = this.catService.curItem as PhotoModel;
+      this.tagMode = false;
+    }
+    else{
+      this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+this.catService.curCat.id +'/videos/' + this.catService.curItem.idVideo));
+    }
+  }
+
+  movePrevPhoto(){
+    let previousPhotoId = this.catService.curItem.idPhoto;
+    this.catService.movePrevItem();
+    if(this.catService.curItem.idPhoto){
+      let cururl = this.location.path().replace( "photos/"+previousPhotoId, "photos/" + this.catService.curItem.idPhoto );
+      this.location.go(cururl);
+      this.photo = this.catService.curItem as PhotoModel;
+      this.tagMode = false;
+    }
+    else{
+      this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+this.catService.curCat.id +'/videos/' + this.catService.curItem.idVideo));
+    }
+  }
+
+
+  tagNotDetected(e, img){
+    this.newFace = { x:e.offsetX/img.width , y:e.offsetY/img.height, h: 0, w: 0}
+    console.log(e.offsetX);
+    console.log(e.offsetY);
+    console.log(img.width);
+    console.log(img.height);
   }
 
   setSelectedFace(e,f){
@@ -85,10 +115,10 @@ export class PhotoComponent implements OnInit {
       this.apiService.deleteFace(f.facesId).subscribe(
         {
           next: res => {
-            this.catService.curPhoto.facesToTag.push({x:f.x, y:f.y, w:f.w,h:f.h})
-            this.catService.curPhoto.faces.splice(this.catService.curPhoto.faces.findIndex(t => t.x === f.x && t.y === f.y),1);
-            this.catService.curPhoto.peoples.splice(this.catService.curPhoto.peoples.findIndex(p => p.id === f.idPeople),1);
-            this.catService.updatePhoto(this.catService.curPhoto);
+            this.catService.curItem.facesToTag.push({x:f.x, y:f.y, w:f.w,h:f.h})
+            this.catService.curItem.faces.splice(this.catService.curItem.faces.findIndex(t => t.x === f.x && t.y === f.y),1);
+            this.catService.curItem.peoples.splice(this.catService.curItem.peoples.findIndex(p => p.id === f.idPeople),1);
+            this.catService.updatePhoto(this.catService.curItem as PhotoModel);
             this.toast.success( '',
               'Enregistré',
               {timeOut: 3000,});
@@ -102,16 +132,17 @@ export class PhotoComponent implements OnInit {
       });
     }
     else{
-      this.apiService.postFace(this.catService.curPhoto.idPhoto,e,f.x,f.y,f.h,f.w).subscribe(
+      this.apiService.postFace(this.catService.curItem.idPhoto,e,f.x,f.y,f.h,f.w).subscribe(
         {
           next: res => {
             console.log(res);
-            this.catService.curPhoto.faces.push(res);
-            this.catService.curPhoto.facesToTag.splice(this.catService.curPhoto.facesToTag.findIndex(t => t.x === f.x && t.y === f.y),1);
+            this.newFace = null;
+            this.catService.curItem.faces.push(res);
+            this.catService.curItem.facesToTag.splice(this.catService.curItem.facesToTag.findIndex(t => t.x === f.x && t.y === f.y),1);
             // this.catService.curPhoto.listPeople.push(res.people);
             // TODO à modifier
-            this.catService.updatePhoto(this.catService.curPhoto);
-            this.catService.curPhoto.peoples.push(res.people);
+            this.catService.updatePhoto(this.catService.curItem as PhotoModel);
+            this.catService.curItem.peoples.push(res.people);
 
 
             this.toast.success( res.people.title,
@@ -130,15 +161,6 @@ export class PhotoComponent implements OnInit {
     console.log(e);
     console.log(f);
     // TODO: mise à jour du list people et passage
-  }
-
-  movePrevPhoto(){
-    let previousPhotoId = this.catService.curPhoto.idPhoto;
-    this.catService.movePrevPhoto();
-    let cururl = this.location.path().replace( "photos/"+previousPhotoId, "photos/" + this.catService.curPhoto.idPhoto );
-    this.location.go(cururl);
-    this.photo = this.catService.curPhoto;
-    this.tagMode = false;
   }
 
   gotToPeople(idPeople){
@@ -165,7 +187,7 @@ export class PhotoComponent implements OnInit {
 
   toEditMode(){
     this.editMode = true;
-    this.photo = {...this.catService.curPhoto};
+    this.photo = {...this.catService.curItem} as PhotoModel;
   }
 
   cancelEditMode(){
@@ -174,6 +196,7 @@ export class PhotoComponent implements OnInit {
 
   updatePhoto(){
     this.apiService.putPhoto(this.photo).subscribe( photo =>{
+      photo.shootDate = new Date (photo.shootDate);
       this.catService.updatePhoto(photo);
       this.editMode = false;
       this.toast.success(photo.title + ' a été mise à jour',
@@ -189,16 +212,16 @@ export class PhotoComponent implements OnInit {
   }
 
   showFace(idPeople){
-    this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = true;
+    this.catService.curItem.faces[this.catService.curItem.faces.findIndex(p => p.idPeople === idPeople)].show = true;
   }
 
   showTagedFace(idPeople){
-    this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = true;
+    this.catService.curItem.faces[this.catService.curItem.faces.findIndex(p => p.idPeople === idPeople)].show = true;
   }
 
   hideTagedFace(idPeople){
     if (!this.tagMode)
-      this.catService.curPhoto.faces[this.catService.curPhoto.faces.findIndex(p => p.idPeople === idPeople)].show = false;
+      this.catService.curItem.faces[this.catService.curItem.faces.findIndex(p => p.idPeople === idPeople)].show = false;
   }
 
   cancelGeoMode(){
@@ -224,11 +247,11 @@ export class PhotoComponent implements OnInit {
 
   cancelTagMode(){
     this.tagMode = false;
-    this.catService.curPhoto.faces.forEach(f => f.show = false);
+    this.catService.curItem.faces.forEach(f => f.show = false);
   }
 
   rotateLeft(){
-    this.apiService.rotateLeft(this.catService.curPhoto).subscribe(
+    this.apiService.rotateLeft(this.catService.curItem as PhotoModel).subscribe(
       {
         next: data => {
           data.srcOrig+="?" + new Date().getTime();
@@ -237,14 +260,14 @@ export class PhotoComponent implements OnInit {
           data.src640+="?" + new Date().getTime();
           data.src1280+="?" + new Date().getTime();
           data.src1920+="?" + new Date().getTime();
-          data.shootDate = this.catService.curPhoto.shootDate;
+          data.shootDate = this.catService.curItem.shootDate;
           this.catService.updatePhoto(data);
           this.toast.success(data.title,
             'Enregistré',
             {timeOut: 3000,});
         },
         error: error => {
-          this.toast.error(this.catService.curPhoto.title,
+          this.toast.error(this.catService.curItem.title,
           'Echec de la modification',
           {timeOut: 4000,});
           console.error('There was an error in rotation!', error);
@@ -253,7 +276,7 @@ export class PhotoComponent implements OnInit {
   }
 
   rotateRight(){
-    this.apiService.rotateRight(this.catService.curPhoto).subscribe(
+    this.apiService.rotateRight(this.catService.curItem as PhotoModel).subscribe(
       {
         next: data => {
           data.srcOrig+="?" + new Date().getTime();
@@ -262,14 +285,14 @@ export class PhotoComponent implements OnInit {
           data.src640+="?" + new Date().getTime();
           data.src1280+="?" + new Date().getTime();
           data.src1920+="?" + new Date().getTime();
-          data.shootDate = this.catService.curPhoto.shootDate;
+          data.shootDate = this.catService.curItem.shootDate;
           this.catService.updatePhoto(data);
           this.toast.success(data.title,
             'Enregistré',
             {timeOut: 3000,});
         },
         error: error => {
-          this.toast.error(this.catService.curPhoto.title,
+          this.toast.error(this.catService.curItem.title,
           'Echec de la modification',
           {timeOut: 4000,});
           console.error('There was an error in rotation!', error);
@@ -278,25 +301,32 @@ export class PhotoComponent implements OnInit {
   }
 
   deletePhoto(){
-    this.apiService.deletePhoto(this.catService.curPhoto).subscribe(
+    this.apiService.deletePhoto(this.catService.curItem as PhotoModel).subscribe(
       {
         next: data => {
-          let previousPhotoId = this.catService.curPhoto.idPhoto;
-          const photoTitle = this.catService.curPhoto.title;
+          let previousPhotoId = this.catService.curItem.idPhoto;
+          const photoTitle = this.catService.curItem.title;
           this.catService.deleteCurrentPhoto();
-          let cururl = this.location.path().replace( "photos/"+previousPhotoId, "photos/" + this.catService.curPhoto.idPhoto );
-          this.location.go(cururl);
-          this.photo = this.catService.curPhoto;
-          this.deleteMode = false;
           this.toast.success(photoTitle,
             'Photo supprimé',
             {timeOut: 3000,});
-          if (this.catService.curPhotos.length === 0){
+          if (this.catService.curItems.length === 0){
             this.returnGalery();
           }
+          if(this.catService.curItem.idVideo){
+            this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+this.catService.curCat.id +'/videos/' + this.catService.curItem.idVideo));
+          }
+          else{
+            let cururl = this.location.path().replace( "photos/"+previousPhotoId, "photos/" + this.catService.curItem.idPhoto );
+            this.location.go(cururl);
+            this.photo = this.catService.curItem as PhotoModel;
+            this.deleteMode = false;
+          }
+
+
         },
         error: error => {
-          this.toast.error(this.catService.curPhoto.title,
+          this.toast.error(this.catService.curItem.title,
           'Echec de la suppression',
           {timeOut: 4000,});
           console.error('There was an error in delete!', error);
@@ -306,11 +336,11 @@ export class PhotoComponent implements OnInit {
 
   setCover(){
     this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => {
-      this.apiService.putCover(this.catService.curCat, this.catService.curPhoto, val[0].path).subscribe(
+      this.apiService.putCover(this.catService.curCat, this.catService.curItem as PhotoModel, val[0].path).subscribe(
         {
           next: cat => {
-            this.catService.curCat.coverPhoto = this.catService.curPhoto;
-            this.toast.success( this.catService.curPhoto.title,
+            this.catService.curCat.coverPhoto = this.catService.curItem as PhotoModel;
+            this.toast.success( this.catService.curItem.title,
               'Photo de couverture',
               {timeOut: 3000,});
           },
@@ -330,7 +360,7 @@ export class PhotoComponent implements OnInit {
       {
         next: cat => {
           this.catService.curCat.coverPhoto = null;
-          this.toast.success( this.catService.curPhoto.title,
+          this.toast.success( this.catService.curItem.title,
             'Photo de couverture enlevé',
             {timeOut: 3000,});
         },
