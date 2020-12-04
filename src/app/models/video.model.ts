@@ -21,4 +21,6 @@ export interface VideoModel{
   peoples?: Array<PeopleModel>;
   albums?: Array<AlbumModel>;
   faces: Array<FaceModel>;
+
+  originalFileName: string;
 }

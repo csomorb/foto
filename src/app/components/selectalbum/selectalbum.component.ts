@@ -2,6 +2,7 @@ import { Component, OnInit, EventEmitter, Output, ElementRef, ViewChild, Input }
 import { ApiService } from 'src/app/services/api.service';
 import { FormBuilder } from '@angular/forms';
 import { AlbumModel } from 'src/app/models/album.model';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-selectalbum',
@@ -19,7 +20,7 @@ export class SelectalbumComponent implements OnInit {
   @Input('defaultSelectedIdALbum') defaultSelectedIdALbum?: number;
   @Input('exeptIdAlbum') exeptIdAlbum?: number;
 
-  constructor(private apiService: ApiService, private fb: FormBuilder) {
+  constructor(private apiService: ApiService, private categoryService: CategoryService, private fb: FormBuilder) {
   }
 
   ngOnInit(): void {
@@ -67,6 +68,7 @@ export class SelectalbumComponent implements OnInit {
     console.log(album);
     if(album.title)
     this.apiService.postAlbum(album.title,album.description,album.idAlbum).subscribe(newAlbum => {
+      this.categoryService.albumList.push(newAlbum);
       this.modeAdd = false;
       this.initSelect(newAlbum.id);
       }

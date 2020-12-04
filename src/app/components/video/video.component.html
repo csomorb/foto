@@ -1,6 +1,6 @@
 <div class="item">
   <div class="item-view-container">
-    <video controls width="100%" #video>
+    <video controls class="video" #video>
 
       <source [src]="videoBaseUrl + idVideo + '/' + idVideo + '.mp4'"
               type="video/mp4">
@@ -19,13 +19,14 @@
       </div>
       <div (click)="moveNextItem()" class="navigation-item">
         <img *ngIf="catService?.nextItem && catService?.nextItem.idPhoto" [src]="photoBaseUrl + catService?.nextItem?.src150" alt="Next picture"/>
-        <img *ngIf="catService?.prevItem && catService?.nextItem.idVideo" [src]="photoBaseUrl + '/videos/' +catService?.nextItem?.idVideo + '/t1.jpg'" alt="Next item"/>
+        <img *ngIf="catService?.nextItem && catService?.nextItem.idVideo" [src]="photoBaseUrl + '/videos/' +catService?.nextItem?.idVideo + '/t1.jpg'" alt="Next item"/>
         <div *ngIf="catService?.nextItem" class="arrow arrow-next"></div>
       </div>
     </div>
     <div class="photo-prop">
       <div class="action-btn">
-        <div (click)="toDeleteMode()" class="btn-i btn-trash"></div>
+
+        <div class="btn-i btn-download" (click)="download()"></div>
         <!-- <div (click)="face(img,canvas)" class="btn-i btn-calendar"></div> -->
         <div *ngIf="!catService.geoTagMode" (click)="toGeoMode()" class="btn-i btn-geotag"></div>
         <div *ngIf="catService.geoTagMode" (click)="cancelGeoMode()" class="btn-i btn-cancel"></div>
@@ -65,6 +66,7 @@
           </div>
         </div>
         <div *ngIf="editMode" class="flex">
+          <div (click)="toDeleteMode()" class="btn-i btn-trash"></div>
           <div (click)="updateVideo()" class="btn-i btn-save btn-align-right"></div>
         </div>
       </form>

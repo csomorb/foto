@@ -1,38 +1,204 @@
-.photo-container {
+.flexbin {
   display: flex;
+  overflow: hidden;
   flex-wrap: wrap;
+  margin: 2px;
+}
+.flexbin:after {
+    content: '';
+    flex-grow: 999999999;
+    min-width: 220px;
+    height: 0;
+}
+.flexbin > div {
+    position: relative;
+    display: block;
+    height: 220px;
+    margin: 1.5px;
+    flex-grow: 1;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+  }
+.flexbin>*:hover {
+  transform: scale(1.1);
+  z-index: 13;
+}
+.flexbin > * > img {
+      height: 220px;
+      object-fit: cover;
+      max-width: 100%;
+      min-width: 100%;
+      vertical-align: bottom;
+}
+.flexbin > .video-i > img {
+  position: absolute;
+}
+.flexbin > .video-i > .nn {
+  position: relative;
+  visibility: hidden;
 }
 
-.photo-container:after {
-  content:'';
-  display:block;
-  flex-grow: 10;
+.flexbin.flexbin-margin {
+  margin: 1.5px;
+}
+.video-item{
+  background-image: url('/assets/icon/video.svg');
+  background-position: center;
+  background-size: 70px;
+  background-repeat: no-repeat;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin-top: -220px;
+  z-index:101;
+}
+@media (max-width: 980px) {
+	.flexbin {
+		display: flex;
+		overflow: hidden;
+		flex-wrap: wrap;
+		margin: 2px;
+	}
+	.flexbin:after {
+		content: '';
+		flex-grow: 999999999;
+		min-width: 150px;
+		height: 0;
+	}
+	.flexbin>div {
+		position: relative;
+		display: block;
+		height: 150px;
+		margin: 1.5px;
+    flex-grow: 1;
+  }
+
+	.flexbin>*>img {
+		height: 150px;
+		object-fit: cover;
+		max-width: 100%;
+		min-width: 100%;
+		vertical-align: bottom;
+	}
+	.flexbin.flexbin-margin {
+		margin: 1.5px;
+  }
+
+  .video-item{
+    margin-top: -150px;
+  }
 }
 
-.photo-container > div {
-  height: 30vh;
-  flex-grow: 1;
-  margin:1px;
-  cursor: pointer;
-}
+@media (max-width: 400px) {
+	.flexbin {
+		display: flex;
+		overflow: hidden;
+		flex-wrap: wrap;
+		margin: 2px;
+	}
+	.flexbin:after {
+		content: '';
+		flex-grow: 999999999;
+		min-width: 100px;
+		height: 0;
+	}
+	.flexbin>* {
+		position: relative;
+		display: block;
+		height: 100px;
+		margin: 1.5px;
+		flex-grow: 1;
+	}
+	.flexbin>*>img {
+		height: 100px;
+		object-fit: cover;
+		max-width: 100%;
+		min-width: 100%;
+		vertical-align: bottom;
+	}
+	.flexbin.flexbin-margin {
+		margin: 1.5px;
+  }
 
-.photo-container img {
-  max-height: 100%;
-  min-width: 100%;
-  object-fit: cover;
-  vertical-align: bottom;
+  .video-item{
+    margin-top: -100px;
+  }
 }
 
 .photo-title{
-    position: relative;
-    top: -19px;
-    text-align: center;
-    background: #0a0b0cb8;
-    display: none;
+  position: relative;
+  top: -19px;
+  text-align: center;
+  background: #0a0b0cb8;
+  display: none;
 }
 
-.photo-container > div:hover .photo-title{
-  display:block;
+.flexbin > div:hover .photo-title{
+display:block;
+}
+
+.flexbin > div:hover .video-item{
+  display: none;
+}
+
+.video-i .tt {
+-webkit-animation: showMe 2s linear infinite 0s forwards;
+	-moz-animation: showMe 2s linear infinite 0s forwards;
+	-o-animation: showMe 2s linear infinite 0s forwards;
+	-ms-animation: showMe 2s linear infinite 0s forwards;
+	animation: showMe 2s linear infinite 0s forwards;
+	-webkit-animation-play-state: paused;
+	-moz-animation-play-state: paused;
+	-o-animation-play-state: paused;
+	-ms-animation-play-state: paused;
+  animation-play-state: paused;
+}
+
+@keyframes showMe {
+  /* 0% { visibility: visible; z-index: 100; }
+  25% { visibility: visible; z-index: 100; }
+  50% { visibility: hidden; z-index: 0; }
+  100% { visibility: hidden; z-index: 0; } */
+  0% { opacity: 1; }
+  25% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.video-i:hover .tt{
+	-webkit-animation-play-state: running;
+	-moz-animation-play-state: running;
+	-o-animation-play-state: running;
+	-ms-animation-play-state: running;
+	animation-play-state: running;
+}
+
+.video-i .tt:nth-child(1){
+	z-index: 9;
+}
+.video-i .tt:nth-child(2){
+    -webkit-animation-delay: 0.5s;
+	-moz-animation-delay: 0.5s;
+	-o-animation-delay: 0.5s;
+	-ms-animation-delay: 0.5s;
+	animation-delay: 0.5s;
+	z-index: 8;
+}
+.video-i .tt:nth-child(3){
+    -webkit-animation-delay: 1s;
+	-moz-animation-delay: 1s;
+	-o-animation-delay: 1s;
+	-ms-animation-delay: 1s;
+	animation-delay: 1s;
+	z-index: 7;
+}
+.video-i .tt:nth-child(4){
+    -webkit-animation-delay: 1.5s;
+	-moz-animation-delay: 1.5s;
+	-o-animation-delay: 1.5s;
+	-ms-animation-delay: 1.5s;
+	animation-delay: 1.5s;
+	z-index: 6;
 }
 
 .album-container{
@@ -177,7 +343,6 @@ h2{
   height: 30px;
   background-size: 23px; */
 }
-
 
 
 .delete-conf{
@@ -341,3 +506,4 @@ h2{
   margin-left: 15px;
   margin-right: 15px;
 }
+

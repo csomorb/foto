@@ -6,7 +6,8 @@ import { Location } from '@angular/common';
 import { ApiService } from 'src/app/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { CategoryService } from 'src/app/services/category.service';
-import { first } from 'rxjs/operators'
+import { first } from 'rxjs/operators';
+import { saveAs } from 'file-saver';
 
 export enum KEY_CODE {
   RIGHT_ARROW = 39,
@@ -165,6 +166,10 @@ export class PhotoComponent implements OnInit {
 
   gotToPeople(idPeople){
     this.router.navigateByUrl("peoples/" + idPeople);
+  }
+
+  gotToAlbum(idAlbum){
+    this.router.navigateByUrl("albums/" + idAlbum);
   }
 
   @HostListener('window:keyup', ['$event'])
@@ -339,7 +344,7 @@ export class PhotoComponent implements OnInit {
       this.apiService.putCover(this.catService.curCat, this.catService.curItem as PhotoModel, val[0].path).subscribe(
         {
           next: cat => {
-            this.catService.curCat.coverPhoto = this.catService.curItem as PhotoModel;
+            this.catService.setCover(this.catService.curItem as PhotoModel, val[0].path);
             this.toast.success( this.catService.curItem.title,
               'Photo de couverture',
               {timeOut: 3000,});
@@ -359,7 +364,7 @@ export class PhotoComponent implements OnInit {
       this.apiService.putNoCover(this.catService.curCat, val[0].path).subscribe(
       {
         next: cat => {
-          this.catService.curCat.coverPhoto = null;
+          this.catService.setCover(null, val[0].path);
           this.toast.success( this.catService.curItem.title,
             'Photo de couverture enlevé',
             {timeOut: 3000,});
@@ -374,4 +379,7 @@ export class PhotoComponent implements OnInit {
     });
   }
 
+  download(){
+    saveAs(this.photoBaseUrl + this.catService?.curItem?.srcOrig,this.catService.curItem.originalFileName);
+  }
 }

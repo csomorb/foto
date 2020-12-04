@@ -166,3 +166,34 @@
 .flex > div{
   margin-top: 5px;
 }
+
+.album-cover{
+  width: 130px;
+  height: 130px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.album-name{
+  background-color: #41484ea1;
+  margin-top: -76px;
+  text-align: center;
+  width: 100%;
+}
+
+.albums-container{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.album-container{
+  width: 130px;
+  height: 130px;
+  cursor: pointer;
+  box-shadow: 1px 1px 10px 0 #000000;
+}
+
+.album-container:hover {
+  box-shadow: 1px 1px 7px 0 #CBCBCB;
+}

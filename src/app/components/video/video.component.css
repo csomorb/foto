@@ -1,3 +1,13 @@
 .flex > div{
   margin-top: 5px;
 }
+
+.video{
+  width: 640px;
+}
+
+@media screen and (max-width: 945px){
+  .video{
+    width: 100%;
+  }
+}

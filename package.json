@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "~10.0.4",
     "@angular/router": "~10.0.4",
     "@types/ol": "^6.4.2",
+    "file-saver": "^2.0.5",
     "ng-pick-datetime": "^7.0.0",
     "ngx-toastr": "^13.1.0",
     "ol": "^6.4.3",

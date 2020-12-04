@@ -6,7 +6,8 @@ import { Location } from '@angular/common';
 import { ApiService } from 'src/app/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { CategoryService } from 'src/app/services/category.service';
-import { first } from 'rxjs/operators'
+import { first } from 'rxjs/operators';
+import { saveAs } from 'file-saver';
 
 export enum KEY_CODE {
   RIGHT_ARROW = 39,
@@ -141,9 +142,10 @@ export class VideoComponent implements OnInit {
     this.apiService.putVideo(this.video).subscribe( video =>{
       video.shootDate = new Date (video.shootDate);
       this.catService.updateVideo(video);
+      console.log(video);
       this.editMode = false;
       this.toast.success(video.title + ' a été mise à jour',
-        'Photo mise à jour',
+        'Vidéo mise à jour',
         {timeOut: 3000,});
     }, error => {
       console.log(error);
@@ -210,6 +212,10 @@ export class VideoComponent implements OnInit {
           console.error('There was an error in delete!', error);
         }
     });
+  }
+
+  download(){
+    saveAs(this.videoBaseUrl + this.idVideo + '/' + this.idVideo + '.mp4', this.catService.curItem.originalFileName.split('.')[0] + '.mp4');
   }
 
 }

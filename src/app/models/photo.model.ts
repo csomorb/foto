@@ -18,6 +18,7 @@ export interface PhotoModel{
   facesToTag: Array<any>;
   faces: Array<FaceModel>;
 
+  originalFileName: string;
   title: string;
   description: string;
   weight: number;

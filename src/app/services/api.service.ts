@@ -110,10 +110,17 @@ export class ApiService {
   }
 
   /**
-   * Renvoie la liste de tous les albums avec la photo de couverture
+   * Renvoie la liste ddes albums en arbre
    */
   getAlbums(){
     return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums`);
+  }
+
+  /**
+   * Renvoie la liste des albums avec leur photo de couverture
+   */
+  getAlbumsCover(){
+    return this.http.get<Array<AlbumModel>>(`${environment.apiUrl}/albums/covers`);
   }
 
   /**

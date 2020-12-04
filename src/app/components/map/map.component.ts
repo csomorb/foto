@@ -249,7 +249,7 @@ export class MapComponent implements OnInit {
         return;
       }
       if(this.catService.geoTagMode){
-        this.mapElement.nativeElement.style.cursor = "url('/assets/icon/plus.svg') 32 32,auto";
+        this.mapElement.nativeElement.style.cursor = "url('/assets/icon/plus.svg') 16 16,auto";
       }
       else{
         var pixel = this.map.getEventPixel(e.originalEvent);

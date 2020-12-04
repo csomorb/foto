@@ -22,24 +22,10 @@ export class CategoryService {
 
   curItems: Array<ItemModel>;
   curAlbumItems: Array<ItemModel>;
-  // curAlbumVideos: Array<VideoModel>;
-  // curVideos: Array<VideoModel>;
 
   timeYears: Array<number>;
   timeMonths: Array<any>;
   timeDays: Array<any>;
-  /**
-   * Current photo
-   */
-  // curPhoto: PhotoModel;
-  // prevPhoto: PhotoModel;
-  // nextPhoto: PhotoModel;
-  // idPhotoToLoad: number;
-  // curVideo: VideoModel;
-  // prevVideo: VideoModel;
-  // nextVideo: VideoModel;
-  // idVideoToLoad: number;
-
   curItem: ItemModel;
   nextItem: ItemModel;
   prevItem: ItemModel;
@@ -49,6 +35,7 @@ export class CategoryService {
   parentList: Array<any>;
   peopleList: Array<PeopleModel>;
   tagList: Array<TagModel>;
+  albumList: Array<AlbumModel>;
 
   markersSource : BehaviorSubject<Array<MarkerModel>> = new BehaviorSubject([]);
   markers = this.markersSource.asObservable();
@@ -60,8 +47,10 @@ export class CategoryService {
     this.idPhotoToLoad = 0;
     this.idVideoToLoad = 0;
     this.geoTagMode = false;
+    this.curAlbumItems = [];
     this.apiService.getPeoples().subscribe( p => this.peopleList = p);
     this.apiService.getTags().subscribe( t => this.tagList = t);
+    this.apiService.getAlbumsCover().subscribe( a => this.albumList = a );
     this.displayMap = false;
   }
 
@@ -89,18 +78,12 @@ export class CategoryService {
     }
     this.displayMap = true;
     this.apiService.getPeopleWithPhotos(idPeople).subscribe(people => {
-      console.log(people);
       this.curCat = people;
       this.curCat.items = [];
       this.curCat.faces.forEach(f =>{
-        f.photo.shootDate = new Date(f.photo.shootDate);
-        f.photo.peoples = [];
-        f.photo.faces.forEach(fa => {
-          fa.show = false;
-          f.photo.peoples.push(this.peopleList.find( s => s.id === fa.idPeople));
-        });
         this.curCat.items.push(f.photo);
       });
+      this._buildItems();
 
       //TODO: videos
 
@@ -123,24 +106,6 @@ export class CategoryService {
     }
     this.apiService.getAlbumWithPhotos(id).subscribe(album => {
       this.curCat = album;
-      this.curCat.photos.forEach(p =>{
-        p.shootDate = new Date(p.shootDate);
-        p.peoples = [];
-        if(p.faces)
-        p.faces.forEach(f => {
-          f.show = false;
-          p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-        });
-      });
-      this.curCat.videos.forEach(v =>{
-        v.shootDate = new Date(v.shootDate);
-        v.peoples = [];
-        if(v.faces)
-        v.faces.forEach(f => {
-          f.show = false;
-          v.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-        });
-      });
       this.apiService.getSSAlbums(id).subscribe(liste => {
         this.curCat.listAlbum = liste.children;
         this.curCat.listAlbum.forEach((ssAlbum, i) =>
@@ -154,6 +119,7 @@ export class CategoryService {
         });
       });
       this.curCat.items = [...this.curCat.photos,...this.curCat.videos];
+      this._buildItems();
       this.curItems = [...this.curCat.items];
       this.triPriseDeVueAncienRecent();
       this.updateMarkerFromCurItems();
@@ -161,14 +127,35 @@ export class CategoryService {
     });
   }
 
+  private _buildItems(){
+    this.curCat.items = this.curCat.items.map(i =>{
+      i.shootDate = new Date(i.shootDate);
+      i.peoples = [];
+      i.albums = i.albums.map(a => {
+        return this.albumList.find( s => s.id === a.id)
+      });
+      i.tags = i.tags.map(a => {
+        return this.tagList.find( s => s.id === a.id)
+      });
+      if(i.faces)
+      i.faces = i.faces.map(f => {
+        f.show = false;
+        i.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
+        return f;
+      });
+      return i;
+    });
+  }
+
+
   /**
    * Charge les albums à la racine
    */
   loadRootAlbum(){
     this.displayMap = false;
-    this.curCat = {id: 0, title: "Acceuil", description : "Bienvenu sur l'album photo", listAlbum : [], photos: []} as CategoryModel;
+    this.curCat = {id: 0, title: "Acceuil", description : "Bienvenu sur l'album photo", listAlbum : [], photos: [], videos:[], items:[]} as CategoryModel;
     this.parentList = [];
-    this.apiService.getRootsAlbums().subscribe(albums => { console.log(albums);
+    this.apiService.getRootsAlbums().subscribe(albums => {
       this.curCat.listAlbum = albums;
       this.curItems = [];
     });
@@ -184,56 +171,20 @@ export class CategoryService {
       albums.forEach(album => {
         nbItems += album.photos.length;
         nbItems += album.videos.length;
-        album.photos.forEach(p =>{
-          p.shootDate = new Date(p.shootDate);
-          p.peoples = [];
-          if (p.faces)
-          p.faces.forEach(f => {
-            f.show = false;
-            p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-          });
-        });
-        album.videos.forEach(v =>{
-          v.shootDate = new Date(v.shootDate);
-          v.peoples = [];
-          if (v.faces)
-          v.faces.forEach(f => {
-            f.show = false;
-            v.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-          });
-        });
-        this.curItems.push(...album.photos);
-        this.curItems.push(...album.videos);
         this.curCat.items.push(...album.photos);
         this.curCat.items.push(...album.videos);
       });
+      this._buildItems();
+      this.curItems = [ ...this.curCat.items];
       this.getYears();
       if (nbItems > 99){
         this.apiService.getAlbumsTimeItems(this.curCat.id,0).subscribe( albums =>{
           albums.forEach(album => {
-            album.photos.forEach(p =>{
-              p.shootDate = new Date(p.shootDate);
-              p.peoples = [];
-              if (p.faces)
-              p.faces.forEach(f => {
-                f.show = false;
-                p.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-              });
-            });
-            album.videos.forEach(v =>{
-              v.shootDate = new Date(v.shootDate);
-              v.peoples = [];
-              if (v.faces)
-              v.faces.forEach(f => {
-                f.show = false;
-                v.peoples.push(this.peopleList.find( s => s.id === f.idPeople));
-              });
-            });
-            this.curItems.push(...album.photos);
-            this.curItems.push(...album.videos);
             this.curCat.items.push(...album.photos);
             this.curCat.items.push(...album.videos);
           });
+          this._buildItems();
+          this.curItems = [ ...this.curCat.items];
           this.getYears();
           this.updateMarkerFromCurItems();
         });
@@ -250,6 +201,7 @@ export class CategoryService {
   cancelAlbumTimePhotos(){
     this.curItems = [...this.curAlbumItems];
     this.curCat.items = [...this.curAlbumItems];
+    this.curAlbumItems = [];
   }
 
 
@@ -258,7 +210,6 @@ export class CategoryService {
    */
   moveNextItem(){
     if(this.nextItem){
-      console.log(this.nextItem);
       this.curItem = this.nextItem;
       this._getNextPrevItem(this.curItem);
     }
@@ -326,8 +277,89 @@ export class CategoryService {
     this.curCat = { ...this.curCat, ...category };
   }
 
-  setCover(photo){
+  setCover(photo, cat){
     this.curCat.coverPhoto = photo;
+    if(cat === 'albums'){
+      this.albumList[this.albumList.findIndex(a => a.id === this.curCat.id)].coverPhoto = photo;
+      this.curItems.forEach(i => {
+        i.albums.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        })
+      });
+      this.curCat.items.forEach(i => {
+        i.albums.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      });
+      if (this.curItem){
+        this.curItem.albums.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      }
+      this.curAlbumItems.forEach(i => {
+        i.albums.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      });
+    }
+    if(cat === 'peoples'){
+      this.albumList[this.peopleList.findIndex(a => a.id === this.curCat.id)].coverPhoto = photo;
+      this.curItems.forEach(i => {
+        i.peoples.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        })
+      });
+      this.curCat.items.forEach(i => {
+        i.peoples.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      });
+      if (this.curItem){
+        this.curItem.peoples.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      }
+      this.curAlbumItems.forEach(i => {
+        i.peoples.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      });
+    }
+    if(cat === 'tags'){
+      this.albumList[this.tagList.findIndex(a => a.id === this.curCat.id)].coverPhoto = photo;
+      this.curItems.forEach(i => {
+        i.tags.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        })
+      });
+      this.curCat.items.forEach(i => {
+        i.tags.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      });
+      if (this.curItem){
+        this.curItem.tags.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      }
+      this.curAlbumItems.forEach(i => {
+        i.tags.forEach(a => {
+          if (a.id === this.curCat.id)
+            a.coverPhoto = photo;
+        });
+      });
+    }
   }
 
   /**

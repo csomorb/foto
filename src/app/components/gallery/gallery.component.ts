@@ -7,6 +7,7 @@ import { ApiService } from 'src/app/services/api.service';
 import { ToastrService } from 'ngx-toastr';
 import { first } from 'rxjs/operators'
 import { ItemModel } from 'src/app/models/item.model';
+import { VideoModel } from 'src/app/models/video.model';
 
 @Component({
   selector: 'app-gallery',
@@ -50,8 +51,7 @@ export class GalleryComponent implements OnInit {
     this.addMode = false;
     this.timeMode = false;
     this.selectedItems = [];
-    this.nbItemPerPage = 40;
-
+    this.nbItemPerPage = 50;
      if (this.catService.curItem){
       let index = 0;
       if(this.catService.curItem.idPhoto)
@@ -127,11 +127,19 @@ export class GalleryComponent implements OnInit {
   }
 
   goToCategory(id){
+    this.editMode = false;
+    this.triMode = false;
+    this.timeMode = false;
+    this.selectedItems = [];
     this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => this.router.navigateByUrl('/'+val[0].path+'/'+id));
   }
 
   goToAlbum(id){
-     this.router.navigateByUrl('/albums/'+id);
+    this.editMode = false;
+    this.triMode = false;
+    this.timeMode = false;
+    this.selectedItems = [];
+    this.router.navigateByUrl('/albums/'+id);
   }
 
   goToTag(id){
@@ -211,74 +219,115 @@ export class GalleryComponent implements OnInit {
     for (var i = 0; i < this.selectedItems.length; i++) {
       this.selectedItems[i].isSelected = this.masterSelected;
     }
-    this.nbSelectedItem += this.selectedItems.reduce((a, i)=> {return i.isSelected?a+1:a;} ,0);
+    this.nbSelectedItem = this.selectedItems.reduce((a, i)=> {return i.isSelected?a+1:a;} ,0);
   }
 
   isAllSelected() {
     this.masterSelected = this.selectedItems.every(function(item:any) {
         return item.isSelected == true;
     });
-    this.nbSelectedItem += this.selectedItems.reduce((a, i)=> {return i.isSelected?a+1:a;} ,0);
+
+    this.nbSelectedItem = this.selectedItems.reduce((a, i)=> {return i.isSelected?a+1:a;} ,0);
   }
 
-  deletePhoto(photo){
-    photo.deleteMode = true;
+  deleteItem(item){
+    item.deleteMode = true;
   }
 
-  deleteCancelPhoto(photo){
-    photo.deleteMode = false;
+  deleteCancelItem(item){
+    item.deleteMode = false;
   }
 
-  deleteConfPhoto(photo){
-    const idPhotoToDelete = photo.idPhoto;
-    const photoTitle = photo.title;
-    this.apiService.deletePhoto(photo).subscribe(
-      {
-        next: data => {
-          this.toast.success(photoTitle,
-              'Photo supprimé',
-              {timeOut: 3000,});
-            this.catService.deletePhoto(idPhotoToDelete);
-        },
-        error: error => {
-          this.toast.error('Echec de la suppression de ' + photoTitle,
-          'Echec de la suppression',
-          {timeOut: 4000,});
-            console.error('There was an error in delete!', error);
-        }
-    });
+  deleteConfItem(item){
+    if (item.idPhoto){
+      const idToDelete = item.idPhoto;
+      const title = item.title;
+      this.apiService.deletePhoto(item as PhotoModel).subscribe(
+        {
+          next: data => {
+            this.toast.success(title,
+                'Photo supprimé',
+                {timeOut: 3000,});
+              this.catService.deletePhoto(idToDelete);
+          },
+          error: error => {
+            this.toast.error('Echec de la suppression de ' + title,
+            'Echec de la suppression',
+            {timeOut: 4000,});
+              console.error('There was an error in delete!', error);
+          }
+      });
+    }
+    else{
+      const idToDelete = item.idPhoto;
+      const title = item.title;
+      this.apiService.deleteVideo(item as VideoModel).subscribe(
+        {
+          next: data => {
+            this.toast.success(title,
+                'Vidéeo supprimé',
+                {timeOut: 3000,});
+              this.catService.deletePhoto(idToDelete);
+          },
+          error: error => {
+            this.toast.error('Echec de la suppression de ' + title,
+            'Echec de la suppression',
+            {timeOut: 4000,});
+              console.error('There was an error in delete!', error);
+          }
+      });
+    }
+
   }
 
   deleteMultiple(){
     this.selectedItems.forEach( p =>{
       if(p.isSelected)
-        this.deleteConfPhoto(p);
+        this.deleteConfItem(p);
     });
     this.cancelDeletMultipleMode();
   }
 
-  updatePhotoDate(photo, dateChanged){
+  updateItemDate(item, dateChanged){
     if(dateChanged){
-      this.updatePhoto(photo);
+      this.updateItem(item);
     }
   }
 
-  updatePhoto(photo){
-    this.apiService.putPhoto(photo).subscribe( photoUp =>{
-      this.catService.updatePhoto(photoUp);
-      this.toast.success(photoUp.title + ' a été mise à jour',
-        'Photo mise à jour',
-        {timeOut: 3000,});
-    }, error => {
-      console.log(error);
-      this.toast.error('Les modifications de ' + photo.title + 'n\'ont pas été enregistrées',
-          'Echec de la modification',
-          {timeOut: 4000,});
-    });
+  updateItem(item){
+    if (item.idPhoto){
+      this.apiService.putPhoto(item as PhotoModel).subscribe( photoUp =>{
+        photoUp.shootDate = new Date (photoUp.shootDate);
+        this.catService.updatePhoto(photoUp);
+        this.toast.success(photoUp.title + ' a été mise à jour',
+          'Photo mise à jour',
+          {timeOut: 3000,});
+      }, error => {
+        console.log(error);
+        this.toast.error('Les modifications de ' + item.title + 'n\'ont pas été enregistrées',
+            'Echec de la modification',
+            {timeOut: 4000,});
+      });
+    }
+    if (item.idVideo){
+      this.apiService.putVideo(item as VideoModel).subscribe( videoUp =>{
+        videoUp.shootDate = new Date (videoUp.shootDate);
+        this.catService.updateVideo(videoUp);
+        this.toast.success(videoUp.title + ' a été mise à jour',
+          'Vidéo mise à jour',
+          {timeOut: 3000,});
+      }, error => {
+        console.log(error);
+        this.toast.error('Les modifications de ' + item.title + 'n\'ont pas été enregistrées',
+            'Echec de la modification',
+            {timeOut: 4000,});
+      });
+    }
+
   }
 
-  selectPhoto(photo){
-    photo.isSelected = !photo.isSelected;
+  selectItem(item){
+    item.isSelected = !item.isSelected;
     this.isAllSelected();
   }
 
@@ -295,7 +344,7 @@ export class GalleryComponent implements OnInit {
       this.apiService.putCover(this.catService.curCat, photo, val[0].path).subscribe(
         {
           next: album => {
-            this.catService.setCover(photo);
+            this.catService.setCover(photo, val[0].path);
             this.toast.success( photo.title,
               'Photo de couverture',
               {timeOut: 3000,});
@@ -315,7 +364,7 @@ export class GalleryComponent implements OnInit {
       this.apiService.putNoCover(this.catService.curCat, val[0].path).subscribe(
       {
         next: album => {
-          this.catService.setCover(null);
+          this.catService.setCover(null,val[0].path);
           this.toast.success( photo.title,
             'Photo de couverture enlevé',
             {timeOut: 3000,});

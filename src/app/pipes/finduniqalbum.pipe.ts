@@ -17,6 +17,7 @@ export class FinduniqalbumPipe implements PipeTransform {
         }
       }
     }
+    console.log(a);
     return a;
   }
 
