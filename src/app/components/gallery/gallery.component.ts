@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { first } from 'rxjs/operators'
 import { ItemModel } from 'src/app/models/item.model';
 import { VideoModel } from 'src/app/models/video.model';
+import * as fileSaver from 'file-saver';
 
 @Component({
   selector: 'app-gallery',
@@ -297,7 +298,6 @@ export class GalleryComponent implements OnInit {
   updateItem(item){
     if (item.idPhoto){
       this.apiService.putPhoto(item as PhotoModel).subscribe( photoUp =>{
-        photoUp.shootDate = new Date (photoUp.shootDate);
         this.catService.updatePhoto(photoUp);
         this.toast.success(photoUp.title + ' a été mise à jour',
           'Photo mise à jour',
@@ -311,7 +311,6 @@ export class GalleryComponent implements OnInit {
     }
     if (item.idVideo){
       this.apiService.putVideo(item as VideoModel).subscribe( videoUp =>{
-        videoUp.shootDate = new Date (videoUp.shootDate);
         this.catService.updateVideo(videoUp);
         this.toast.success(videoUp.title + ' a été mise à jour',
           'Vidéo mise à jour',
@@ -604,7 +603,6 @@ export class GalleryComponent implements OnInit {
       this.apiService.putCopyPhotoToAlbum(p.idPhoto, this.selectedAlbumToCopyPhoto).subscribe(
         {
           next: data => {
-            data.shootDate = p.shootDate;
             this.catService.updatePhoto(data);
             this.toast.success(data.title,
               'Copié',
@@ -621,7 +619,6 @@ export class GalleryComponent implements OnInit {
       this.apiService.putCopyVideoToAlbum(p.idVideo, this.selectedAlbumToCopyPhoto).subscribe(
         {
           next: data => {
-            data.shootDate = p.shootDate;
             this.catService.updateVideo(data);
             this.toast.success(data.title,
               'Copié',
@@ -647,6 +644,61 @@ export class GalleryComponent implements OnInit {
 
   goToPage(pageNumber: number){
     this.currentPage = pageNumber;
+  }
+
+  download(){
+    this.route.pathFromRoot[1].url.pipe(first()).subscribe( val => {
+      if (this.editMode && !this.nbSelectedItem){
+        this.toast.error('Sélectionnez des fichiers',
+          'Aucun fichier',
+          {timeOut: 4000,});
+        return;
+      }
+      this.toast.success('Le téléchargement débutera bientot',
+        'Téléchargement',
+      {timeOut: 3000,});
+      if (!this.editMode){
+        this.apiService.download(this.catService.curCat.id, val[0].path).subscribe(
+          response => {
+            let blob:any = new Blob([response], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+            fileSaver.saveAs(blob, this.catService.curCat.title.replace(/\s/g, '_') + '.zip');
+          },
+          error => {
+            console.log('Error downloading the file');
+            this.toast.error('Echec téléchargement',
+            'Erreur',
+            {timeOut: 4000,});
+          }
+        );
+      }
+      else{
+        const idVideos = [];
+        const idPhotos = [];
+        this.selectedItems.forEach( i =>{
+          if(i.isSelected && i.idPhoto){
+            idPhotos.push(i.idPhoto)
+          }
+          if(i.isSelected && i.idVideo){
+            idVideos.push(i.idVideo)
+          }
+        });
+        this.apiService.downloadItems(this.catService.curCat.id, val[0].path,idVideos,idPhotos).subscribe(
+          response => {
+            let blob:any = new Blob([response], { type: 'application/octet-stream' });
+            const url = window.URL.createObjectURL(blob);
+            fileSaver.saveAs(blob, this.catService.curCat.title.replace(/\s/g, '_') + '.zip');
+          },
+          error => {
+            console.log('Error downloading the file');
+            this.toast.error('Echec téléchargement',
+            'Erreur',
+            {timeOut: 4000,});
+          }
+        );
+
+      }
+    });
   }
 
 }

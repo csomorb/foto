@@ -55,7 +55,6 @@ export class PhotoComponent implements OnInit {
         this.apiService.putPhoto(this.catService.curItem as PhotoModel).subscribe(
           {
             next: data => {
-              data.shootDate = this.catService.curItem.shootDate;
               this.catService.geoTagMode = false;
               this.catService.updatePhoto(data);
               this.toast.success(data.title,
@@ -201,7 +200,6 @@ export class PhotoComponent implements OnInit {
 
   updatePhoto(){
     this.apiService.putPhoto(this.photo).subscribe( photo =>{
-      photo.shootDate = new Date (photo.shootDate);
       this.catService.updatePhoto(photo);
       this.editMode = false;
       this.toast.success(photo.title + ' a été mise à jour',
@@ -265,7 +263,6 @@ export class PhotoComponent implements OnInit {
           data.src640+="?" + new Date().getTime();
           data.src1280+="?" + new Date().getTime();
           data.src1920+="?" + new Date().getTime();
-          data.shootDate = this.catService.curItem.shootDate;
           this.catService.updatePhoto(data);
           this.toast.success(data.title,
             'Enregistré',
@@ -290,7 +287,6 @@ export class PhotoComponent implements OnInit {
           data.src640+="?" + new Date().getTime();
           data.src1280+="?" + new Date().getTime();
           data.src1920+="?" + new Date().getTime();
-          data.shootDate = this.catService.curItem.shootDate;
           this.catService.updatePhoto(data);
           this.toast.success(data.title,
             'Enregistré',

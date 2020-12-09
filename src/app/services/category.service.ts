@@ -62,10 +62,51 @@ export class CategoryService {
     this.curCat = {id: 0, title: "Personnes", description : "Liste des personnes taguées", listPeople : []} as CategoryModel;
     this.parentList = [];
     this.apiService.getRootsPeoples().subscribe(peoples => { console.log(peoples);
+      if (peoples)
       this.curCat.listPeople = peoples;
 
     });
     this.curItems = [];
+  }
+
+  /**
+   * Charge tous les tags
+   */
+  loadRootTag(){
+    this.displayMap = false;
+    this.curCat = {id: 0, title: "Tags", description : "Liste des tags", listTag : []} as CategoryModel;
+    this.parentList = [];
+    this.apiService.getRootsTags().subscribe(tags => { console.log(tags);
+      if (tags)
+      this.curCat.listTag = tags;
+      console.log(this.curCat.listTag);
+    });
+    this.curItems = [];
+  }
+
+  /**
+   * Charge le tag donné
+   */
+  loadTag(idTag){
+    if (idTag === 0){
+      console.error("Chargement racine people logic error")
+    }
+    this.displayMap = true;
+    this.apiService.getTagWithPhotos(idTag).subscribe(tag => {
+      this.curCat = tag;
+      this.curCat.items = [];
+      this.curCat.photos.forEach(f =>{
+        this.curCat.items.push(f);
+      });
+      this.curCat.videos.forEach(f =>{
+        this.curCat.items.push(f);
+      });
+      this._buildItems();
+      this.parentList = [];
+      this.curItems = [...this.curCat.items];
+      this.updateMarkerFromCurItems();
+      this._loadItemAfterInit();
+    });
   }
 
   /**
@@ -230,6 +271,10 @@ export class CategoryService {
    * @param video Vidéo avec les champs mise à jour
    */
   updateVideo(updatedVideo: VideoModel){
+    updatedVideo.shootDate = new Date(updatedVideo.shootDate);
+    updatedVideo.albums = updatedVideo.albums.map( a =>{
+      return this.albumList.find(al => al.id === a.id);
+    });
     if (this.curItem){
       this.curItem = updatedVideo;
       this.updateMarkerFromCurItem();
@@ -254,6 +299,10 @@ export class CategoryService {
    * @param photo Photo avec les champs mise à jour
    */
   updatePhoto(updatedPhoto: PhotoModel){
+    updatedPhoto.shootDate = new Date(updatedPhoto.shootDate);
+    updatedPhoto.albums = updatedPhoto.albums.map( a =>{
+      return this.albumList.find(al => al.id === a.id);
+    });
     if (this.curItem){
       this.curItem = updatedPhoto;
       this.updateMarkerFromCurItem();

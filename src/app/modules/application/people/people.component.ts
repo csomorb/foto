@@ -10,8 +10,7 @@ import { CategoryService } from 'src/app/services/category.service';
 })
 export class PeopleComponent implements OnInit {
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute, private router: Router,
-    public catService: CategoryService) { }
+  constructor(private route: ActivatedRoute, public catService: CategoryService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {

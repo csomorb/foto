@@ -42,6 +42,7 @@
   <div class="btn-i btn-cancel" (click)="cancelTriMode()" *ngIf="triMode"></div>
   <div class="btn-i btn-add-picture" (click)="addPhoto()"></div>
   <div class="btn-i btn-trash" (click)="toDeleteMode()"></div>
+  <div class="btn-i btn-download" (click)="download()" *ngIf="!editMode || (editMode && nbSelectedItem)"></div>
   <div class="btn-i btn-edit" (click)="toEditMode()" *ngIf="!editMode"></div>
   <div class="btn-i btn-cancel" (click)="cancelEditMode()" *ngIf="editMode"></div>
 </div>
@@ -180,6 +181,7 @@
   <div *ngIf="editMode && nbSelectedItem" class="action-container">
     <div class="btn-i btn-rotate-left" (click)="rotateLeft()"></div>
     <div class="btn-i btn-rotate-right" (click)="rotateRight()"></div>
+    <div class="btn-i btn-download" (click)="download()"></div>
     <div *ngIf="!catService.geoTagMode" (click)="toGeoMode()" class="btn-i btn-geotag"></div>
     <div *ngIf="catService.geoTagMode" (click)="cancelGeoMode()" class="btn-i btn-cancel"></div>
     <div class="btn-i btn-trash" (click)="toDeletMultipleMode()"></div>

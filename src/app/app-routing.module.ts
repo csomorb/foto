@@ -50,7 +50,7 @@ const routes: Routes = [
       { path: 'gallery', component: TaggalleryComponent },
     ]
   },
-  { path: 'tagss/:idTag', component: TagComponent ,
+  { path: 'tags/:idTag', component: TagComponent ,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: TaggalleryComponent },

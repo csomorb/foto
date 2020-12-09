@@ -321,7 +321,7 @@ export class ApiService {
    * @param description
    */
   postTag(title: string, description:string){
-    let tag = {title : name, description: description} ;
+    let tag = {title : title, description: description} ;
     return this.http.post<TagModel>(environment.apiUrl + '/tags/', tag);
   }
 
@@ -338,7 +338,7 @@ export class ApiService {
    * Renvoie toutes les tags avec leur photo de profil et les photos?
    */
   getRootsTags(){
-    return this.http.get<Array<TagModel>>(`${environment.apiUrl}/tags/roots`);
+    return this.http.get<Array<TagModel>>(`${environment.apiUrl}/tags`);
   }
 
   /**
@@ -412,5 +412,12 @@ export class ApiService {
     }
   }
 
+  download(id: number, cat: string): any{
+    return this.http.get(`${environment.apiUrl}/${cat}/${id}/download`, {responseType: 'blob'});
+  }
 
+  downloadItems(id: number, cat: string,idVideos: Array<Number>,idPhotos:Array<Number>){
+    let body = {idVideos, idPhotos};
+    return this.http.put(`${environment.apiUrl}/${cat}/${id}/download`, body, {responseType: 'blob'});
+  }
 }

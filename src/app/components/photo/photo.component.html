@@ -124,6 +124,14 @@
         <span class="prop-content">{{catService?.curItem?.width}} x {{catService?.curItem?.height}} pixel</span>
       </div>
     </div>
+    <div>
+      <div *ngIf="catService?.curItem?.tags">Tags:</div>
+
+
+      <div *ngFor="let t of catService?.curItem?.tags">
+        {{t.title}}
+      </div>
+    </div>
     <div *ngIf="catService?.curItem?.peoples?.length">
       Personnes présentes:
       <div *ngFor="let p of catService?.curItem?.peoples" (mouseenter) ="showTagedFace(p.id)"  (mouseleave) ="hideTagedFace(p.id)" class="people-container" (click)="tagMode ? showFace(p.id) : gotToPeople(p.id)">

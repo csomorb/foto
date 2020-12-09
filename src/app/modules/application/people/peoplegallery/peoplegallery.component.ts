@@ -35,14 +35,7 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
   }
 
   toDeleteMode(){
-    if (1){
-      this.toast.warning('TODO',
-        'TODO',
-        {timeOut: 4000,});
-    }
-    else{
-      this.deleteMode = true;
-    }
+    this.deleteMode = true;
   }
 
   createPeople(){
@@ -59,10 +52,8 @@ export class PeoplegalleryComponent extends GalleryComponent implements OnInit {
               this.catService.curCat.listPeople.push(data);
             }
             this.catService.peopleList.push(data);
-            console.log(data);
-            const peopleName = data.title;
             this.addMode = false;
-            this.toast.success(peopleName,
+            this.toast.success(data.title,
               'Ajouté',
               {timeOut: 3000,});
           },

@@ -25,7 +25,7 @@
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY'"><span (click)="toAllYears()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span></div>
   <div class="time-line" *ngIf="timeMode && curTimeLevel==='DAY-SELECT'"><span (click)="toAllYears()">Date de création</span> / <span (click)="goToYear(curYear)">{{curYear}}</span> / <span (click)="goToMonth(curYear, curMonth)">{{curMonth | month}}</span> / {{curDay}}</div>
   <div class="nb-selected" *ngIf="editMode">
-    {{nbSelectedItem}} / {{catService.curCat.photos.length}}
+    {{nbSelectedItem}} / {{catService.curItems.length}}
   </div>
   <div class="btn-i btn-calendar" (click)="toTimeMode()" *ngIf="!timeMode"></div>
   <div class="btn-i btn-folder" (click)="cancelTimeMode()" *ngIf="timeMode"></div>
@@ -33,6 +33,7 @@
   <div class="btn-i btn-add-people" (click)="toAddMode()"></div>
   <div class="btn-i btn-cancel" (click)="cancelTriMode()" *ngIf="triMode"></div>
   <div class="btn-i btn-trash" (click)="toDeleteMode()"></div>
+  <div class="btn-i btn-download" (click)="download()" *ngIf="!editMode || (editMode && nbSelectedItem)"></div>
   <div class="btn-i btn-edit" (click)="toEditMode()" *ngIf="!editMode"></div>
   <div class="btn-i btn-cancel" (click)="cancelEditMode()" *ngIf="editMode"></div>
 </div>
@@ -190,6 +191,7 @@
   <div *ngIf="editMode && nbSelectedItem" class="action-container">
     <div class="btn-i btn-rotate-left" (click)="rotateLeft()"></div>
     <div class="btn-i btn-rotate-right" (click)="rotateRight()"></div>
+    <div class="btn-i btn-download" (click)="download()"></div>
     <div *ngIf="!catService.geoTagMode" (click)="toGeoMode()" class="btn-i btn-geotag"></div>
     <div *ngIf="catService.geoTagMode" (click)="cancelGeoMode()" class="btn-i btn-cancel"></div>
     <div class="btn-i btn-trash" (click)="toDeletMultipleMode()"></div>

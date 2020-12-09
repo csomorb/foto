@@ -85,6 +85,10 @@ a{
   background-image: url('/assets/icon/download.svg');
 }
 
+.btn-add-tag{
+  background-image: url('/assets/icon/add-tag.svg');
+}
+
 
 .btn {
   background: linear-gradient(180deg, rgb(95 95 95 / 75%) 0%, rgb(60 60 66 / 75%) 100%);

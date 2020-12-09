@@ -57,7 +57,6 @@ export class VideoComponent implements OnInit {
         this.apiService.putVideo(this.catService.curItem as VideoModel).subscribe(
           {
             next: data => {
-              data.shootDate = this.catService.curItem.shootDate;
               this.catService.geoTagMode = false;
               this.catService.updateVideo(data);
               this.toast.success(data.title,
@@ -140,7 +139,6 @@ export class VideoComponent implements OnInit {
 
   updateVideo(){
     this.apiService.putVideo(this.video).subscribe( video =>{
-      video.shootDate = new Date (video.shootDate);
       this.catService.updateVideo(video);
       console.log(video);
       this.editMode = false;
