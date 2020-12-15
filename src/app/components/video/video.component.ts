@@ -110,6 +110,10 @@ export class VideoComponent implements OnInit {
     this.router.navigateByUrl("peoples/" + idPeople);
   }
 
+  gotToTag(idTag){
+    this.router.navigateByUrl("tags/" + idTag);
+  }
+
   @HostListener('window:keyup', ['$event'])
   keyEvent(event: KeyboardEvent) {
     if (event.keyCode === KEY_CODE.RIGHT_ARROW) {
@@ -121,6 +125,45 @@ export class VideoComponent implements OnInit {
     if (event.keyCode === KEY_CODE.ESCAPE) {
       this.returnGalery();
     }
+  }
+
+  setSelectedTag(idTag){
+    if (this.catService.curItem.tags.findIndex(t => t.id === idTag) === -1)
+    this.apiService.setVideoTag(this.catService.curItem.idVideo,idTag).subscribe(  {
+      next: res => {
+        const tag = this.catService.tagList.find(t => t.id === idTag);
+        this.catService.curItem.tags.push(tag);
+        this.catService.updateVideo(this.catService.curItem as VideoModel);
+        this.toast.success( '',
+          'Enregistré',
+          {timeOut: 3000,});
+      },
+      error: error => {
+        this.toast.error('Non enregistré',
+        'Echec de la modification',
+        {timeOut: 4000,});
+        console.error('There was an error in seting cover!', error);
+      }
+  });
+  }
+
+  delteSelectedTag(e,idTag){
+    e.stopPropagation();
+    this.apiService.unsetVideoTag(this.catService.curItem.idVideo,idTag).subscribe(  {
+      next: res => {
+        this.catService.curItem.tags.splice(this.catService.curItem.tags.findIndex( t => t.id === idTag),1);
+        this.catService.updateVideo(this.catService.curItem as VideoModel);
+        this.toast.success( '',
+          'Enregistré',
+          {timeOut: 3000,});
+      },
+      error: error => {
+        this.toast.error('Non enregistré',
+        'Echec de la modification',
+        {timeOut: 4000,});
+        console.error('There was an error in seting cover!', error);
+      }
+  });
   }
 
   returnGalery(){
@@ -176,6 +219,44 @@ export class VideoComponent implements OnInit {
 
   cancelTagMode(){
     this.tagMode = false;
+  }
+
+  unsetSelectedFace(e,idPeople){
+    e.stopPropagation();
+    this.apiService.unsetVideoPeople(this.catService.curItem.idVideo,idPeople).subscribe(  {
+      next: res => {
+        this.catService.curItem.peoples.splice(this.catService.curItem.peoples.findIndex( t => t.id === idPeople),1);
+        this.catService.updateVideo(this.catService.curItem as VideoModel);
+        this.toast.success( '',
+          'Enregistré',
+          {timeOut: 3000,});
+      },
+      error: error => {
+        this.toast.error('Non enregistré',
+        'Echec de la modification',
+        {timeOut: 4000,});
+        console.error('There was an error in seting people!', error);
+      }
+  });
+  }
+
+  setSelectedFace(idPeople){
+    this.apiService.setVideoPeople(this.catService.curItem.idVideo,idPeople).subscribe(  {
+      next: res => {
+        const people = this.catService.peopleList.find(p => p.id === idPeople);
+        this.catService.curItem.peoples.push(people);
+        this.catService.updateVideo(this.catService.curItem as VideoModel);
+        this.toast.success( '',
+          'Enregistré',
+          {timeOut: 3000,});
+      },
+      error: error => {
+        this.toast.error('Non enregistré',
+        'Echec de la modification',
+        {timeOut: 4000,});
+        console.error('There was an error in seting people!', error);
+      }
+  });
   }
 
   deleteVideo(){

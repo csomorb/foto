@@ -125,11 +125,12 @@
       </div>
     </div>
     <div>
-      <div *ngIf="catService?.curItem?.tags">Tags:</div>
-
-
-      <div *ngFor="let t of catService?.curItem?.tags">
-        {{t.title}}
+      <div *ngIf="catService?.curItem?.tags.length || editMode">Tags:</div>
+      <app-selecttag *ngIf="editMode" (selectedTagID)="setSelectedTag($event)"></app-selecttag>
+      <div *ngFor="let t of catService?.curItem?.tags" class="people-container" (click)="gotToTag(t.id)">
+        <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + t?.coverPhoto?.src150 + ')'}"></div>
+        <div class="people-name">{{t.title}}</div>
+        <div class="btn-i btn-cancel" *ngIf="editMode" (click)="delteSelectedTag($event,t.id)"></div>
       </div>
     </div>
     <div *ngIf="catService?.curItem?.peoples?.length">

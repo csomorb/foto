@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { PeopleModel } from '../models/people.model';
 import { CategoryModel } from '../models/category.model';
 import { VideoModel } from '../models/video.model';
+import { ItemModel } from '../models/item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -420,4 +421,29 @@ export class ApiService {
     let body = {idVideos, idPhotos};
     return this.http.put(`${environment.apiUrl}/${cat}/${id}/download`, body, {responseType: 'blob'});
   }
+
+  setPhotoTag(idPhoto: number, idTag: number){
+    return this.http.put<PhotoModel>(`${environment.apiUrl}/photos/${idPhoto}/tags/${idTag}`, null);
+  }
+
+  setVideoTag(idVideo: number, idTag: number){
+    return this.http.put<VideoModel>(`${environment.apiUrl}/videos/${idVideo}/tags/${idTag}`, null);
+  }
+
+  unsetPhotoTag(idPhoto:number, idTag: number){
+    return this.http.delete<PhotoModel>(`${environment.apiUrl}/photos/${idPhoto}/tags/${idTag}`);
+  }
+
+  unsetVideoTag(idVideo:number, idTag: number){
+    return this.http.delete<VideoModel>(`${environment.apiUrl}/videos/${idVideo}/tags/${idTag}`);
+  }
+
+  setVideoPeople(idVideo:number, idPeople: number){
+    return this.http.put<VideoModel>(`${environment.apiUrl}/videos/${idVideo}/peoples/${idPeople}`,null);
+  }
+
+  unsetVideoPeople(idVideo:number, idPeople: number){
+    return this.http.delete<VideoModel>(`${environment.apiUrl}/videos/${idVideo}/peoples/${idPeople}`);
+  }
+
 }

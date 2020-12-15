@@ -109,6 +109,46 @@ export class PhotoComponent implements OnInit {
     console.log(img.height);
   }
 
+  setSelectedTag(idTag){
+    if (this.catService.curItem.tags.findIndex(t => t.id === idTag) === -1)
+    this.apiService.setPhotoTag(this.catService.curItem.idPhoto,idTag).subscribe(  {
+      next: res => {
+        const tag = this.catService.tagList.find(t => t.id === idTag);
+        console.log(tag);
+        this.catService.curItem.tags.push(tag);
+        this.catService.updatePhoto(this.catService.curItem as PhotoModel);
+        this.toast.success( '',
+          'Enregistré',
+          {timeOut: 3000,});
+      },
+      error: error => {
+        this.toast.error('Non enregistré',
+        'Echec de la modification',
+        {timeOut: 4000,});
+        console.error('There was an error in seting cover!', error);
+      }
+  });
+  }
+
+  delteSelectedTag(e,idTag){
+    e.stopPropagation();
+    this.apiService.unsetPhotoTag(this.catService.curItem.idPhoto,idTag).subscribe(  {
+      next: res => {
+        this.catService.curItem.tags.splice(this.catService.curItem.tags.findIndex( t => t.id === idTag),1);
+        this.catService.updatePhoto(this.catService.curItem as PhotoModel);
+        this.toast.success( '',
+          'Enregistré',
+          {timeOut: 3000,});
+      },
+      error: error => {
+        this.toast.error('Non enregistré',
+        'Echec de la modification',
+        {timeOut: 4000,});
+        console.error('There was an error in seting cover!', error);
+      }
+  });
+  }
+
   setSelectedFace(e,f){
     console.log("POST FACETAG");
     if (e === 0){
@@ -169,6 +209,10 @@ export class PhotoComponent implements OnInit {
 
   gotToAlbum(idAlbum){
     this.router.navigateByUrl("albums/" + idAlbum);
+  }
+
+  gotToTag(idTag){
+    this.router.navigateByUrl("tags/" + idTag);
   }
 
   @HostListener('window:keyup', ['$event'])
@@ -378,4 +422,6 @@ export class PhotoComponent implements OnInit {
   download(){
     saveAs(this.photoBaseUrl + this.catService?.curItem?.srcOrig,this.catService.curItem.originalFileName);
   }
+
+
 }

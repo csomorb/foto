@@ -91,6 +91,27 @@
         <span class="prop-content">{{catService?.curItem?.width}} x {{catService?.curItem?.height}} pixel</span>
       </div>
     </div>
+    <div>
+      <div *ngIf="catService?.curItem?.tags.length || editMode">Tags:</div>
+      <app-selecttag *ngIf="editMode" (selectedTagID)="setSelectedTag($event)"></app-selecttag>
+      <div *ngFor="let t of catService?.curItem?.tags" class="people-container" (click)="gotToTag(t.id)">
+        <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + t?.coverPhoto?.src150 + ')'}"></div>
+        <div class="people-name">{{t.title}}</div>
+        <div class="btn-i btn-cancel" *ngIf="editMode" (click)="delteSelectedTag($event,t.id)"></div>
+      </div>
+    </div>
+
+    <div>
+      <div *ngIf="catService?.curItem?.tags.length || tagMode">Personnes présentes</div>
+      <app-selectpeoplevideo (selectedPeopleID)="setSelectedFace($event)" *ngIf="tagMode"></app-selectpeoplevideo>
+      <div *ngFor="let p of catService?.curItem?.peoples" class="people-container" (click)="gotToPeople(p.id)">
+        <div class="people-cover" [ngStyle]="{'background-image': 'url(' + photoBaseUrl + p?.coverPhoto?.src150 + ')'}"></div>
+        <div class="people-name">{{p.title}}</div>
+        <div class="btn-i btn-cancel" *ngIf="tagMode" (click)="unsetSelectedFace($event,p.id)"></div>
+      </div>
+    </div>
+
+
     <!-- <div *ngIf="catService?.curItem?.peoples?.length">
       Personnes présentes:
       <div *ngFor="let p of catService?.curItem?.peoples" (mouseenter) ="showTagedFace(p.id)"  (mouseleave) ="hideTagedFace(p.id)" class="people-container" (click)="tagMode ? showFace(p.id) : gotToPeople(p.id)">

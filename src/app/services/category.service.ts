@@ -49,7 +49,7 @@ export class CategoryService {
     this.geoTagMode = false;
     this.curAlbumItems = [];
     this.apiService.getPeoples().subscribe( p => this.peopleList = p);
-    this.apiService.getTags().subscribe( t => this.tagList = t);
+    this.apiService.getTags().subscribe( t => this.tagList = t );
     this.apiService.getAlbumsCover().subscribe( a => this.albumList = a );
     this.displayMap = false;
   }
@@ -120,7 +120,7 @@ export class CategoryService {
     this.displayMap = true;
     this.apiService.getPeopleWithPhotos(idPeople).subscribe(people => {
       this.curCat = people;
-      this.curCat.items = [];
+      this.curCat.items = this.curCat.videos;
       this.curCat.faces.forEach(f =>{
         this.curCat.items.push(f.photo);
       });
@@ -171,13 +171,17 @@ export class CategoryService {
   private _buildItems(){
     this.curCat.items = this.curCat.items.map(i =>{
       i.shootDate = new Date(i.shootDate);
-      i.peoples = [];
+      if(i.peoples)
+      i.peoples = i.peoples.map(p => {return this.peopleList.find( s => s.id === p.id)});
+      else
+        i.peoples = [];
       i.albums = i.albums.map(a => {
         return this.albumList.find( s => s.id === a.id)
       });
       i.tags = i.tags.map(a => {
         return this.tagList.find( s => s.id === a.id)
       });
+
       if(i.faces)
       i.faces = i.faces.map(f => {
         f.show = false;

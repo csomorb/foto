@@ -44,6 +44,7 @@
 
 .people-name{
   margin-left: 5px;
+  flex-grow: 2;
 }
 
 .box{

@@ -31,6 +31,8 @@ import { FinduniqpeoplePipe } from './pipes/finduniqpeople.pipe';
 import { FinduniqtagPipe } from './pipes/finduniqtag.pipe';
 import { MapComponent } from './components/map/map.component';
 import { VideoComponent } from './components/video/video.component';
+import { SelecttagComponent } from './components/selecttag/selecttag.component';
+import { SelectpeoplevideoComponent } from './components/selectpeoplevideo/selectpeoplevideo.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +60,8 @@ import { VideoComponent } from './components/video/video.component';
     FinduniqtagPipe,
     MapComponent,
     VideoComponent,
+    SelecttagComponent,
+    SelectpeoplevideoComponent,
   ],
   imports: [
     BrowserModule,
