@@ -12,17 +12,17 @@ import { AlbumgalleryComponent } from './modules/application/album/albumgallery/
 import { PeoplegalleryComponent } from './modules/application/people/peoplegallery/peoplegallery.component';
 import { TagComponent } from './modules/application/tag/tag.component';
 import { TaggalleryComponent } from './modules/application/tag/taggallery/taggallery.component';
-
+import { AuthGuard } from './auth.guard'
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'albums', component: AlbumComponent,
+  { path: '', canActivate: [AuthGuard], component: HomeComponent },
+  { path: 'albums', canActivate: [AuthGuard], component: AlbumComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: AlbumgalleryComponent },
     ]
   },
-  { path: 'albums/:idAlbum', component: AlbumComponent ,
+  { path: 'albums/:idAlbum', canActivate: [AuthGuard], component: AlbumComponent ,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: AlbumgalleryComponent },
@@ -30,13 +30,13 @@ const routes: Routes = [
       { path: 'videos/:idVideo', component: VideoComponent }
       ]
   },
-  { path: 'peoples', component: PeopleComponent,
+  { path: 'peoples', canActivate: [AuthGuard], component: PeopleComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: PeoplegalleryComponent },
     ]
   },
-  { path: 'peoples/:idPeople', component: PeopleComponent ,
+  { path: 'peoples/:idPeople', canActivate: [AuthGuard], component: PeopleComponent ,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: PeoplegalleryComponent },
@@ -44,13 +44,13 @@ const routes: Routes = [
       { path: 'videos/:idVideo', component: VideoComponent }
       ]
   },
-  { path: 'tags', component: TagComponent,
+  { path: 'tags', canActivate: [AuthGuard], component: TagComponent,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: TaggalleryComponent },
     ]
   },
-  { path: 'tags/:idTag', component: TagComponent ,
+  { path: 'tags/:idTag', canActivate: [AuthGuard], component: TagComponent ,
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'gallery' },
       { path: 'gallery', component: TaggalleryComponent },
@@ -58,8 +58,8 @@ const routes: Routes = [
       { path: 'videos/:idVideo', component: VideoComponent }
       ]
   },
-  { path: 'upload', component: UploaderComponent },
-  { path: 'upload/:idAlbum', component: UploaderComponent },
+  { path: 'upload', canActivate: [AuthGuard], component: UploaderComponent },
+  { path: 'upload/:idAlbum', canActivate: [AuthGuard], component: UploaderComponent },
   { path: 'login', component: LoginComponent },
   { path: '**', component: NotFoundComponent }
 ];

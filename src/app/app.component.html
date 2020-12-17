@@ -15,8 +15,11 @@
       </div>
     </div>
     <div class="nav-right">
-      <div class="nav-item">
-        <a href="/connexion" routerLink="/connexion">Connexion</a>
+      <div class="nav-item" *ngIf="!authService.currentUserValue">
+        <a href="/login" routerLink="/login">Connexion</a>
+      </div>
+      <div class="nav-item" *ngIf="authService.currentUserValue">
+        <a href="/user" routerLink="/user">{{authService.currentUserValue.username}}</a> <a href="/login" routerLink="/login" (click)="logout()">Déconnexion</a>
       </div>
     </div>
   </div>
@@ -37,8 +40,11 @@
       <div class="nav-item">
         <a href="/tags" routerLink="/tags">Tags</a>
       </div>
-      <div class="nav-item">
-        <a href="/connexion" routerLink="/connexion">Connexion</a>
+      <div class="nav-item" *ngIf="!authService.currentUserValue">
+        <a href="/login" routerLink="/login">Connexion</a>
+      </div>
+      <div class="nav-item" *ngIf="authService.currentUserValue">
+        <a href="/login" routerLink="/login">Déconnexion</a>
       </div>
     </div>
   </div>

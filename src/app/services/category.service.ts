@@ -61,7 +61,7 @@ export class CategoryService {
     this.displayMap = false;
     this.curCat = {id: 0, title: "Personnes", description : "Liste des personnes taguées", listPeople : []} as CategoryModel;
     this.parentList = [];
-    this.apiService.getRootsPeoples().subscribe(peoples => { console.log(peoples);
+    this.apiService.getRootsPeoples().subscribe(peoples => {
       if (peoples)
       this.curCat.listPeople = peoples;
 
@@ -76,10 +76,9 @@ export class CategoryService {
     this.displayMap = false;
     this.curCat = {id: 0, title: "Tags", description : "Liste des tags", listTag : []} as CategoryModel;
     this.parentList = [];
-    this.apiService.getRootsTags().subscribe(tags => { console.log(tags);
+    this.apiService.getRootsTags().subscribe(tags => {
       if (tags)
       this.curCat.listTag = tags;
-      console.log(this.curCat.listTag);
     });
     this.curItems = [];
   }
@@ -125,9 +124,6 @@ export class CategoryService {
         this.curCat.items.push(f.photo);
       });
       this._buildItems();
-
-      //TODO: videos
-
       this.parentList = [];
       this.curItems = [...this.curCat.items];
       this.updateMarkerFromCurItems();

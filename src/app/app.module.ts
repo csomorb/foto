@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NotFoundComponent } from './modules/general/not-found/not-found.component';
 import { LoginComponent } from './modules/general/login/login.component';
 import { AlbumComponent } from './modules/application/album/album.component';
@@ -33,6 +33,8 @@ import { MapComponent } from './components/map/map.component';
 import { VideoComponent } from './components/video/video.component';
 import { SelecttagComponent } from './components/selecttag/selecttag.component';
 import { SelectpeoplevideoComponent } from './components/selectpeoplevideo/selectpeoplevideo.component';
+import { JwtInterceptor } from './services/jwt-interceptor';
+import { ErrorInterceptor } from './services/error.interceptor';
 
 @NgModule({
   declarations: [
@@ -74,7 +76,10 @@ import { SelectpeoplevideoComponent } from './components/selectpeoplevideo/selec
     OwlNativeDateTimeModule,
     ToastrModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
