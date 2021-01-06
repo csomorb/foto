@@ -13,6 +13,7 @@ import { PeoplegalleryComponent } from './modules/application/people/peoplegalle
 import { TagComponent } from './modules/application/tag/tag.component';
 import { TaggalleryComponent } from './modules/application/tag/taggallery/taggallery.component';
 import { AuthGuard } from './auth.guard'
+import { RegisterComponent } from './modules/general/register/register.component';
 
 const routes: Routes = [
   { path: '', canActivate: [AuthGuard], component: HomeComponent },
@@ -60,6 +61,7 @@ const routes: Routes = [
   },
   { path: 'upload', canActivate: [AuthGuard], component: UploaderComponent },
   { path: 'upload/:idAlbum', canActivate: [AuthGuard], component: UploaderComponent },
+  { path: 'register',  canActivate: [AuthGuard], component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: '**', component: NotFoundComponent }
 ];

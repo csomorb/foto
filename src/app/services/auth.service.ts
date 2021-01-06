@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { ToastrService } from 'ngx-toastr';
 
 export interface ApplicationUser {
 	accessToken: string;
@@ -18,7 +19,7 @@ export class AuthService {
 	private currentUserSubject: BehaviorSubject<ApplicationUser>;
 	public currentUser: Observable<ApplicationUser>;
 
-	constructor(private readonly http: HttpClient) {
+	constructor(private readonly http: HttpClient,public toast: ToastrService) {
 		this.currentUserSubject = new BehaviorSubject<ApplicationUser>(
 			JSON.parse(localStorage.getItem('currentUser'))
 		);
@@ -42,6 +43,17 @@ export class AuthService {
 				}
 
 				return user;
+			})
+		);
+  }
+
+  register(username: string, password: string, email:string, role:string) {
+		return this.http.post<any>(environment.apiUrl+'/auth/register', { username, password, email, role }).pipe(
+			map(user => {
+        console.log(user);
+        this.toast.success(username,
+          'Utilisateur créé',
+          {timeOut: 3000,});
 			})
 		);
 	}

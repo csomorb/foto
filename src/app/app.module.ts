@@ -35,6 +35,7 @@ import { SelecttagComponent } from './components/selecttag/selecttag.component';
 import { SelectpeoplevideoComponent } from './components/selectpeoplevideo/selectpeoplevideo.component';
 import { JwtInterceptor } from './services/jwt-interceptor';
 import { ErrorInterceptor } from './services/error.interceptor';
+import { RegisterComponent } from './modules/general/register/register.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { ErrorInterceptor } from './services/error.interceptor';
     VideoComponent,
     SelecttagComponent,
     SelectpeoplevideoComponent,
+    RegisterComponent,
   ],
   imports: [
     BrowserModule,
